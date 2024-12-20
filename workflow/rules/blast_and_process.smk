@@ -1,6 +1,6 @@
 rule blast_card:
     input:
-        fasta = "{base_dir}/data/input/{sample}.part_{part}.fasta",
+        fasta = "{base_dir}/data/fastq/{sample}.part_{part}.fasta",
         card = "{base_dir}/data/blast_db/card_db.pdb"
     output:
         card_results = "{base_dir}/results/{sample}/{part}/card_results.txt"
@@ -19,7 +19,7 @@ rule blast_card:
 
 rule blast_silva:
     input:
-        fasta = "{base_dir}/data/input/{sample}.part_{part}.fasta",
+        fasta = "{base_dir}/data/fastq/{sample}.part_{part}.fasta",
         silva = "{base_dir}/data/blast_db/silva_db.ndb"
     output:
         silva_results = "{base_dir}/results/{sample}/{part}/SILVA_results.txt"
