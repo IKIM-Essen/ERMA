@@ -2,6 +2,7 @@ channels:
   - bioconda                                                                                                                                                         
   - conda-forge   
 dependencies:
+  - usearch=12.0
   - _libgcc_mutex=0.1=conda_forge
   - _openmp_mutex=4.5=2_gnu
   - blast=2.16.0=hc155240_2

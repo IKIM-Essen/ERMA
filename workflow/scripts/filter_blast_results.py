@@ -79,10 +79,7 @@ def filter_blast_results(input_file, output_file, min_similarity):
 
     # Filter results based on percentage identity and alignment length for 16S
     sixteen_s_data = df[
-        (df['part'] == '16S') &
-        (df['align_length'].between(200, 300)) &
-        (df['perc_identity'] > float(min_similarity) * 100) 
-        #& (df['orientation'] == 'reverse')
+        (df['part'] == '16S')
     ]
     
     sixteen_s_data = sixteen_s_data.groupby("query_id").apply(process_orientation_and_counts).reset_index(drop=True)

@@ -27,9 +27,7 @@ def process_combined_data(combined_data, sample_name):
         how='inner'
     )
     
-    # Extract genus from the path in 16S data and add the sample name
-    merged_data['genus'] = merged_data['path'].apply(lambda x: x.split(';')[-2] if pd.notna(x) else None)
-    merged_data = merged_data[merged_data["genus"] != "Incertae Sedis"]
+    # Add the sample name
     merged_data['sample'] = sample_name
     
     # Calculate genus counts per AMR Gene Family and genus for the sample

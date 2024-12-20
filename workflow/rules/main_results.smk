@@ -1,13 +1,6 @@
 runname = "".join(config["runname"])
 seq_tech = "".join(config["seq_tech"])
 
-if seq_tech == "Illumina":
-    samples = list(set([re.split(r'_R\d_',r)[0] for r in reads]))
-elif seq_tech == "ONT":
-    samples = reads
-else:
-    raise ValueError("Invalid sequencing technology specified. Check config file and README.")
-
 rule generate_genus_distribution_plot:
     input:
         filtered_data = expand("{{base_dir}}/results/{sample}/{part}/filtered_results.csv", 

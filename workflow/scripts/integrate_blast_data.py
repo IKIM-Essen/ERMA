@@ -35,8 +35,6 @@ def process_silva_results(silva_results_path, taxa_mapping_path, output_path, ch
     """Process SILVA results and save them to an intermediate output file."""
     blast_columns = ["query_id", "subject_id", "perc_identity", "align_length", "mismatches",
                      "gap_opens", "q_start", "q_end", "s_start", "s_end", "evalue", "bit_score"]
-    
-    taxa_df = pd.read_csv(taxa_mapping_path, sep="\t")
     header_written = False
 
     with gzip.open(silva_results_path, 'rt') as f_in, open(output_path, 'w') as f_out:
@@ -46,7 +44,7 @@ def process_silva_results(silva_results_path, taxa_mapping_path, output_path, ch
             chunk["distance"] = chunk["q_start"] - chunk["q_end"]
             orientation_counts = chunk.groupby("query_id").apply(process_orientation_and_counts).reset_index()
             merged_chunk = chunk.merge(orientation_counts, on="query_id")
-            merged_chunk = merged_chunk.merge(taxa_df, on="primaryAccession", how="left")
+            merged_chunk["genus"] = merged_chunk["subject_id"].str.split(';').str[-2]
             merged_chunk.to_csv(f_out, index=False, header=not header_written)
             header_written = True  # Ensure header is only written once
 
@@ -64,7 +62,6 @@ if __name__ == "__main__":
     card_results = snakemake.input.card_results
     silva_results = snakemake.input.silva_results
     aro_mapping = snakemake.input.aro_mapping
-    taxa_mapping = snakemake.input.taxa_mapping
     card_output = snakemake.output.intermed_card_results
     silva_output = snakemake.output.intermed_silva_results
     final_output = snakemake.output.integrated_data
