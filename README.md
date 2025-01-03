@@ -33,7 +33,7 @@ Clone the repository: First, clone the pipeline repository to your local machine
 git clone https://github.com/your-username/ERMA.git
 cd ERMA
 ```
-Prepare Data Folder: You need to place your raw sequencing files (fastq.gz format) in the data/input/ directory. This folder must exist before running the pipeline.
+Prepare Data Folder: You need to place your raw sequencing files (fastq.gz format) in the data/fastq/ directory. This folder must exist before running the pipeline.
 
 Modify the Config File: Open the config/config.yaml file and change the base_dir parameter to the base directory where the pipeline is located. The config file should look like this:
 ```yaml

@@ -5,7 +5,7 @@ import altair as alt
 necessary_columns = [
     "query_id",
     "part",
-    "path",
+    "genus",
     "AMR Gene Family",
     "perc_identity",
 ]
@@ -17,12 +17,12 @@ def process_combined_data(combined_data, sample_name):
     
     # Prepare to merge only unique hits
     unique_abr_data = abr_data[['query_id', 'AMR Gene Family']].drop_duplicates()
-    unique_sixteen_s_data = sixteen_s_data[['query_id', 'path']].drop_duplicates()
+    unique_sixteen_s_data = sixteen_s_data[['query_id', 'genus']].drop_duplicates()
     
     # Merge on query_id to associate AMR Gene Family with genus information from 16S data
     merged_data = pd.merge(
         unique_abr_data[['query_id', 'AMR Gene Family']], 
-        unique_sixteen_s_data[['query_id', 'path']],
+        unique_sixteen_s_data[['query_id', 'genus']],
         on='query_id', 
         how='inner'
     )

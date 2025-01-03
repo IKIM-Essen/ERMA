@@ -22,7 +22,6 @@ dtype_dict = {
     "orientation": "string",
     "start": "float",
     "stop": "float",
-    "path": "string",
     "organism_name": "string",
     "taxid": "float",
     "ARO Accession": "string",
@@ -82,6 +81,8 @@ def filter_blast_results(input_file, output_file, min_similarity):
         (df['part'] == '16S')
     ]
     
+    sixteen_s_data = sixteen_s_data.copy()
+    sixteen_s_data["query_id"] = sixteen_s_data["query_id"].str.split(expand=True)[0]
     sixteen_s_data = sixteen_s_data.groupby("query_id").apply(process_orientation_and_counts).reset_index(drop=True)
     
     # Filter for common query IDs between abr_data and sixteen_s_data

@@ -31,7 +31,7 @@ def process_card_results(card_results_path, aro_mapping_path, output_path, chunk
             merged_chunk.to_csv(f_out, index=False, header=not header_written)
             header_written = True
 
-def process_silva_results(silva_results_path, taxa_mapping_path, output_path, chunksize):
+def process_silva_results(silva_results_path, output_path, chunksize):
     """Process SILVA results and save them to an intermediate output file."""
     blast_columns = ["query_id", "subject_id", "perc_identity", "align_length", "mismatches",
                      "gap_opens", "q_start", "q_end", "s_start", "s_end", "evalue", "bit_score"]
@@ -70,7 +70,7 @@ if __name__ == "__main__":
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
         future_card = executor.submit(process_card_results, card_results, aro_mapping, card_output, chunksize)
-        future_silva = executor.submit(process_silva_results, silva_results, taxa_mapping, silva_output, chunksize)
+        future_silva = executor.submit(process_silva_results, silva_results, silva_output, chunksize)
         
         future_card.result()
         future_silva.result()

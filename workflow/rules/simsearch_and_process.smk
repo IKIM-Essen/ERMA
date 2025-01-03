@@ -1,6 +1,6 @@
 rule blast_card:
     input:
-        fasta = "{base_dir}/data/input/{sample}.part_{part}.fasta",
+        fasta = "{base_dir}/data/fastq/{sample}.part_{part}.fasta",
         card = "{base_dir}/data/blast_db/card_db.pdb"
     output:
         card_results = "{base_dir}/results/{sample}/{part}/card_results.txt"
@@ -19,7 +19,7 @@ rule blast_card:
 
 rule usearch_silva:
     input:
-        fasta = "{base_dir}/data/input/{sample}.part_{part}.fasta",
+        fasta = "{base_dir}/data/fastq/{sample}.part_{part}.fasta",
         silva = "{base_dir}/data/silva_db/silva_seq.fasta"
     output:
         silva_results = "{base_dir}/results/{sample}/{part}/SILVA_results.txt"
@@ -33,7 +33,7 @@ rule usearch_silva:
     threads: config["max_threads"]                  
     shell:
         """
-        usearch -usearch_local {input.fasta} -db {input.silva} -blast6out {output.silva_results} -evalue 1e-5 -threads {params.internal_threads} -strand plus mincols 200 2> {log}
+        usearch -usearch_local {input.fasta} -db {input.silva} -blast6out {output.silva_results} -evalue 1e-5 -threads {params.internal_threads} -strand plus -mincols 200 2> {log}
         """
 
 rule gzip_blast_results:

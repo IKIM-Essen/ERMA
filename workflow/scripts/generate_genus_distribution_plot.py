@@ -6,7 +6,7 @@ import sys
 necessary_columns = [
     "query_id",
     "part",
-    "path",
+    "genus",
     "AMR Gene Family"
 ]
 
@@ -22,7 +22,6 @@ def generate_genus_distribution_plot(input_files, output_file,output2, sample_na
         df_merged = pd.merge(abr, sixteen_s, on='query_id', suffixes=('_abr', '_16S'))
         
         # Assign genus based on 16S path for each merged record
-        df_merged['genus'] = df_merged['path_16S'].apply(lambda x: x.split(';')[-2] if pd.notna(x) else None)
         j+=df_merged.shape[0]
         all_data.append(df_merged)  # Append the DataFrame to the list
         #print("all_data",sample_name,j)
@@ -31,14 +30,14 @@ def generate_genus_distribution_plot(input_files, output_file,output2, sample_na
     print("combined_df",sample_name,combined_df.shape[0])
     
     # Group by AMR gene family and genus across all files
-    genus_distribution = combined_df.groupby(['AMR Gene Family_abr', 'genus']).size().reset_index(name='count')
+    genus_distribution = combined_df.groupby(['AMR Gene Family_abr', 'genus_16S']).size().reset_index(name='count')
     genus_distribution.to_csv(output2)
     # Create the Altair bar chart
     chart = alt.Chart(genus_distribution).mark_bar().encode(
         x=alt.X('AMR Gene Family_abr', title='AMR Gene Family'),
         y=alt.Y('count', title='Count'),
-        color=alt.Color('genus', title='Genus'),
-        tooltip=['AMR Gene Family_abr', 'genus', 'count']
+        color=alt.Color('genus_16S', title='Genus'),
+        tooltip=['AMR Gene Family_abr', 'genus_16S', 'count']
     ).properties(
         title=f'Genus Distribution for {sample_name}',
         width=800,
