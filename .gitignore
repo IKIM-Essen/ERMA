@@ -1,13 +1,14 @@
 data/*
-!data/fastq/
+#!data/fastq/
+!data/fastq/.gitkeep
 data/fastq/*
-!.gitkeep
 logs/*
 results/*
 results*
 .gitignore
 .gitattributes
 .editorconfig
+!.gitkeep
 LICENSE
 .github/*
 .snakemake/*
