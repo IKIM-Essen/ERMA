@@ -78,7 +78,8 @@ def filter_blast_results(input_file, output_file, min_similarity):
 
     # Filter results based on percentage identity and alignment length for 16S
     sixteen_s_data = df[
-        (df['part'] == '16S')
+        (df['part'] == '16S') &
+        (df['perc_identity'] > float(min_similarity) * 100) 
     ]
     
     sixteen_s_data = sixteen_s_data.copy()

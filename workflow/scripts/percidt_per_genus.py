@@ -33,11 +33,11 @@ def generate_percentage_idt_per_genus(input_files, output_file):
     genus_query_counts = combined_data.groupby('genus')['query_id'].nunique().reset_index()
     genus_query_counts.columns = ['genus', 'unique_query_count']
     combined_data = pd.merge(combined_data, genus_query_counts, on='genus')
-    genus_order = combined_data.groupby('genus')['perc_identity'].median().sort_values(ascending=False).index
+    genus_order = genus_query_counts.sort_values(by='unique_query_count', ascending=False)['genus']
     
     # Plotting
     fig, ax1 = plt.subplots(figsize=(15, 8))
-    sns.boxplot(x='genus', y='perc_identity', data=combined_data, ax=ax1, order=genus_order)
+    sns.boxplot(x='genus', y='perc_identity', data=combined_data, ax=ax1, order=genus_order, fliersize=0.0)
     ax1.set_xlabel("Bacterial Genus")
     ax1.set_ylabel("Percentage Identity")
     ax1.set_title("Boxplot of Percentage Identity and Read Counts for Each Bacterial genus")
