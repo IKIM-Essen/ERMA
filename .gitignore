@@ -1,6 +1,8 @@
-data/*
-#!data/fastq/
+data/blast_db
+data/card_db
+data/silva_db
 !data/fastq/.gitkeep
+data/fastq/
 data/fastq/*
 logs/*
 results/*
