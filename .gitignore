@@ -15,5 +15,3 @@ LICENSE
 config/config.yaml
 logs
 .test/.snakemake
-.test/test_epic_data_combined.csv
-.test/*.png
