@@ -9,7 +9,6 @@ include: "rules/load_db.smk"
 include: "rules/simsearch_and_process.smk"
 include: "rules/create_boxplots.smk"
 include: "rules/main_results.smk"
-include: "rules/qc.smk"
 
 # Build a list of all "fastq.gz" files in "/ERMA/data/fastq" which will be processed subsequently
 reads = [os.path.basename(f).replace(".fastq.gz", "") for f in glob.glob(os.path.join(config["base_dir"], "data", "fastq", "*.fastq.gz"))]
