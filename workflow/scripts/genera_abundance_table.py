@@ -44,7 +44,7 @@ def process_combined_data(combined_data, sample_name):
 
 def combine_blast_data(input_files, sample_name):
     # Load and combine data from all parts for the given sample
-    all_data = [pd.read_csv(input_file, sep=",", usecols=necessary_columns, header=0) for input_file in input_files]
+    all_data = [pd.read_csv(input_file, sep=",", usecols=necessary_columns, header=0, compression='gzip') for input_file in input_files]
     combined_data = pd.concat(all_data, ignore_index=True)
     
     # Process combined data to get genus counts and relative values

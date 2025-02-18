@@ -36,25 +36,10 @@ rule usearch_silva:
         usearch -usearch_local {input.fasta} -db {input.silva} -blast6out {output.silva_results} -evalue 1e-5 -threads {params.internal_threads} -strand plus -mincols 200 2> {log}
         """
 
-rule gzip_blast_results:
-    input:
-        silva_results = "{base_dir}/results/{sample}/{part}/SILVA_results.txt",
-        card_results = "{base_dir}/results/{sample}/{part}/card_results.txt"
-    output:
-        silva_zip = "{base_dir}/results/{sample}/{part}/SILVA_results.txt.gz",
-        card_zip = "{base_dir}/results/{sample}/{part}/card_results.txt.gz"
-    log:
-        "{base_dir}/logs/gzip_blast_results/{sample}_{part}.log"        
-    shell:
-        """
-        gzip {input.silva_results} 2> {log}
-        gzip {input.card_results} 2>> {log}
-        """
-
 rule integrate_blast_data:
     input:
-        card_results = "{base_dir}/results/{sample}/{part}/card_results.txt.gz",
-        silva_results = "{base_dir}/results/{sample}/{part}/SILVA_results.txt.gz",
+        card_results = "{base_dir}/results/{sample}/{part}/card_results.txt",
+        silva_results = "{base_dir}/results/{sample}/{part}/SILVA_results.txt",
         aro_mapping = "{base_dir}/data/card_db/aro_index.tsv",    
     output:
         intermed_card_results = temp("{base_dir}/results/{sample}/{part}/intermed_card_results.csv"),
@@ -85,12 +70,23 @@ rule filter_blast_results:
     script:
         "../scripts/filter_blast_results.py"
 
-rule gzip_filtered_blast_data:
+rule gzip_intermediates:
     input:
-        int_data = "{base_dir}/results/{sample}/{part}/filtered_results.csv"
-    log:
-        "{base_dir}/logs/gzip_integrated_blast_data/{sample}_{part}.log"    
+        silva_results = "{base_dir}/results/{sample}/{part}/SILVA_results.txt",
+        card_results = "{base_dir}/results/{sample}/{part}/card_results.txt",
+        int_data = "{base_dir}/results/{sample}/{part}/integrated_filtered_results.csv",        
+        filt_data = "{base_dir}/results/{sample}/{part}/filtered_results.csv"
     output:
-        int_data_zip = "{base_dir}/results/{sample}/{part}/filtered_results.csv.gz"
+        silva_zip = "{base_dir}/results/{sample}/{part}/SILVA_results.txt.gz",
+        card_zip = "{base_dir}/results/{sample}/{part}/card_results.txt.gz",
+        integrated_data = "{base_dir}/results/{sample}/{part}/integrated_filtered_results.csv.gz",     
+        filt_data_zip = "{base_dir}/results/{sample}/{part}/filtered_results.csv.gz",
+    log:
+        "{base_dir}/logs/gzip_blast_results/{sample}_{part}.log"        
     shell:
-        "gzip -9 {input.int_data} 2> {log}"
+        """
+        gzip {input.silva_results} 2> {log}
+        gzip {input.card_results} 2>> {log}
+        gzip {input.int_data} 2>> {log}
+        gzip {input.filt_data} 2>> {log}
+        """

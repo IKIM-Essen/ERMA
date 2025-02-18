@@ -3,7 +3,7 @@ seq_tech = "".join(config["seq_tech"])
 
 rule generate_genus_distribution_plot:
     input:
-        filtered_data = expand("{{base_dir}}/results/{sample}/{part}/filtered_results.csv", 
+        filtered_data = expand("{{base_dir}}/results/{sample}/{part}/filtered_results.csv.gz",
                                 sample=samples,part=get_numpart_list())
     output:
         report(
@@ -25,7 +25,7 @@ rule generate_genus_distribution_plot:
         
 rule genera_abundance_table:
     input:
-        filtered_data = expand("{{base_dir}}/results/{sample}/{part}/filtered_results.csv",sample=samples,part=get_numpart_list())
+        filtered_data = expand("{{base_dir}}/results/{sample}/{part}/filtered_results.csv.gz",sample=samples,part=get_numpart_list()),
     output:
         report(
             "{base_dir}/results/abundance/combined_genus_abundance.csv",

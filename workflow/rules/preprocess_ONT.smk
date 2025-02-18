@@ -2,7 +2,7 @@ rule decompress_fastq:
     input:
         "{base_dir}/data/fastq/{sample}.fastq.gz"
     output:
-        "{base_dir}/data/fastq/{sample}.fastq"
+        temp("{base_dir}/data/fastq/{sample}.fastq")
     log:
         "{base_dir}/logs/decompress_fastq/{sample}.log"    
     shell:
@@ -12,7 +12,7 @@ rule convert_fastq_to_fasta:
     input:
         "{base_dir}/data/fastq/{sample}.fastq"
     output:
-        "{base_dir}/data/fastq/temp/{sample}.fasta"
+        temp("{base_dir}/data/fastq/temp/{sample}.fasta")
     log:
         "{base_dir}/logs/convert_fastq_to_fasta/{sample}.log"    
     conda:
@@ -24,7 +24,7 @@ rule split_fasta_file:
     input:
         "{base_dir}/data/fastq/temp/{sample}.fasta"
     output:
-        "{base_dir}/data/fastq/{sample}.part_{part}.fasta"
+        temp("{base_dir}/data/fastq/{sample}.part_{part}.fasta")
     params:
         outdir = config["base_dir"],
         num_parts = config["num_parts"],    

@@ -23,7 +23,7 @@ def generate_percentage_idt_per_genus(input_files, output_file):
     all_data = []  # List to hold DataFrames from all input files
 
     for input_file in input_files:
-        df = pd.read_csv(input_file, sep=",", usecols=necessary_columns, header=0, dtype=dtype_dict)
+        df = pd.read_csv(input_file, sep=",", usecols=necessary_columns, header=0, dtype=dtype_dict, compression='gzip')
         all_data.append(df)
         
     # Combine all partitions into a single DataFrame

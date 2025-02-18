@@ -31,7 +31,7 @@ rule translate_silva_db:
     input:
         seq = "{base_dir}/data/silva_db/silva_seq_RNA.fasta"
     output:
-        seq = "{base_dir}/data/silva_db/silva_seq.fasta"
+        seq = temp("{base_dir}/data/silva_db/silva_seq.fasta")
     conda:
         "../envs/python.yaml"          
     shell:

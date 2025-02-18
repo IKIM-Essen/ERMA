@@ -14,7 +14,7 @@ def generate_genus_distribution_plot(input_files, output_file,output2, sample_na
     all_data = []  # List to hold DataFrames from all input files
     j=0
     for input_file in input_files:
-        df = pd.read_csv(input_file, sep=",", usecols=necessary_columns, header=0)
+        df = pd.read_csv(input_file, sep=",", usecols=necessary_columns, header=0, compression='gzip')
         df = df.drop_duplicates()
         # Split and merge ABR and 16S data by query_id
         abr = df[df["part"] == "ABR"]

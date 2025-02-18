@@ -20,7 +20,7 @@ def process_card_results(card_results_path, aro_mapping_path, output_path, chunk
     aro_df = pd.read_csv(aro_mapping_path, sep="\t")
     header_written = False
 
-    with gzip.open(card_results_path, 'rt') as f_in, open(output_path, 'w') as f_out:
+    with open(card_results_path, 'rt') as f_in, open(output_path, 'w') as f_out:
         for chunk in pd.read_csv(f_in, sep="\t", names=blast_columns, chunksize=chunksize):
             chunk["part"] = "ABR"
             chunk['ARO Accession'] = chunk['subject_id'].str.split("|", expand=True)[2]
@@ -37,7 +37,7 @@ def process_silva_results(silva_results_path, output_path, chunksize):
                      "gap_opens", "q_start", "q_end", "s_start", "s_end", "evalue", "bit_score"]
     header_written = False
 
-    with gzip.open(silva_results_path, 'rt') as f_in, open(output_path, 'w') as f_out:
+    with open(silva_results_path, 'rt') as f_in, open(output_path, 'w') as f_out:
         for chunk in pd.read_csv(f_in, sep="\t", names=blast_columns, chunksize=chunksize):
             chunk["part"] = "16S"
             chunk["primaryAccession"] = chunk['subject_id'].str.split(".", expand=True)[0]
