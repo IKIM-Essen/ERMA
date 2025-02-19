@@ -9,7 +9,7 @@ else:
 
 rule generate_percidt_genus:
     input:
-        filtered_data = expand("{{base_dir}}/results/{{sample}}/{part}/filtered_results.csv", 
+        filtered_data = expand("{{base_dir}}/results/{{sample}}/{part}/filtered_results.csv.gz",
                                 part=get_numpart_list())
     output:
         report(
@@ -26,7 +26,7 @@ rule generate_percidt_genus:
 
 rule plot_alignment_length_boxplot:
     input:
-        csv_files = expand("{{base_dir}}/results/{sample}/{part}/filtered_results.csv",sample=samples,part=get_numpart_list())
+        csv_files = expand("{{base_dir}}/results/{sample}/{part}/filtered_results.csv.gz",sample=samples,part=get_numpart_list())
     output:
         report(
             "{base_dir}/results/boxplots/combined_allength_boxplot.png",
@@ -44,7 +44,7 @@ rule plot_alignment_length_boxplot:
 
 rule plot_percentage_identity_boxplot:
     input:
-        csv_files = expand("{{base_dir}}/results/{sample}/{part}/filtered_results.csv",sample=samples,part=get_numpart_list())
+        csv_files = expand("{{base_dir}}/results/{sample}/{part}/filtered_results.csv.gz",sample=samples,part=get_numpart_list())
     output:
         report(
             "{base_dir}/results/boxplots/combined_percidt_boxplot.png",
@@ -62,7 +62,7 @@ rule plot_percentage_identity_boxplot:
 
 rule plot_evalue_boxplot:
     input:
-        csv_files = expand("{{base_dir}}/results/{sample}/{part}/filtered_results.csv",sample=samples,part=get_numpart_list())
+        csv_files = expand("{{base_dir}}/results/{sample}/{part}/filtered_results.csv.gz",sample=samples,part=get_numpart_list())
     output:
         report(
             "{base_dir}/results/boxplots/combined_evalue_boxplot.png",

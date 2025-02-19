@@ -2,7 +2,7 @@ samples = [os.path.basename(f).replace(".fastq.gz", "") for f in glob.glob(os.pa
 
 rule fastqc:
     input:
-        "{base_dir}/data/input/{sample}.fastq.gz"
+        "{base_dir}/data/fastq/{sample}.fastq.gz"
     output:
         html="{base_dir}/results/fastqc/{sample}.html",
         zip="{base_dir}/results/fastqc/{sample}_fastqc.zip",

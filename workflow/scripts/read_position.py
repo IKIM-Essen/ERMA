@@ -20,18 +20,12 @@ dtype_dict = {
     "CARD Short Name": "string",
 }
 
-def generate_read_position(input_file, output_file, sample_name,chunksize):
-    chunk_size = chunksize  # Adjust the chunk size according to your system's memory
+def generate_read_position(input_file, output_file, sample_name):
     
-    merged_data_list = []
-    
-    for chunk in pd.read_csv(input_file, sep=",", header=0, dtype=dtype_dict, chunksize=chunk_size):
-        abr_data = chunk[chunk['part'] == 'ABR']
-        sixteen_s_data = chunk[chunk['part'] == '16S']
-        merged_chunk = pd.merge(abr_data, sixteen_s_data, on='query_id', suffixes=('_abr', '_16s'))
-        merged_data_list.append(merged_chunk)
-    
-    merged_data = pd.concat(merged_data_list)
+    df = pd.read_csv(input_file, sep=",", header=0, dtype=dtype_dict)
+    abr_data = df[df['part'] == 'ABR']
+    sixteen_s_data = df[df['part'] == '16S']
+    merged_data = pd.merge(abr_data, sixteen_s_data, on='query_id', suffixes=('_abr', '_16s'))
     merged_data['x_enum'] = np.arange(1, len(merged_data) + 1)
 
     # Plotting
@@ -76,6 +70,5 @@ if __name__ == "__main__":
     input_file = snakemake.input.filtered_data
     output_file = snakemake.output[0]
     sample_name = snakemake.params.sample_name
-    chunksize = snakemake.params.chunksize    
     sys.stderr = open(snakemake.log[0], "w")
-    generate_read_position(input_file, output_file, sample_name,chunksize)
+    generate_read_position(input_file, output_file, sample_name)

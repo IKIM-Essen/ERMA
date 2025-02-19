@@ -6,13 +6,12 @@ configfile: "config/config.yaml"
 include: "rules/common.smk"
 include: "rules/qc.smk"
 include: "rules/load_db.smk"
-include: "rules/blast_and_process.smk"
+include: "rules/simsearch_and_process.smk"
 include: "rules/create_boxplots.smk"
 include: "rules/main_results.smk"
-include: "rules/qc.smk"
 
 # Build a list of all "fastq.gz" files in "/ERMA/data/fastq" which will be processed subsequently
-reads = [os.path.basename(f).replace(".fastq.gz", "") for f in glob.glob(os.path.join(config["base_dir"], "data", "input", "*.fastq.gz"))]
+reads = [os.path.basename(f).replace(".fastq.gz", "") for f in glob.glob(os.path.join(config["base_dir"], "data", "fastq", "*.fastq.gz"))]
 
 # Retrieve sample names. For Illumina this is done by splitting at _R1_/_R2_ ...
 runname = "".join(config["runname"])
@@ -44,7 +43,6 @@ rule plot_read_positions:
         )  
     params:
         sample_name = "{sample}",
-        chunksize = config["chunksize"]
     log:
         "{base_dir}/logs/plot_read_positions/{sample}.log"            
     conda:
@@ -53,8 +51,7 @@ rule plot_read_positions:
         "scripts/read_position.py"
 
 rule snakemake_report:
-    input:       
-        expand("{base_dir}/results/{sample}/genus_distribution_plot.html", sample=samples,base_dir=config["base_dir"]),        
+    input:              
         expand("{base_dir}/results/{sample}/genus_idt_per_genus_plot.png", sample=samples,base_dir=config["base_dir"]),        
         expand("{base_dir}/results/abundance/combined_genus_abundance_bubbleplot.html", base_dir=config["base_dir"]),            
         expand("{base_dir}/results/abundance/reads_per_found_AMR.csv", base_dir=config["base_dir"]),            

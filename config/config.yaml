@@ -2,7 +2,7 @@ runname: "test"
 base_dir: "/local/work/adrian/ERMA"  # User should change this path
 seq_tech: "ONT" # Put here "Illumina" or "ONT"
 
-min_similarity: "0.8" # threshold to filter blast hits by percentage identity
+min_similarity: "0.8" # threshold to pre-filter blast hits by percentage identity
 
 silva:
   download-path-seq: "https://www.arb-silva.de/fileadmin/silva_databases/release_138_2/Exports/SILVA_138.2_SSURef_NR99_tax_silva.fasta.gz"
@@ -11,6 +11,5 @@ silva:
 card:
   download-path: "https://card.mcmaster.ca/download/0/broadstreet-v3.3.0.tar.bz2"
 
-chunksize: 500000 # number of lines per chunk the large tables are split
-num_parts: 10 # number of chunks the fastqs are split into
+num_parts: 1 # number of chunks the fastqs are split into
 max_threads: 32
