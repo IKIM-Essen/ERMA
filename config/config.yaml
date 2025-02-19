@@ -11,6 +11,5 @@ silva:
 card:
   download-path: "https://card.mcmaster.ca/download/0/broadstreet-v3.3.0.tar.bz2"
 
-chunksize: 500000 # number of lines per chunk the large tables are split
 num_parts: 1 # number of chunks the fastqs are split into
 max_threads: 32

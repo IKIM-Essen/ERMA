@@ -6,7 +6,7 @@ rule blast_card:
         card_results = "{base_dir}/results/{sample}/{part}/card_results.txt"
     params:
         db = "{base_dir}/data/blast_db",
-        internal_threads = config["num_parts"],        
+        internal_threads = config["max_threads"],        
     log:
         "{base_dir}/logs/blast_card/{sample}_{part}.log"    
     conda:
@@ -45,8 +45,6 @@ rule integrate_blast_data:
         intermed_card_results = temp("{base_dir}/results/{sample}/{part}/intermed_card_results.csv"),
         intermed_silva_results = temp("{base_dir}/results/{sample}/{part}/intermed_silva_results.csv"),
         integrated_data = "{base_dir}/results/{sample}/{part}/integrated_filtered_results.csv"
-    params:
-        chunksize = config["chunksize"]
     log:
         "{base_dir}/logs/integrate_blast_data/{sample}_{part}.log"    
     conda:            

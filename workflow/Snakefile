@@ -43,7 +43,6 @@ rule plot_read_positions:
         )  
     params:
         sample_name = "{sample}",
-        chunksize = config["chunksize"]
     log:
         "{base_dir}/logs/plot_read_positions/{sample}.log"            
     conda:
@@ -52,8 +51,7 @@ rule plot_read_positions:
         "scripts/read_position.py"
 
 rule snakemake_report:
-    input:       
-        expand("{base_dir}/results/{sample}/genus_distribution_plot.html", sample=samples,base_dir=config["base_dir"]),        
+    input:              
         expand("{base_dir}/results/{sample}/genus_idt_per_genus_plot.png", sample=samples,base_dir=config["base_dir"]),        
         expand("{base_dir}/results/abundance/combined_genus_abundance_bubbleplot.html", base_dir=config["base_dir"]),            
         expand("{base_dir}/results/abundance/reads_per_found_AMR.csv", base_dir=config["base_dir"]),            

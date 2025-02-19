@@ -37,7 +37,8 @@ def create_bubble_plots(df, abundance_threshold, output1,output2):
         coloraxis_colorbar=dict(title="Total Genus Count"),
         #paper_bgcolor='grey',
         plot_bgcolor='lightgrey',
-        yaxis=dict(categoryorder="category descending")
+        yaxis=dict(categoryorder="category descending"),
+        xaxis=dict(categoryorder="category ascending"),
     )
     fig.write_html(output1)
 
