@@ -5,9 +5,10 @@ import sys
 def create_bubble_plots(df, abundance_threshold, output1,output2):
     # Iterate over unique AMR Gene Families
     # Filter data for the current AMR Gene Family
-    total_counts_per_abr = df.groupby('AMR Gene Family')['total_genus_count'].sum()
+    df = pd.read_csv(df,header=0,sep=',')
+    total_counts_per_abr = df.groupby('AMR Gene Family')['genus_count'].sum()
+    total_counts_per_abr.to_csv(output2)
     top_abr = total_counts_per_abr.idxmax()
-    top_abr.to_csv(output2)
     top_abr_data = df[df['AMR Gene Family'] == top_abr]
     top_abr_data = top_abr_data[top_abr_data['relative_genus_count'] > float(abundance_threshold)]
     # Create the bubble plot
@@ -36,7 +37,8 @@ def create_bubble_plots(df, abundance_threshold, output1,output2):
         coloraxis_colorbar=dict(title="Total Genus Count"),
         #paper_bgcolor='grey',
         plot_bgcolor='lightgrey',
-        yaxis=dict(categoryorder="category descending")
+        yaxis=dict(categoryorder="category descending"),
+        xaxis=dict(categoryorder="category ascending"),
     )
     fig.write_html(output1)
 

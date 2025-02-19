@@ -12,8 +12,9 @@ def read_and_process_partitioned_data(partition_files,sample):
 
     for part_file in partition_files:
         if os.path.exists(part_file):
-            fields = ['align_length', 'part']
-            df = pd.read_csv(part_file, header=0, sep=',', usecols=fields)
+            fields = ['query_id','align_length', 'part']
+            df = pd.read_csv(part_file, header=0, sep=',', usecols=fields, compression='gzip')
+            df = df.drop_duplicates()            
             df['sample'] = sample_name
             data_frames.append(df)
         else:
