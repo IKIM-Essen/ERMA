@@ -33,7 +33,7 @@ rule usearch_silva:
     threads: config["max_threads"]                  
     shell:
         """
-        usearch -usearch_local {input.fasta} -db {input.silva} -blast6out {output.silva_results} -evalue 1e-5 -threads {params.internal_threads} -strand plus -mincols 200 2> {log}
+        usearch -usearch_local {input.fasta} -db {input.silva} -blast6out {output.silva_results} -evalue 1e-5 -id 0.95 -threads {params.internal_threads} -strand both -mincols 200 2> {log}
         """
 
 rule integrate_blast_data:

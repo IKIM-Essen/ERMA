@@ -15,21 +15,9 @@ rule get_16S_db:
         wget -O silva_seq_RNA.fasta.gz {params.seq} 2> {log};
         """
 
-rule unzip_silva_db:
-    input:
-        seq = "{base_dir}/data/silva_db/silva_seq_RNA.fasta.gz",
-    output:
-        seq = temp("{base_dir}/data/silva_db/silva_seq_RNA.fasta"),
-    log:
-        "{base_dir}/logs/unzip_silva_db/log.log"
-    shell:
-        """
-        gzip -dk {input.seq} 2> {log};
-        """
-
 rule translate_silva_db:
     input:
-        seq = "{base_dir}/data/silva_db/silva_seq_RNA.fasta"
+        seq = "{base_dir}/data/silva_db/silva_seq_RNA.fasta.gz"
     output:
         seq = temp("{base_dir}/data/silva_db/silva_seq.fasta")
     conda:

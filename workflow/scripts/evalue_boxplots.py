@@ -28,6 +28,7 @@ def plot_boxplots(data, output_file):
     """Plot boxplots based on the e-values for ABR and 16S parts across samples."""
     plt.figure(figsize=(15, 10))
     flierprops = dict(markerfacecolor='0.75', markersize=2, linestyle='none')
+    data['sample'] = pd.Categorical(data['sample'], categories=sorted(data['sample'].unique()), ordered=True)
     sns.boxplot(x='sample', y='evalue', hue='part', data=data, flierprops=flierprops)
     plt.yscale('log')
     plt.title('Boxplot of e-values for ABR and 16S parts across samples -Filtered-')
@@ -50,9 +51,7 @@ def main(csv_files, sample_names, output_file):
 
     if all_data:
         combined_data = pd.concat(all_data)
-        print("Creating combined boxplot")
         plot_boxplots(combined_data, output_file)
-        print(f"Combined boxplot has been saved to {output_file}")
     else:
         print("No data found.")
 

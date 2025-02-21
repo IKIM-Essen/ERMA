@@ -63,7 +63,6 @@ def export_genera_abundance(input_files, sample_names, output_file):
     
     # Export the final aggregated data to a CSV file
     all_samples_data.to_csv(output_file, index=False)
-    print(f"Exported genera abundance data to {output_file}")
 
 if __name__ == "__main__":
     input_files = list(snakemake.input.filtered_data)

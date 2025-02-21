@@ -3,7 +3,7 @@ rule merge_fastq:
         r1="{base_dir}/data/fastq/{sample}_R1_001.fastq.gz",
         r2="{base_dir}/data/fastq/{sample}_R2_001.fastq.gz"
     output:
-        out = "{base_dir}/data/fastq/temp/{sample}.fastq.gz"
+        out = temp("{base_dir}/data/fastq/temp/{sample}.fastq.gz")
     log:
         "{base_dir}/logs/merge_fastq/{sample}.log"
     conda:

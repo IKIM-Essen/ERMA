@@ -34,6 +34,7 @@ rule abundance_bubble_plot:
             caption = "../../report/genus_top_hits.rst",
             category="0. Main result"
         ),
+        "{base_dir}/results/abundance/reads_per_found_AMR_per_sample.csv",
     params:
         abundance_filter = 0.001
     log:
@@ -43,3 +44,20 @@ rule abundance_bubble_plot:
     threads: config["max_threads"]
     script:
         "../scripts/genera_abundance_plot.py"
+
+rule found_AMR_per_sample:
+    input:
+        abundance_data = "{base_dir}/results/abundance/reads_per_found_AMR_per_sample.csv",
+    output:
+        report(
+            "{base_dir}/results/abundance/AMR_per_sample.png",
+            caption = "../../report/genus_top_hits.rst",
+            category="0. Main result"
+        ),
+    log:
+        "{base_dir}/logs/genera_abundance_plot.log"                  
+    conda:
+        "../envs/python.yaml"
+    threads: config["max_threads"]
+    script:
+        "../scripts/AMR_per_sample.py"

@@ -17,6 +17,8 @@ rule generate_percidt_genus:
             caption = "../../report/genus_top_hits.rst",
             category="2. Genus percentage Identity",
         )
+    params:
+        sample_name = samples,    
     log:
         "{base_dir}/logs/generate_percidt_genus/{sample}.log"            
     conda:
