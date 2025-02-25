@@ -10,39 +10,43 @@ def create_bubble_plots(df, abundance_threshold, output1,output2,output3):
     total_counts_per_abr_per_sample.to_csv(output3)
     total_counts_per_abr = df.groupby('AMR Gene Family')['genus_count'].sum()
     total_counts_per_abr.to_csv(output2)
-    significant_AMRs = total_counts_per_abr[total_counts_per_abr / total_counts_per_abr.sum() > 0.2].index.tolist()
+    total_genus_count = total_counts_per_abr.sum()
+    high_contributing_abr = total_counts_per_abr[total_counts_per_abr / total_genus_count > 0.10].index.tolist()
 
-    # Create a subplot figure (no shared x/y axes or legend)
-    fig = make_subplots(
-        rows=len(significant_AMRs), cols=1, 
-        subplot_titles=[f"{amr} ({total_counts_per_abr[amr]} reads)" for amr in significant_AMRs]
+    # Filter and merge data for selected AMR Gene Families
+    merged_data = df[df['AMR Gene Family'].isin(high_contributing_abr)]
+    merged_data = merged_data[
+        (merged_data['relative_genus_count'] > float(abundance_threshold)) & 
+        (merged_data['total_genus_count'] > 100)
+    ]
+    # Create a single combined bubble plot
+    fig = px.scatter(
+        merged_data, 
+        x="sample", 
+        y="genus",
+        size="relative_genus_count",
+        color="AMR Gene Family",  # Different AMR Gene Families get different colors
+        hover_name="genus",
+        hover_data={
+            "genus_count": True,
+            "relative_genus_count": True,
+            "total_genus_count": True,
+            "sample": False
+        },
+        size_max=20,
+        color_discrete_sequence=px.colors.qualitative.Set1  # Better color distinction
     )
-
-    # Add traces for each AMR Gene Family
-    for idx, amr in enumerate(significant_AMRs):
-        amr_data = df[df['AMR Gene Family'] == amr]
-        amr_data = amr_data[(amr_data['relative_genus_count'] > float(abundance_threshold)) & (amr_data['total_genus_count'] > 100)]
-        amr_data = amr_data.sort_values(by=["genus", "sample"],ascending=[False,True])
-
-        scatter = px.scatter(
-            amr_data, x="sample", y="genus", 
-            size="relative_genus_count", color="total_genus_count",
-            hover_name="genus",
-            hover_data={"genus_count": True, "relative_genus_count": True, "total_genus_count": True, "sample": False},
-            size_max=20, color_continuous_scale="Greens"
-        )
-
-        # Add each scatter plot to the correct subplot
-        for trace in scatter.data:
-            trace.showlegend = True  # Remove legend
-            fig.add_trace(trace, row=idx+1, col=1)
-
-    # Update layout
+    
+    # Update layout for better readability
     fig.update_layout(
-        height=600 * len(significant_AMRs), 
-        title="Bubble Plots of Significant AMR Gene Families Across Samples",
+        title='Bubble Plot of Relative Genera Abundance per Sample for High-Contributing AMR Gene Families',
+        xaxis_title='Sample - AMR Gene Family',
+        yaxis_title='Genus',
+        legend_title="AMR Gene Family",
         plot_bgcolor='lightgrey',
-        coloraxis_colorbar=dict(title="Total Genus Count")
+        yaxis=dict(categoryorder="category descending"),
+        xaxis=dict(categoryorder="category ascending"),
+        height = 20 * len(merged_data) if len(merged_data) <= 50 else 10 * len(merged_data)
     )
 
     # Save the final figure as an HTML file for Snakemake

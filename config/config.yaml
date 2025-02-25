@@ -1,4 +1,4 @@
-runname: "test"
+runname: "Svjetlana-samples"
 base_dir: "/local/work/adrian/ERMA"  # User should change this path
 seq_tech: "Illumina" # Put here "Illumina" or "ONT"
 
@@ -11,5 +11,5 @@ silva:
 card:
   download-path: "https://card.mcmaster.ca/download/0/broadstreet-v3.3.0.tar.bz2"
 
-num_parts: 4 # number of chunks the fastqs are split into
+num_parts: 4
 max_threads: 60

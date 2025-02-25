@@ -27,16 +27,16 @@ rule abundance_bubble_plot:
         report(
             "{base_dir}/results/abundance/combined_genus_abundance_bubbleplot.html",
             caption = "../../report/genus_top_hits.rst",
-            category="0. Main result"
+            category="1. Main result"
         ),
         report(
             "{base_dir}/results/abundance/reads_per_found_AMR.csv",
             caption = "../../report/genus_top_hits.rst",
-            category="0. Main result"
+            category="1. Main result"
         ),
         "{base_dir}/results/abundance/reads_per_found_AMR_per_sample.csv",
     params:
-        abundance_filter = 0.001
+        abundance_filter = 0.01
     log:
         "{base_dir}/logs/genera_abundance_plot.log"                  
     conda:
@@ -52,7 +52,7 @@ rule found_AMR_per_sample:
         report(
             "{base_dir}/results/abundance/AMR_per_sample.png",
             caption = "../../report/genus_top_hits.rst",
-            category="0. Main result"
+            category="1. Main result"
         ),
     log:
         "{base_dir}/logs/genera_abundance_plot.log"                  

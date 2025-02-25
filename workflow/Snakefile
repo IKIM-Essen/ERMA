@@ -30,7 +30,7 @@ print(f"Run: {runname} with detected sequence technology: {seq_tech}\nDetected s
 
 rule all:
     input:
-        f"results/{runname}_report.zip"  
+        "results/{}_report.zip".format(config["runname"])  
 
 rule plot_read_positions:
     input:
@@ -61,6 +61,6 @@ rule snakemake_report:
         expand("{base_dir}/results/boxplots/combined_allength_boxplot.png", base_dir=config["base_dir"]),        
         expand("{base_dir}/results/qc/multiqc.html", base_dir=config["base_dir"]),        
     output:
-        f"results/{runname}_report.zip"     
+        "results/{}_report.zip".format(config["runname"])   
     shell:
         "snakemake --nolock --report {output} --report-stylesheet config/custom-stylesheet.css"

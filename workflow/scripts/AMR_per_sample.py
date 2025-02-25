@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 def main(abundance_data, output_file):
     """Main function to process partitioned files for each sample and generate the plot."""
     df = pd.read_csv(abundance_data,header=0,sep=',')
+    df = df[df["genus_count"] >= 0.05 * df.groupby("sample")["genus_count"].transform("sum")]
     df_pivot = df.pivot_table(index="sample", columns="AMR Gene Family", values="genus_count", aggfunc="sum").fillna(0)
 
     # Plot the stacked bar chart

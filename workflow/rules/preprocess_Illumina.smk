@@ -33,6 +33,10 @@ rule split_fasta_file:
     params:
         outdir = config["base_dir"],
         num_parts = config["num_parts"],    
+    log:
+        "{base_dir}/logs/split_fasta/{sample}_{part}.log"
+    conda:
+        "../envs/python.yaml"           
     shell:
         """
         seqkit split2 --by-part {params.num_parts} {input} --out-dir {params.outdir}/data/fastq/
