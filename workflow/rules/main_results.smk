@@ -3,17 +3,18 @@ seq_tech = "".join(config["seq_tech"])
         
 rule genera_abundance_table:
     input:
-        filtered_data = expand("{{base_dir}}/results/{sample}/{part}/filtered_results.csv.gz",sample=samples,part=get_numpart_list()),
+        filtered_data = local(expand("results/{sample}/{part}/filtered_results.csv.gz",sample=samples,part=get_numpart_list())),
     output:
         report(
-            "{base_dir}/results/abundance/combined_genus_abundance.csv",
+            local("results/abundance/combined_genus_abundance.html"),
             caption = "../../report/genus_top_hits.rst",
-            category="3. General data"
-        )
+            category="1. Abundance"
+        ),
+        csv = local("results/abundance/combined_genus_abundance.csv"),
     params:
         sample_name = samples,
     log:
-        "{base_dir}/logs/genera_abundance_table.log"                  
+        local("logs/genera_abundance_table.log")
     conda:
         "../envs/python.yaml"
     threads: config["max_threads"]
@@ -22,22 +23,22 @@ rule genera_abundance_table:
 
 rule abundance_bubble_plot:
     input:
-        abundance_data = "{base_dir}/results/abundance/combined_genus_abundance.csv",
+        abundance_data = local("results/abundance/combined_genus_abundance.csv"),
     output:
         report(
-            "{base_dir}/results/abundance/combined_genus_abundance_bubbleplot.html",
+            local("results/abundance/combined_genus_abundance_bubbleplot.html"),
             caption = "../../report/genus_top_hits.rst",
-            category="0. Main result"
+            category="1. Abundance"
         ),
         report(
-            "{base_dir}/results/abundance/reads_per_found_AMR.csv",
+            local("results/abundance/reads_per_found_AMR.html"),
             caption = "../../report/genus_top_hits.rst",
-            category="0. Main result"
+            category="1. Abundance"
         ),
     params:
         abundance_filter = 0.001
     log:
-        "{base_dir}/logs/genera_abundance_plot.log"                  
+        local("logs/genera_abundance_plot.log")
     conda:
         "../envs/python.yaml"
     threads: config["max_threads"]

@@ -32,33 +32,15 @@ rule all:
     input:
         f"results/{runname}_report.zip"  
 
-rule plot_read_positions:
-    input:
-        filtered_data = "{base_dir}/results/{sample}/filtered_results.csv"
-    output:
-        report(
-            "{base_dir}/results/{sample}/read_positions.png",
-            caption = "../report/genus_top_hits.rst",
-            category="3. General data",        
-        )  
-    params:
-        sample_name = "{sample}",
-    log:
-        "{base_dir}/logs/plot_read_positions/{sample}.log"            
-    conda:
-        "envs/python.yaml"
-    script:
-        "scripts/read_position.py"
-
 rule snakemake_report:
     input:              
-        expand("{base_dir}/results/{sample}/genus_idt_per_genus_plot.png", sample=samples,base_dir=config["base_dir"]),        
-        expand("{base_dir}/results/abundance/combined_genus_abundance_bubbleplot.html", base_dir=config["base_dir"]),            
-        expand("{base_dir}/results/abundance/reads_per_found_AMR.csv", base_dir=config["base_dir"]),            
-        expand("{base_dir}/results/boxplots/combined_evalue_boxplot.png", base_dir=config["base_dir"]),        
-        expand("{base_dir}/results/boxplots/combined_percidt_boxplot.png", base_dir=config["base_dir"]),        
-        expand("{base_dir}/results/boxplots/combined_allength_boxplot.png", base_dir=config["base_dir"]),        
-        expand("{base_dir}/results/qc/multiqc.html", base_dir=config["base_dir"]),        
+        local("results/abundance/combined_genus_abundance_bubbleplot.html"),
+        local("results/abundance/reads_per_found_AMR.html"),
+        local("results/boxplots/combined_allength_boxplot.png"),        
+        local("results/boxplots/combined_evalue_boxplot.png"),        
+        local("results/boxplots/combined_percidt_boxplot.png"),        
+        local("results/qc/multiqc.html"),
+        local(expand("results/{sample}/genus_idt_per_genus_plot.png", sample=samples)),        
     output:
         f"results/{runname}_report.zip"     
     shell:

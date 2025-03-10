@@ -2,31 +2,32 @@ samples = [os.path.basename(f).replace(".fastq.gz", "") for f in glob.glob(os.pa
 
 rule fastqc:
     input:
-        "{base_dir}/data/fastq/{sample}.fastq.gz"
+        local("data/fastq/{sample}.fastq.gz")
     output:
-        html="{base_dir}/results/fastqc/{sample}.html",
-        zip="{base_dir}/results/fastqc/{sample}_fastqc.zip",
+        html=local("results/fastqc/{sample}.html"),
+        zip=local("results/fastqc/{sample}_fastqc.zip"),
     log:
-        "{base_dir}/logs/input/{sample}.log",
+        local("logs/input/{sample}.log"),
     threads: 8
+    resources: mem_mb = 1024
     wrapper:
-        "v1.3.1/bio/fastqc"
+        "v5.8.3/bio/fastqc"
 
 
 rule multiqc_report:
     input:
-        expand(
-            "{base_dir}/results/fastqc/{sample}_fastqc.zip",
-            sample=samples,base_dir=config["base_dir"]
-        ),
+        local(expand(
+            "results/fastqc/{sample}_fastqc.zip",
+            sample=samples
+        )),
     output:
         report(
-            "{base_dir}/results/qc/multiqc.html",
+            local("results/qc/multiqc.html"),
             caption="../../report/genus_top_hits.rst",
             htmlindex="multiqc.html",
             category="4. QC",
         ),
     log:
-        "{base_dir}/logs/multiqc/multiqc.log",
+        local("logs/multiqc/multiqc.log"),
     wrapper:
-        "v3.3.3/bio/multiqc"
+        "v5.8.3/bio/multiqc"
