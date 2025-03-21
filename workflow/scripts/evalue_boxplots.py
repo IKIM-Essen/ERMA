@@ -50,9 +50,7 @@ def main(csv_files, sample_names, output_file):
 
     if all_data:
         combined_data = pd.concat(all_data)
-        print("Creating combined boxplot")
         plot_boxplots(combined_data, output_file)
-        print(f"Combined boxplot has been saved to {output_file}")
     else:
         print("No data found.")
 

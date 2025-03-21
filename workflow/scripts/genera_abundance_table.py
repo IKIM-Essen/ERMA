@@ -51,7 +51,7 @@ def combine_blast_data(input_files, sample_name):
     genus_counts = process_combined_data(combined_data, sample_name)
     return genus_counts
 
-def export_genera_abundance(input_files, sample_names, output_file):
+def export_genera_abundance(input_files, sample_names, output_csv, output_html):
     all_samples_data = pd.DataFrame()
     
     # Process each sample’s files to build the final DataFrame
@@ -62,12 +62,13 @@ def export_genera_abundance(input_files, sample_names, output_file):
             all_samples_data = pd.concat([all_samples_data, sample_data], ignore_index=True)
     
     # Export the final aggregated data to a CSV file
-    all_samples_data.to_csv(output_file, index=False)
-    print(f"Exported genera abundance data to {output_file}")
+    all_samples_data.to_csv(output_csv, index=False)
+    all_samples_data.to_html(output_html, index=False)
 
 if __name__ == "__main__":
     input_files = list(snakemake.input.filtered_data)
-    output_file = snakemake.output[0]
+    output_csv = snakemake.output.csv
+    output_html = snakemake.output[0]
     sample_name = snakemake.params.sample_name
     sys.stderr = open(snakemake.log[0], "w")  
-    export_genera_abundance(input_files, sample_name, output_file)
+    export_genera_abundance(input_files, sample_name, output_csv, output_html)

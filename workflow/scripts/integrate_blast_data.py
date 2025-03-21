@@ -73,5 +73,3 @@ if __name__ == "__main__":
         future_silva.result()
 
     merge_results(card_output, silva_output, final_output)
-    
-    print(f"Processing complete. Final merged output saved to {final_output}")

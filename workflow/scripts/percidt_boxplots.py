@@ -1,6 +1,5 @@
 import os
 import sys
-import gzip
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -12,7 +11,7 @@ def read_and_process_partitioned_data(partition_files,sample):
 
     for part_file in partition_files:
         if os.path.exists(part_file):
-            fields = ['query_id','perc_identity', 'genus']
+            fields = ['query_id','perc_identity', 'part']
             df = pd.read_csv(part_file, header=0, sep=',', usecols=fields, compression='gzip')
             df = df.drop_duplicates()
             df['sample'] = sample_name
@@ -29,7 +28,7 @@ def plot_boxplots(data, output_file):
     """Plot boxplots based on the e-values for ABR and 16S parts across samples."""
     plt.figure(figsize=(15, 10))
     flierprops = dict(markerfacecolor='0.75', markersize=2, linestyle='none')
-    sns.boxplot(x='sample', y='perc_identity', hue='genus', data=data, flierprops=flierprops)
+    sns.boxplot(x='sample', y='perc_identity', hue='part', data=data, flierprops=flierprops)
     plt.title('Boxplot of percentage identities for ABR and 16S parts across samples -Filtered-')
     plt.xlabel('Sample')
     plt.ylabel('perc_identity')
@@ -50,9 +49,7 @@ def main(csv_files, sample_names, output_file):
 
     if all_data:
         combined_data = pd.concat(all_data)
-        print("Creating combined boxplot")
         plot_boxplots(combined_data, output_file)
-        print(f"Combined boxplot has been saved to {output_file}")
     else:
         print("No data found.")
 
