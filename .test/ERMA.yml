@@ -10,7 +10,6 @@ dependencies:
   - matplotlib
   - seaborn
   - biopython
-  - bowtie2
   - plotly
   - samtools
   - seqtk=1.3

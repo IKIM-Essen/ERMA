@@ -4,15 +4,13 @@ rule get_16S_db:
     params:
         seq = config["silva"]["download-path-seq"],
         path = "data/silva_db"
-    log:
-        "logs/get_16S_db/log.log"
     conda:
         "../envs/python.yaml"
     shell:
         """
         mkdir -p {params.path};
         cd {params.path};
-        wget -O silva_seq_RNA.fasta.gz {params.seq} 2> {log};
+        wget -O silva_seq_RNA.fasta.gz {params.seq};
         """
 
 rule unzip_silva_db:
@@ -21,7 +19,7 @@ rule unzip_silva_db:
     output:
         seq = local(temp("data/silva_db/silva_seq_RNA.fasta"))
     log:
-        "logs/unzip_silva_db/log.log"
+        local("logs/unzip_silva_db/get_silva_db.log")
     shell:
         """
         gzip -dk {input.seq} 2> {log};
@@ -43,13 +41,11 @@ rule get_card_db:
     params:
         seq = config["card"]["download-path"],
         path = "data/card_db"
-    log:
-        "logs/get_card_db/log.log"
     shell:
         """
         mkdir -p {params.path};
         cd {params.path};
-        wget -O card_seq.tar.bz2 {params.seq} 2> {log};
+        wget -O card_seq.tar.bz2 {params.seq};
         """
 
 rule unzip_card_db:
@@ -61,7 +57,7 @@ rule unzip_card_db:
     params:
         path = "data/card_db"
     log:
-        "logs/unzip_card_db/log.log"
+        local("logs/unzip_card_db/unzip_card_db.log")
     shell:
         """
         tar -xvjf {input.seq} -C {params.path} 2> {log};
@@ -75,7 +71,7 @@ rule makeblastdb_card:
     params:
         path = "data/blast_db/card_db"
     log:
-        "logs/makeblastdb_card/log.log"
+        local("logs/makeblastdb_card/makeblastdb_card.log")
     conda:
         "../envs/blast.yaml"  
     shell:

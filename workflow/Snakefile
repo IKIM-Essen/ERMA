@@ -28,6 +28,8 @@ else:
 
 print(f"Run: {runname} with detected sequence technology: {seq_tech}\nDetected samples: {samples}")
 
+localrules: all,get_16S_db,get_card_db,
+
 rule all:
     input:
         f"results/{runname}_report.zip"  
@@ -41,6 +43,10 @@ rule snakemake_report:
         local("results/boxplots/combined_percidt_boxplot.png"),        
         local("results/qc/multiqc.html"),
         local(expand("results/{sample}/genus_idt_per_genus_plot.png", sample=samples)),        
+    conda:
+        "envs/snakemake.yaml"
+    log:
+        local("logs/report/report.log"),        
     output:
         f"results/{runname}_report.zip"     
     shell:

@@ -4,7 +4,7 @@ rule convert_fastq_to_fasta:
     output:
         local(temp("results/fastq/{sample}.fasta"))
     log:
-        "logs/convert_fastq_to_fasta/{sample}.log"    
+        local("logs/convert_fastq_to_fasta/{sample}.log")
     conda:
         "../envs/python.yaml"        
     shell:
@@ -16,7 +16,7 @@ rule split_fasta_file:
     output:
         local(temp("results/fastq/{sample}.part_{part}.fasta"))
     log:
-        "logs/split_fasta/{sample}_{part}.log"    
+        local("logs/split_fasta/{sample}_{part}.log")
     conda:
         "../envs/python.yaml"        
     params:
