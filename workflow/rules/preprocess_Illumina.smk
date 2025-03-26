@@ -1,11 +1,11 @@
 rule merge_fastq:
     input:
-        local(r1="{base_dir}/data/fastq/{sample}_R1_001.fastq.gz"),
-        local(r2="{base_dir}/data/fastq/{sample}_R2_001.fastq.gz")
+        r1 = local("data/fastq/{sample}_R1_001.fastq.gz"),
+        r2 = local("data/fastq/{sample}_R2_001.fastq.gz")
     output:
-        local(out = "{base_dir}/data/fastq/temp/{sample}.fastq.gz")
+        out = local("data/fastq/{sample}.fastq.gz")
     log:
-        local("{base_dir}/logs/merge_fastq/{sample}.log")
+        local("logs/merge_fastq/{sample}.log")
     conda:
         "../envs/python.yaml"                
     shell:
@@ -13,11 +13,11 @@ rule merge_fastq:
 
 rule convert_fastq_to_fasta:
     input:
-        local("{base_dir}/data/fastq/temp/{sample}.fastq.gz")
+        local("data/fastq/{sample}.fastq.gz")
     output:
-        local(temp("{base_dir}/data/fastq/temp/{sample}.fasta")),
+        local(temp("data/fastq/{sample}.fasta")),
     log:
-        local("{base_dir}/logs/convert_fastq_to_fasta/{sample}.log")
+        local("logs/convert_fastq_to_fasta/{sample}.log")
     conda:
         "../envs/python.yaml"        
     shell:
@@ -27,7 +27,7 @@ rule convert_fastq_to_fasta:
 
 rule split_fasta_file:
     input:
-        local("results/fastq/{sample}.fasta")
+        local("data/fastq/{sample}.fasta")
     output:
         local(temp("results/fastq/{sample}.part_{part}.fasta"))
     log:

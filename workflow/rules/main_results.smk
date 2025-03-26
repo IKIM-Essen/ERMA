@@ -1,6 +1,3 @@
-runname = "".join(config["runname"])
-seq_tech = "".join(config["seq_tech"])
-        
 rule genera_abundance_table:
     input:
         filtered_data = local(expand("results/{sample}/{part}/filtered_results.csv.gz",sample=samples,part=get_numpart_list())),

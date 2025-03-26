@@ -1,6 +1,6 @@
-runname: "test"
+runname: "rozman_diamond"
 base_dir: "/local/work/adrian/ERMA"  # User should change this path
-seq_tech: "ONT" # Put here "Illumina" or "ONT"
+seq_tech: "Illumina" # Put here "Illumina" or "ONT"
 
 min_similarity: "0.8" # threshold to pre-filter blast hits by percentage identity
 

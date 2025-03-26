@@ -28,7 +28,7 @@ else:
 
 print(f"Run: {runname} with detected sequence technology: {seq_tech}\nDetected samples: {samples}")
 
-localrules: all,get_16S_db,get_card_db,
+#localrules: all,get_16S_db,get_card_db,
 
 rule all:
     input:
