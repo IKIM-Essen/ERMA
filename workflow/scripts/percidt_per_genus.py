@@ -37,23 +37,23 @@ def generate_percentage_idt_per_genus(input_files, output_file):
     
     # Plotting
     fig, ax1 = plt.subplots(figsize=(15, 8))
-    sns.boxplot(x='genus', y='perc_identity', data=combined_data, ax=ax1, order=genus_order, fliersize=0.0)
+    sns.boxplot(x='genus', y='perc_identity', data=combined_data, ax=ax1, order=genus_order, fliersize=0.0, color='dodgerblue')
     ax1.set_xlabel("Bacterial Genus")
-    ax1.set_ylabel("Percentage Identity")
+    ax1.set_ylabel("Percentage Identity (boxplot)", color='royalblue')
     ax1.set_title("Boxplot of Percentage Identity and Read Counts for Each Bacterial genus")
     ax1.set_xticklabels(ax1.get_xticklabels(), rotation=90)
 
     # Add a second y-axis for unique query counts
     ax2 = ax1.twinx()
-    sns.barplot(x='genus', y='unique_query_count', data=genus_query_counts, ax=ax2, alpha=0.3, color='blue', order=genus_order)
-    ax2.set_ylabel("Number of Unique Reads (query_id)", color='blue')
+    sns.barplot(x='genus', y='unique_query_count', data=genus_query_counts, ax=ax2, alpha=0.2, color='purple', order=genus_order)
+    ax2.set_ylabel("Number of hits (bar)", color='violet')
     
     plt.tight_layout()
     plt.savefig(output_file)
     plt.close()
 
 if __name__ == "__main__":
-    input_files = snakemake.input.filtered_data  # List of partitioned files
+    input_files = sorted(snakemake.input.filtered_data)  # List of partitioned files
     output_file = snakemake.output[0]
     sys.stderr = open(snakemake.log[0], "w")
     generate_percentage_idt_per_genus(input_files, output_file)

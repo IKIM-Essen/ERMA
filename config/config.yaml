@@ -1,4 +1,4 @@
-runname: "rozman_diamond"
+runname: "test"
 base_dir: "/local/work/adrian/ERMA"  # User should change this path
 seq_tech: "Illumina" # Put here "Illumina" or "ONT"
 

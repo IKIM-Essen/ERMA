@@ -9,20 +9,19 @@ include: "rules/load_db.smk"
 include: "rules/simsearch_and_process.smk"
 include: "rules/create_boxplots.smk"
 include: "rules/main_results.smk"
+include: "rules/preprocess.smk"
+include: "rules/merge_Illumina.smk"
 
 # Build a list of all "fastq.gz" files in "/ERMA/data/fastq" which will be processed subsequently
 reads = [os.path.basename(f).replace(".fastq.gz", "") for f in glob.glob(os.path.join(config["base_dir"], "data", "fastq", "*.fastq.gz"))]
-
 # Retrieve sample names. For Illumina this is done by splitting at _R1_/_R2_ ...
 runname = "".join(config["runname"])
 seq_tech = "".join(config["seq_tech"])
 
 if seq_tech == "Illumina":
     samples = list(set([re.split(r'_R\d_',r)[0] for r in reads]))
-    include: "rules/preprocess_Illumina.smk"
 elif seq_tech == "ONT":
     samples = reads
-    include: "rules/preprocess_ONT.smk"
 else:
     raise ValueError("Invalid sequencing technology specified. Check config file and README.")
 

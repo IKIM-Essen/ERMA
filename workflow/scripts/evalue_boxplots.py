@@ -55,8 +55,8 @@ def main(csv_files, sample_names, output_file):
         print("No data found.")
 
 if __name__ == "__main__":
-    partitioned_csv_files = snakemake.input.csv_files  # Dict of sample -> list of partition files
+    partitioned_csv_files = sorted(snakemake.input.csv_files)  # Dict of sample -> list of partition files
     output_file = snakemake.output[0]  # Path to save the output plot
-    sample_name = snakemake.params.sample_name  # Minimum similarity filter
+    sample_name = sorted(snakemake.params.sample_name)  # Minimum similarity filter
     sys.stderr = open(snakemake.log[0], "w")
     main(partitioned_csv_files, sample_name, output_file)

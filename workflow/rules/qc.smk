@@ -13,7 +13,6 @@ rule fastqc:
     wrapper:
         "v5.8.3/bio/fastqc"
 
-
 rule multiqc_report:
     input:
         local(expand(
