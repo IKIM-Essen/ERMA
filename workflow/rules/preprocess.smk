@@ -26,3 +26,11 @@ rule split_fasta_file:
         """
         seqkit split2 --by-part {params.num_parts} {input} --out-dir {params.outdir}/results/fastq/
         """
+
+rule prepare_fastqs:
+    output:
+        sentinel=local(temp("data/fastq/merged_done.txt")),
+    conda:
+        "../envs/python.yaml"    
+    script:
+        "../scripts/prepare_fastq.sh"

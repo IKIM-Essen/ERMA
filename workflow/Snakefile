@@ -10,7 +10,6 @@ include: "rules/simsearch_and_process.smk"
 include: "rules/create_boxplots.smk"
 include: "rules/main_results.smk"
 include: "rules/preprocess.smk"
-include: "rules/merge_Illumina.smk"
 
 # Build a list of all "fastq.gz" files in "/ERMA/data/fastq" which will be processed subsequently
 reads = [os.path.basename(f).replace(".fastq.gz", "") for f in glob.glob(os.path.join(config["base_dir"], "data", "fastq", "*.fastq.gz"))]
@@ -27,11 +26,11 @@ else:
 
 print(f"Run: {runname} with detected sequence technology: {seq_tech}\nDetected samples: {samples}")
 
-#localrules: all,get_16S_db,get_card_db,
-
 rule all:
     input:
         f"results/{runname}_report.zip"  
+
+report: "../report/workflow.rst"
 
 rule snakemake_report:
     input:              
@@ -42,10 +41,11 @@ rule snakemake_report:
         local("results/boxplots/combined_percidt_boxplot.png"),        
         local("results/qc/multiqc.html"),
         local(expand("results/{sample}/genus_idt_per_genus_plot.png", sample=samples)),        
+        local(expand("results/{sample}/{part}/genus_abundance.html", sample=samples,part=get_numpart_list())),        
+    log:
+        local("logs/report/report.log"),
     conda:
         "envs/snakemake.yaml"
-    log:
-        local("logs/report/report.log"),        
     output:
         f"results/{runname}_report.zip"     
     shell:

@@ -28,19 +28,29 @@ def generate_percentage_idt_per_genus(input_files, output_file):
         
     # Combine all partitions into a single DataFrame
     combined_data = pd.concat(all_data)
-    
-    # Calculate genus query counts and genus order
+
+    # Calculate genus query counts
     genus_query_counts = combined_data.groupby('genus')['query_id'].nunique().reset_index()
     genus_query_counts.columns = ['genus', 'unique_query_count']
-    combined_data = pd.merge(combined_data, genus_query_counts, on='genus')
-    genus_order = genus_query_counts.sort_values(by='unique_query_count', ascending=False)['genus']
-    
+
+    # Keep only the top 20 genera
+    top20_species = genus_query_counts.nlargest(20, 'unique_query_count')
+
+    # Filter combined_data to retain only the top 20 genera
+    combined_data = combined_data[combined_data['genus'].isin(top20_species['genus'])]
+
+    # Now filter genus_query_counts as well
+    genus_query_counts = genus_query_counts[genus_query_counts['genus'].isin(top20_species['genus'])]
+
+    # Define order for the x-axis
+    genus_order = top20_species.sort_values(by='unique_query_count', ascending=False)['genus']
+
     # Plotting
     fig, ax1 = plt.subplots(figsize=(15, 8))
     sns.boxplot(x='genus', y='perc_identity', data=combined_data, ax=ax1, order=genus_order, fliersize=0.0, color='dodgerblue')
     ax1.set_xlabel("Bacterial Genus")
     ax1.set_ylabel("Percentage Identity (boxplot)", color='royalblue')
-    ax1.set_title("Boxplot of Percentage Identity and Read Counts for Each Bacterial genus")
+    ax1.set_title("Boxplot of Percentage Identity and Read Counts for Each Bacterial Genus")
     ax1.set_xticklabels(ax1.get_xticklabels(), rotation=90)
 
     # Add a second y-axis for unique query counts

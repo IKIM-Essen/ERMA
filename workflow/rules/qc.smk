@@ -22,9 +22,11 @@ rule multiqc_report:
     output:
         report(
             local("results/qc/multiqc.html"),
-            caption="../../report/genus_top_hits.rst",
-            htmlindex="multiqc.html",
-            category="4. QC",
+            caption="../../report/multiqc.rst",
+            category="4. MultiQC",
+            labels={
+                "File": "MultiQC Report"
+            }     
         ),
     log:
         local("logs/multiqc/multiqc.log"),
