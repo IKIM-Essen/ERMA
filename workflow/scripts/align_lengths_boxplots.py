@@ -16,7 +16,11 @@ def read_and_process_partitioned_data(partition_files,sample):
             df = pd.read_csv(part_file, header=0, sep=',', usecols=fields, compression='gzip')
             df = df.drop_duplicates()            
             df['sample'] = sample_name
-            data_frames.append(df)
+            abr = df[df['part'] == "ABR"].copy()
+            sixts = df[df['part'] == "16S"]
+            abr["align_length"] *= 3 
+            merged_df = pd.concat([abr, sixts])
+            data_frames.append(merged_df)
         else:
             print(f"File {part_file} does not exist.")
 
@@ -26,7 +30,7 @@ def read_and_process_partitioned_data(partition_files,sample):
         return None
 
 def plot_boxplots(data, output_file):
-    """Plot boxplots based on the e-values for ABR and 16S parts across samples."""
+    """Plot boxplots based on the alignment lengths for ABR and 16S parts across samples."""
     plt.figure(figsize=(15, 10))
     flierprops = dict(markerfacecolor='0.75', markersize=2, linestyle='none')
     sns.boxplot(x='sample', y='align_length', hue='part', data=data, flierprops=flierprops)
@@ -55,8 +59,8 @@ def main(csv_files, sample_names, output_file):
         print("No data found.")
 
 if __name__ == "__main__":
-    partitioned_csv_files = snakemake.input.csv_files  # Dict of sample -> list of partition files
+    partitioned_csv_files = sorted(snakemake.input.csv_files)  # Dict of sample -> list of partition files
     output_file = snakemake.output[0]  # Path to save the output plot
-    sample_name = snakemake.params.sample_name  # Minimum similarity filter
+    sample_name = sorted(snakemake.params.sample_name)  # Minimum similarity filter
     sys.stderr = open(snakemake.log[0], "w")
     main(partitioned_csv_files, sample_name, output_file)

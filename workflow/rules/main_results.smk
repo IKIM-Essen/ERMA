@@ -1,15 +1,30 @@
-runname = "".join(config["runname"])
-seq_tech = "".join(config["seq_tech"])
-        
 rule genera_abundance_table:
+    input:
+        filtered_data = local("results/{sample}/{part}/filtered_results.csv.gz"),
+    output:
+        report(
+            local("results/{sample}/{part}/genus_abundance.html"),
+            caption = "../../report/genus_abundance_table.rst",
+            category="2. Single Sample Abundance Data",
+            subcategory="{sample}",
+            labels={
+                "sample": "{sample}",
+                "table":"Genera Abundance"}
+        ),
+    params:
+        sample_name = "{sample}"
+    log:
+        local("logs/{sample}/{part}/genera_abundance_table.log")
+    conda:
+        "../envs/python.yaml"
+    threads: config["max_threads"]
+    script:
+        "../scripts/genera_abundance_table.py"
+
+rule combined_genera_abundance_table:
     input:
         filtered_data = local(expand("results/{sample}/{part}/filtered_results.csv.gz",sample=samples,part=get_numpart_list())),
     output:
-        report(
-            local("results/abundance/combined_genus_abundance.html"),
-            caption = "../../report/genus_top_hits.rst",
-            category="1. Abundance"
-        ),
         csv = local("results/abundance/combined_genus_abundance.csv"),
     params:
         sample_name = samples,
@@ -19,7 +34,7 @@ rule genera_abundance_table:
         "../envs/python.yaml"
     threads: config["max_threads"]
     script:
-        "../scripts/genera_abundance_table.py"
+        "../scripts/combined_genera_abundance_table.py"
 
 rule abundance_bubble_plot:
     input:
@@ -27,14 +42,10 @@ rule abundance_bubble_plot:
     output:
         report(
             local("results/abundance/combined_genus_abundance_bubbleplot.html"),
-            caption = "../../report/genus_top_hits.rst",
-            category="1. Abundance"
-        ),
-        report(
-            local("results/abundance/reads_per_found_AMR.html"),
-            caption = "../../report/genus_top_hits.rst",
-            category="1. Abundance"
-        ),
+            caption = "../../report/abundance_bubble_plot.rst",
+            category="1. Combined Abundance Data",
+            labels={"figure":"Abundance Bubble Plot"}
+        ),    
     params:
         abundance_filter = 0.001
     log:
@@ -44,3 +55,21 @@ rule abundance_bubble_plot:
     threads: config["max_threads"]
     script:
         "../scripts/genera_abundance_plot.py"
+
+rule reads_per_AMR:
+    input:
+        abundance_data = local("results/abundance/combined_genus_abundance.csv"),
+    output:
+        report(
+            local("results/abundance/reads_per_found_AMR.html"),
+            caption = "../../report/reads_per_AMR.rst",
+            category="1. Combined Abundance Data",
+            labels={"table":"Reads per AMR"}
+        ),    
+    log:
+        local("logs/genera_abundance_plot.log")
+    conda:
+        "../envs/python.yaml"
+    threads: config["max_threads"]
+    script:
+        "../scripts/reads_per_amr.py"

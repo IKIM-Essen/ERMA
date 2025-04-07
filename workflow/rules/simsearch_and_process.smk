@@ -1,20 +1,19 @@
-rule blast_card:
+rule diamond_card:
     input:
         fasta = local("results/fastq/{sample}.part_{part}.fasta"),
-        card = local("data/blast_db/card_db.pdb")
+        card = local("data/card_db/card_db.dmnd")
     output:
         card_results = local("results/{sample}/{part}/card_results.txt")
     params:
-        db = "data/blast_db",
         internal_threads = config["max_threads"],        
     log:
-        local("logs/blast_card/{sample}_{part}.log")
+        local("logs/diamond_card/{sample}_{part}.log")
     conda:
-        "../envs/blast.yaml" 
+        "../envs/diamond.yaml" 
     threads: config["max_threads"]      
     shell:
         """
-        blastx -query {input.fasta} -db {params.db}/card_db -out {output.card_results} -outfmt 6 -evalue 1e-5 -num_threads {params.internal_threads} 2> {log}
+        diamond blastx -d {input.card} -q {input.fasta} -o {output.card_results} --outfmt 6 --evalue 1e-5 --threads {params.internal_threads} 2> {log}
         """
 
 rule usearch_silva:
@@ -29,11 +28,11 @@ rule usearch_silva:
         internal_threads = config["max_threads"],
         min_id = config["min_similarity"]
     conda:
-        "../envs/blast.yaml"
-    threads: config["max_threads"]                  
+        "../envs/usearch.yaml"
+    threads: config["max_threads"]
     shell:
         """
-        usearch -usearch_local {input.fasta} -db {input.silva} -blast6out {output.silva_results} -evalue 1e-5 -threads {params.internal_threads} -strand plus -mincols 200 2> {log}
+        usearch -usearch_local {input.fasta} -db {input.silva} -blast6out {output.silva_results} -evalue 1e-5 -threads {params.internal_threads} -strand both -mincols 200 2> {log}
         """
 
 rule integrate_blast_data:

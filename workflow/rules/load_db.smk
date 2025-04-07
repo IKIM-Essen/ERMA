@@ -67,14 +67,14 @@ rule makeblastdb_card:
     input:
         seq = local("data/card_db/protein_fasta_protein_homolog_model.fasta")
     output:
-        db = local("data/blast_db/card_db.pdb")
+        db = local("data/card_db/card_db.dmnd")
     params:
-        path = "data/blast_db/card_db"
+        path = "data/card_db/card_db"
     log:
-        local("logs/makeblastdb_card/makeblastdb_card.log")
+        local("logs/diamond_makedb_card/makedb_card.log")
     conda:
-        "../envs/blast.yaml"  
+        "../envs/diamond.yaml"  
     shell:
         """
-        makeblastdb -in {input.seq} -dbtype prot -out {params.path} 2> {log};
+        diamond makedb --in {input.seq} -d {params.path} 2> {log};
         """

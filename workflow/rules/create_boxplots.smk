@@ -4,8 +4,13 @@ rule generate_percidt_genus:
     output:
         report(
             local("results/{sample}/genus_idt_per_genus_plot.png"),
-            caption = "../../report/genus_top_hits.rst",
-            category="2. Genus percentage Identity",
+            caption = "../../report/identity_read_count_per_genus.rst",
+            category="2. Single Sample Abundance Data",
+            subcategory="{sample}",
+            labels={
+                "sample": "{sample}",
+                "figure": "Identity/Read Count per Genus"
+            }
         )
     log:
         local("logs/generate_percidt_genus/{sample}.log")
@@ -20,8 +25,11 @@ rule plot_alignment_length_boxplot:
     output:
         report(
             local("results/boxplots/combined_allength_boxplot.png"),
-            caption = "../../report/genus_top_hits.rst",
-            category="3. Statistics",        
+            caption = "../../report/boxplot.rst",
+            category="3. Boxplots",
+            labels={
+                "boxplot": "Alignment Length"
+            }                   
         )        
     params:
         sample_name = samples,
@@ -38,8 +46,11 @@ rule plot_percentage_identity_boxplot:
     output:
         report(
             local("results/boxplots/combined_percidt_boxplot.png"),
-            caption = "../../report/genus_top_hits.rst",
-            category="3. Statistics",        
+            caption = "../../report/boxplot.rst",
+            category="3. Boxplots",
+            labels={
+                "boxplot": "Percentage Identity"
+            }     
         )
     params:
         sample_name = samples,
@@ -56,8 +67,11 @@ rule plot_evalue_boxplot:
     output:
         report(
             local("results/boxplots/combined_evalue_boxplot.png"),
-            caption = "../../report/genus_top_hits.rst",
-            category="3. Statistics"
+            caption = "../../report/boxplot.rst",
+            category="3. Boxplots",
+            labels={
+                "boxplot": "E-Value"
+            }     
         )
     params:
         sample_name = samples,

@@ -1,4 +1,5 @@
 import pandas as pd
+import altair as alt
 
 # Necessary columns to load from each CSV file
 necessary_columns = [
@@ -41,22 +42,31 @@ def process_combined_data(combined_data, sample_name):
     
     return genus_counts
 
-def combine_blast_data(input_file, sample_name):
+def combine_blast_data(input_files, sample_name):
     # Load and combine data from all parts for the given sample
-    df = pd.read_csv(input_file, sep=",", usecols=necessary_columns, header=0, compression='gzip')
+    all_data = [pd.read_csv(input_file, sep=",", usecols=necessary_columns, header=0, compression='gzip') for input_file in input_files]
+    combined_data = pd.concat(all_data, ignore_index=True)
     
     # Process combined data to get genus counts and relative values
-    genus_counts = process_combined_data(df, sample_name)
+    genus_counts = process_combined_data(combined_data, sample_name)
     return genus_counts
 
-def export_genera_abundance(input_file, sample_name, output_html):
-    sample_data = combine_blast_data(input_file, sample_name)
-    sample_data = sample_data.sort_values(by=["genus_count"], ascending=False)
-    sample_data.to_html(output_html, index=False)
+def export_genera_abundance(input_files, sample_names, output_csv):
+    all_samples_data = pd.DataFrame()
+    
+    # Process each sample’s files to build the final DataFrame
+    for sample_name in sample_names:
+        sample_files = [f for f in input_files if f"/{sample_name}/" in f]
+        if sample_files:
+            sample_data = combine_blast_data(sample_files, sample_name)
+            all_samples_data = pd.concat([all_samples_data, sample_data], ignore_index=True)
+    
+    # Export the final aggregated data to a CSV file
+    all_samples_data.to_csv(output_csv, index=False)
 
 if __name__ == "__main__":
-    input_file = snakemake.input.filtered_data
-    output_html = snakemake.output[0]
+    input_files = list(snakemake.input.filtered_data)
+    output_csv = snakemake.output.csv
     sample_name = snakemake.params.sample_name
     sys.stderr = open(snakemake.log[0], "w")  
-    export_genera_abundance(input_file, sample_name, output_html)
+    export_genera_abundance(input_files, sample_name, output_csv)

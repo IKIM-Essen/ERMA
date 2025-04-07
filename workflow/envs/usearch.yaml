@@ -1,0 +1,4 @@
+channels:                                                                                                                                                            
+  - bioconda                                                                                                                                                           
+dependencies:
+  - usearch=12.0

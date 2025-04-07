@@ -2,12 +2,11 @@ import pandas as pd
 import plotly.express as px
 import sys
 
-def create_bubble_plots(df, abundance_threshold, output1,output2):
+def create_bubble_plots(df, abundance_threshold, output1):
     # Iterate over unique AMR Gene Families
     # Filter data for the current AMR Gene Family
     df = pd.read_csv(df,header=0,sep=',')
     total_counts_per_abr = df.groupby('AMR Gene Family')['genus_count'].sum().reset_index()
-    total_counts_per_abr.to_html(output2)
     top_abr = df.groupby('AMR Gene Family')['genus_count'].sum().idxmax()
     top_abr_data = df[df['AMR Gene Family'] == top_abr]
     top_abr_data = top_abr_data[top_abr_data['relative_genus_count'] > float(abundance_threshold)]
@@ -44,8 +43,7 @@ def create_bubble_plots(df, abundance_threshold, output1,output2):
 
 if __name__ == "__main__":
     input_files = snakemake.input.abundance_data
-    output_html = snakemake.output[0]
-    output_csv = snakemake.output[1]
+    output_csv = snakemake.output[0]
     abundance_threshold = snakemake.params.abundance_filter
     sys.stderr = open(snakemake.log[0], "w")  
-    create_bubble_plots(input_files, abundance_threshold, output_html,output_csv)
+    create_bubble_plots(input_files, abundance_threshold, output_csv)
