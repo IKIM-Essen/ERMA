@@ -5,4 +5,3 @@ latency-wait: 5
 printshellcmds: True
 default-storage-provider: fs
 local-storage-prefix: /local/work/adrian
-keep-going: True

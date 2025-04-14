@@ -10,11 +10,26 @@ necessary_columns = [
     "perc_identity",
 ]
 
+def write_dummy_line(sample_name):
+    dummy_line = {
+        'sample': sample_name,
+        'AMR Gene Family': 'NA',
+        'genus': 'NA',
+        'genus_count': 0,
+        'total_genus_count': 0,
+        'relative_genus_count': 0,
+    }
+    merged_data = pd.DataFrame([dummy_line])
+    return merged_data
+
 def process_combined_data(combined_data, sample_name):
     # Separate ABR and 16S data for merging by query_id
     abr_data = combined_data[combined_data["part"] == "ABR"]
     sixteen_s_data = combined_data[combined_data["part"] == "16S"]
     
+    if sixteen_s_data.iloc[0]["query_id"] == "dummy":
+        return write_dummy_line(sample_name)
+
     # Prepare to merge only unique hits
     unique_abr_data = abr_data[['query_id', 'AMR Gene Family']].drop_duplicates()
     unique_sixteen_s_data = sixteen_s_data[['query_id', 'genus']].drop_duplicates()

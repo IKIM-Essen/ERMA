@@ -3,7 +3,7 @@ rule genera_abundance_table:
         filtered_data = local("results/{sample}/{part}/filtered_results.csv.gz"),
     output:
         report(
-            local("results/{sample}/{part}/genus_abundance.html"),
+            local(temp("results/{sample}/{part}/genus_abundance.html")),
             caption = "../../report/genus_abundance_table.rst",
             category="2. Single Sample Abundance Data",
             subcategory="{sample}",

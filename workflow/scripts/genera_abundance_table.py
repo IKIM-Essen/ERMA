@@ -9,6 +9,18 @@ necessary_columns = [
     "perc_identity",
 ]
 
+def write_dummy_line(sample_name):
+    dummy_line = {
+        'sample': sample_name,
+        'AMR Gene Family': 'NA',
+        'genus': 'NA',
+        'genus_count': 0,
+        'total_genus_count': 0,
+        'relative_genus_count': 0,
+    }
+    merged_data = pd.DataFrame([dummy_line])
+    return merged_data
+
 def process_combined_data(combined_data, sample_name):
     # Separate ABR and 16S data for merging by query_id
     abr_data = combined_data[combined_data["part"] == "ABR"]
@@ -18,6 +30,9 @@ def process_combined_data(combined_data, sample_name):
     unique_abr_data = abr_data[['query_id', 'AMR Gene Family']].drop_duplicates()
     unique_sixteen_s_data = sixteen_s_data[['query_id', 'genus']].drop_duplicates()
     
+    if sixteen_s_data.iloc[0]["query_id"] == "dummy":
+        return write_dummy_line(sample_name)
+
     # Merge on query_id to associate AMR Gene Family with genus information from 16S data
     merged_data = pd.merge(
         unique_abr_data[['query_id', 'AMR Gene Family']], 

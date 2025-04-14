@@ -38,6 +38,45 @@ dtype_dict = {
     "CARD Short Name": "string"
 }
 
+def write_dummy_line(output_file):
+    print("Detected only a dummy 16S line — generating merged dummy output.")
+    dummy_line = {
+        'query_id': 'dummy',
+        'subject_id': 'NA',
+        'perc_identity': 0,
+        'align_length': 0,
+        'mismatches': 0,
+        'gap_opens': 0,
+        'q_start': 0,
+        'q_end': 0,
+        's_start': 0,
+        's_end': 0,
+        'evalue': 0,
+        'bit_score': 0,
+        'part': '16S',
+        'primaryAccession': 'NA',
+        'distance': 0,
+        'orientation': 'NA',
+        'genus': 'Unclassified',
+        'ARO Accession': 'NA',
+        'CVTERM ID': 'NA',
+        'Model Sequence ID': 'NA',
+        'Model ID': 'NA',
+        'Model Name': 'NA',
+        'ARO Name': 'NA',
+        'Protein Accession': 'NA',
+        'DNA Accession': 'NA',
+        'AMR Gene Family': 'NA',
+        'Drug Class': 'NA',
+        'Resistance Mechanism': 'NA',
+        'CARD Short Name': 'NA',
+        'most_common_q_start': 0,
+        'most_common_q_end': 0
+    }
+    merged_data = pd.DataFrame([dummy_line])
+    merged_data.to_csv(output_file, index=False)
+    return  # Exit the function early
+
 def filter_group(group):
     most_common_q_start = group["most_common_q_start"].dropna().iloc[0]
     abr_part = group[group["part"] == "ABR"]
@@ -86,16 +125,18 @@ def filter_blast_results(input_file, output_file, min_similarity):
     sixteen_s_data["query_id"] = sixteen_s_data["query_id"].str.split(expand=True)[0]
     sixteen_s_data = sixteen_s_data.groupby("query_id").apply(process_orientation_and_counts).reset_index(drop=True)
     
-    # Filter for common query IDs between abr_data and sixteen_s_data
-    common_query_ids = pd.Index(abr_data['query_id']).intersection(sixteen_s_data['query_id'])
-    abr_data_filtered = abr_data[abr_data['query_id'].isin(common_query_ids)]
-    sixteen_s_data_filtered = sixteen_s_data[sixteen_s_data['query_id'].isin(common_query_ids)]
+    if len(sixteen_s_data) == 1 and sixteen_s_data.iloc[0]["query_id"] == "dummy.dummy":
+        write_dummy_line(output_file)
+    else:
+        # Filter for common query IDs between abr_data and sixteen_s_data
+        common_query_ids = pd.Index(abr_data['query_id']).intersection(sixteen_s_data['query_id'])
+        abr_data_filtered = abr_data[abr_data['query_id'].isin(common_query_ids)]
+        sixteen_s_data_filtered = sixteen_s_data[sixteen_s_data['query_id'].isin(common_query_ids)]
     
-    # Concatenate the filtered ABR and 16S data
-    merged_data = pd.concat([abr_data_filtered, sixteen_s_data_filtered])
-    
-    # Write the filtered data to output
-    merged_data.to_csv(output_file, index=False)
+        #Concatenate the filtered ABR and 16S data
+        merged_data = pd.concat([abr_data_filtered, sixteen_s_data_filtered])
+        # Write the filtered data to output
+        merged_data.to_csv(output_file, index=False)
 
 if __name__ == "__main__":
     input_file = snakemake.input.integrated_data

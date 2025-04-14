@@ -16,24 +16,45 @@ rule diamond_card:
         diamond blastx -d {input.card} -q {input.fasta} -o {output.card_results} --outfmt 6 --evalue 1e-5 --threads {params.internal_threads} 2> {log}
         """
 
-rule usearch_silva:
-    input:
-        fasta = local("results/fastq/{sample}.part_{part}.fasta"),
-        silva = local("data/silva_db/silva_seq.fasta")
-    output:
-        silva_results = local("results/{sample}/{part}/SILVA_results.txt")
-    log:
-        local("logs/blast_silva/{sample}_{part}.log")
-    params:
-        internal_threads = config["max_threads"],
-        min_id = config["min_similarity"]
-    conda:
-        "../envs/usearch.yaml"
-    threads: config["max_threads"]
-    shell:
-        """
-        usearch -usearch_local {input.fasta} -db {input.silva} -blast6out {output.silva_results} -evalue 1e-5 -threads {params.internal_threads} -strand both -mincols 200 2> {log}
-        """
+if config["similarity_search_mode"] == "fast":
+    rule usearch_silva:
+        input:
+            fasta = local("results/fastq/{sample}.part_{part}.fasta"),
+            silva = local("data/silva_db/silva_seq.fasta")
+        output:
+            silva_results = local(temp("results/{sample}/{part}/SILVA_results.txt"))
+        log:
+            local("logs/blast_silva/{sample}_{part}.log")
+        params:
+            internal_threads = config["max_threads"],
+            min_id = config["min_similarity"],
+        conda:
+            "../envs/usearch.yaml"
+        threads: config["max_threads"]
+        shell:
+            """
+            usearch -usearch_local {input.fasta} -db {input.silva} -blast6out {output.silva_results} -evalue 1e-5 -threads {params.internal_threads} -strand plus -mincols 200 2> {log}
+            """
+
+if config["similarity_search_mode"] == "extensive":
+    rule usearch_silva:
+        input:
+            fasta = local("results/fastq/{sample}.part_{part}.fasta"),
+            silva = local("data/silva_db/silva_seq.fasta")
+        output:
+            silva_results = local(temp("results/{sample}/{part}/SILVA_results.txt"))
+        log:
+            local("logs/blast_silva/{sample}_{part}.log")
+        params:
+            internal_threads = config["max_threads"],
+            min_id = config["min_similarity"],
+        conda:
+            "../envs/usearch.yaml"
+        threads: config["max_threads"]
+        shell:
+            """
+            usearch -usearch_local {input.fasta} -db {input.silva} -blast6out {output.silva_results} -evalue 1e-5 -threads {params.internal_threads} -strand both -mincols 200 2> {log}
+            """
 
 rule integrate_blast_data:
     input:
@@ -41,9 +62,9 @@ rule integrate_blast_data:
         silva_results = local("results/{sample}/{part}/SILVA_results.txt"),
         aro_mapping = local("data/card_db/aro_index.tsv"),
     output:
-        intermed_card_results = temp("results/{sample}/{part}/intermed_card_results.csv"),
-        intermed_silva_results = temp("results/{sample}/{part}/intermed_silva_results.csv"),
-        integrated_data = local("results/{sample}/{part}/integrated_filtered_results.csv")
+        intermed_card_results = local(temp("results/{sample}/{part}/intermed_card_results.csv")),
+        intermed_silva_results = local(temp("results/{sample}/{part}/intermed_silva_results.csv")),
+        integrated_data = local(temp("results/{sample}/{part}/integrated_filtered_results.csv")),
     log:
         local("logs/integrate_blast_data/{sample}_{part}.log")    
     conda:            
@@ -72,7 +93,7 @@ rule gzip_intermediates:
         silva_results = local("results/{sample}/{part}/SILVA_results.txt"),
         card_results = local("results/{sample}/{part}/card_results.txt"),
         int_data = local("results/{sample}/{part}/integrated_filtered_results.csv"),
-        filt_data = local("results/{sample}/{part}/filtered_results.csv")
+        filt_data = local("results/{sample}/{part}/filtered_results.csv"),
     output:
         silva_zip = local("results/{sample}/{part}/SILVA_results.txt.gz"),
         card_zip = local("results/{sample}/{part}/card_results.txt.gz"),

@@ -10,6 +10,7 @@ Config Parameters
 - **base_dir**: "{{ snakemake.config["base_dir"] }}" - Base directory for the workflow files. Adjust this path to your local environment.  
 - **seq_tech**: "{{ snakemake.config["seq_tech"] }}" - Sequencing technology used (e.g., "Illumina" or "ONT"), guiding read preprocessing and analysis.  
 - **min_similarity**: "{{ snakemake.config["min_similarity"] }}" - Minimum percentage identity to pre-filter similarity search results. Helps reduce noise by excluding low-confidence matches.  
+- **sim_search_mode**: "{{ snakemake.config["similarity_search_mode"] }}" - Fast: compares only one strand against the more extensive SILVA database; Extensive compares both.
 
 Performance Optimization
 ============================

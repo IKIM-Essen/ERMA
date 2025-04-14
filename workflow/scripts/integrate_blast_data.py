@@ -15,9 +15,9 @@ def process_orientation_and_counts(group):
 def write_dummy_line(output_file, part):
     """Write a dummy line to ensure compatibility with pandas."""
     dummy_data = {
-        "query_id": ["dummy"],
+        "query_id": ["dummy.dummy"],
         "subject_id": ["dummy"],
-        "perc_identity": [0],
+        "perc_identity": [100],
         "align_length": [0],
         "mismatches": [0],
         "gap_opens": [0],

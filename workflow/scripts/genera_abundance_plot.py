@@ -1,16 +1,34 @@
 import pandas as pd
 import plotly.express as px
-import sys
+import plotly.io as pio
 
-def create_bubble_plots(df, abundance_threshold, output1):
-    # Iterate over unique AMR Gene Families
-    # Filter data for the current AMR Gene Family
-    df = pd.read_csv(df,header=0,sep=',')
+def create_bubble_plots(input_csv, abundance_threshold, output_html):
+    df = pd.read_csv(input_csv, header=0, sep=',')
+
+    # Drop rows with missing or zero genus counts
+    df = df[df['genus_count'] > 0]
+
+    # If empty after filtering, return an empty plot
+    if df.empty or df['AMR Gene Family'].isnull().all():
+        print("No valid data to plot — generating an empty dummy plot.")
+
+        fig = px.scatter(
+            title="Empty Bubble Plot — No Data Available"
+        )
+        fig.update_layout(
+            xaxis_title='Sample - AMR Gene Family',
+            yaxis_title='Genus',
+            plot_bgcolor='lightgrey'
+        )
+        pio.write_html(fig, file=output_html)
+        return
+
+    # Normal flow
     total_counts_per_abr = df.groupby('AMR Gene Family')['genus_count'].sum().reset_index()
-    top_abr = df.groupby('AMR Gene Family')['genus_count'].sum().idxmax()
+    top_abr = total_counts_per_abr.sort_values(by='genus_count', ascending=False)['AMR Gene Family'].iloc[0]
     top_abr_data = df[df['AMR Gene Family'] == top_abr]
     top_abr_data = top_abr_data[top_abr_data['relative_genus_count'] > float(abundance_threshold)]
-    # Create the bubble plot
+
     fig = px.scatter(
         top_abr_data, 
         x="sample", 
@@ -27,19 +45,17 @@ def create_bubble_plots(df, abundance_threshold, output1):
         size_max=20,
         color_continuous_scale="Greens"
     )
-    
-    # Update layout for titles and axis labels
+
     fig.update_layout(
-        title=f'Bubble Plot of Relative Genera Abundance per Sample and top found AMR:<br> {top_abr} with {total_counts_per_abr.sum()} reads over all samples',
+        title=f'Bubble Plot of Relative Genera Abundance per Sample\nTop AMR Gene Family: {top_abr} ({total_counts_per_abr["genus_count"].sum()} reads)',
         xaxis_title='Sample - AMR Gene Family',
         yaxis_title='Genus',
         coloraxis_colorbar=dict(title="Total Genus Count"),
-        #paper_bgcolor='grey',
         plot_bgcolor='lightgrey',
         yaxis=dict(categoryorder="category descending"),
         xaxis=dict(categoryorder="category ascending"),
     )
-    fig.write_html(output1)
+    pio.write_html(fig, file=output_html)
 
 if __name__ == "__main__":
     input_files = snakemake.input.abundance_data
