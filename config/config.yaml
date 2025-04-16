@@ -1,6 +1,6 @@
 runname: "test"
 base_dir: "/local/work/adrian/ERMA"  # User should change this path
-seq_tech: "Illumina" # Put here "Illumina" or "ONT"
+seq_tech: "ONT" # Put here "Illumina" or "ONT"
 
 min_similarity: "0.8" # threshold to pre-filter blast hits by percentage identity
 
@@ -14,4 +14,4 @@ card:
 num_parts: 1 # number of chunks the fastqs are split into
 max_threads: 16
 
-similarity_search_mode: "extensive" # Put here fast or extensive
+similarity_search_mode: "fast" # Put here fast or extensive

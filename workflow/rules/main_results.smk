@@ -46,8 +46,6 @@ rule abundance_bubble_plot:
             category="1. Combined Abundance Data",
             labels={"figure":"Abundance Bubble Plot"}
         ),    
-    params:
-        abundance_filter = 0.001
     log:
         local("logs/genera_abundance_plot.log")
     conda:
@@ -73,3 +71,24 @@ rule reads_per_AMR:
     threads: config["max_threads"]
     script:
         "../scripts/reads_per_amr.py"
+
+rule plot_overview:
+    input:
+        overview_table = local("results/qc/overview_table.txt")
+    output:
+        report(
+            local("results/qc/overview_plot.png"),
+            caption = "../../report/boxplot.rst",
+            category="4. QC",
+            labels={
+                "File": "Overview"
+            }       
+        )
+    params:
+        sample_name = samples,
+    log:
+        local("logs/plot_overview/combined.log")
+    conda:
+        "../envs/python.yaml"     
+    script:
+        "../scripts/plot_overview.py"

@@ -12,17 +12,10 @@ include: "rules/main_results.smk"
 include: "rules/preprocess.smk"
 
 # Build a list of all "fastq.gz" files in "/ERMA/data/fastq" which will be processed subsequently
-reads = [os.path.basename(f).replace(".fastq.gz", "") for f in glob.glob(os.path.join(config["base_dir"], "data", "fastq", "*.fastq.gz"))]
+samples = [os.path.basename(f).replace(".fastq.gz", "") for f in glob.glob(os.path.join(config["base_dir"], "data", "fastq", "*.fastq.gz"))]
 # Retrieve sample names. For Illumina this is done by splitting at _R1_/_R2_ ...
 runname = "".join(config["runname"])
 seq_tech = "".join(config["seq_tech"])
-
-if seq_tech == "Illumina":
-    samples = list(set([re.split(r'_R\d_',r)[0] for r in reads]))
-elif seq_tech == "ONT":
-    samples = reads
-else:
-    raise ValueError("Invalid sequencing technology specified. Check config file and README.")
 
 print(f"Run: {runname} with detected sequence technology: {seq_tech}\nDetected samples: {samples}")
 
@@ -40,6 +33,7 @@ rule snakemake_report:
         local("results/boxplots/combined_evalue_boxplot.png"),        
         local("results/boxplots/combined_percidt_boxplot.png"),        
         local("results/qc/multiqc.html"),
+        local("results/qc/overview_plot.png"),
         local(expand("results/{sample}/genus_idt_per_genus_plot.png", sample=samples)),        
         local(expand("results/{sample}/{part}/genus_abundance.html", sample=samples,part=get_numpart_list())),        
     log:

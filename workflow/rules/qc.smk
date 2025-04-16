@@ -32,3 +32,18 @@ rule multiqc_report:
         local("logs/multiqc/multiqc.log"),
     wrapper:
         "v5.8.3/bio/multiqc"
+
+rule merge_overview:
+    input:
+        filtered_data = local(expand("results/{sample}/{part}/filtered_results.csv.gz",sample=samples,part=get_numpart_list())),
+        overview_tables = local(expand("results/{sample}/{part}/overview_table.txt",sample=samples,part=get_numpart_list()))
+    output:
+        local("results/qc/overview_table.txt"),
+    params:
+        sample_name = samples,
+    log:
+        local("logs/merge_overview/combined.log")
+    conda:
+        "../envs/python.yaml"     
+    script:
+        "../scripts/merge_overview.py"

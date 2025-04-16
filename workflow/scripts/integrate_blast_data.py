@@ -86,19 +86,30 @@ def process_silva_results(silva_results_path, output_path):
         print(f"Error processing {silva_results_path}: {e}")
         write_dummy_line(output_path, "16S")
 
-def merge_results(card_output, silva_output, final_output):
-    """Merge processed CARD and SILVA results into one final output file."""
+def merge_results(card_output, silva_output, final_output, overview_table):
+    """Merge processed CARD and SILVA results into one final output file and update overview table."""
     card_df = pd.read_csv(card_output)
     silva_df = pd.read_csv(silva_output)
     
-    combined_df = pd.concat([silva_df,card_df])
-    
+    combined_df = pd.concat([silva_df, card_df])
     combined_df.to_csv(final_output, index=False)
+
+    # Extract sample and part from card_output path
+    path_parts = card_output.split("/")
+    sample = path_parts[1]
+    part = path_parts[2]
+
+    # Count number of rows in the combined DataFrame
+    count = len(combined_df)
+
+    with open(overview_table, "a") as file:
+        file.write(f"integration_output,{sample},{part},{count}\n")
 
 if __name__ == "__main__":
     card_results = snakemake.input.card_results
     silva_results = snakemake.input.silva_results
     aro_mapping = snakemake.input.aro_mapping
+    overview_table = snakemake.input.overview_table
     card_output = snakemake.output.intermed_card_results
     silva_output = snakemake.output.intermed_silva_results
     final_output = snakemake.output.integrated_data
@@ -111,4 +122,4 @@ if __name__ == "__main__":
         future_card.result()
         future_silva.result()
 
-    merge_results(card_output, silva_output, final_output)
+    merge_results(card_output, silva_output, final_output, overview_table)
