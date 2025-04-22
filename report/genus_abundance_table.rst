@@ -1,14 +1,6 @@
 Genus Abundance Table
 
-The Genus Abundance Table provides a detailed overview of genus-level taxonomic classification from the analyzed samples.
-It quantifies the relative abundance of detected genera by aggregating the counts of reads assigned to each genus.
+The Genus Abundance Table provides an extensive overview of sample-wise counts of AMR-genus hits found through similarity search and filtering. 
+The table shows how many filtered ABR similarity hits are contributed to which genus. Additionally, the relative contribution to the total amount of filtered ABR similarity hits can be seen.
 
-This plot helps identify dominant microbial taxa and their association with resistance genes by summarizing the presence of genera across samples.
-
-Use Case:
-
-- Explore the taxonomic composition of samples
-
-- Compare microbial profiles between samples
-
-- Understand the relationship between genera and antimicrobial resistance
+This table is meant as full-detailed data depiction. A more intuitive but less extensive depiction is given through the 'Identity-Read Count per Genus'-Plot.

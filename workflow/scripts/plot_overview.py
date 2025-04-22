@@ -12,8 +12,10 @@ def categorize_output_state(state):
 def categorize_filter_state(state):
     return {
         "filtered_min_similarity_ABR": "ABR < similarity threshold",
+        "filtered_max_identity_ABR": "ABR Hit not max identity for query ID",
         "filtered_min_similarity_16S": "16S < similarity threshold",
-        "filtered_query_id_mismatch": "Query ID mismatch"
+        "filtered_max_identity_16S": "16S Hit not max identity for query ID",
+        "filtered_query_id_mismatch": "Query hit not in both databases"
     }.get(state)
 
 def plot_summary(input_path, output_path):
@@ -29,7 +31,7 @@ def plot_summary(input_path, output_path):
 
     # Reorder columns
     main_order = ["Raw Fasta Input", "Diamond and Usearch hits", "Hits after filtration"]
-    filter_order = ["ABR < similarity threshold", "16S < similarity threshold", "Query ID mismatch"]
+    filter_order = ["ABR < similarity threshold", "16S < similarity threshold", "Query hit not in both databases"]
 
     main_summary = main_summary[main_order]
     overlay_summary = overlay_summary[filter_order]
@@ -51,7 +53,7 @@ def plot_summary(input_path, output_path):
     filter_colors = {
         "ABR < similarity threshold": "royalblue",
         "16S < similarity threshold": "#a6d854",
-        "Query ID mismatch": "#ffd92f"
+        "Query hit not in both databases": "#ffd92f"
     }
 
     # Positions for main bars

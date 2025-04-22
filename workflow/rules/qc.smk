@@ -23,7 +23,7 @@ rule multiqc_report:
         report(
             local("results/qc/multiqc.html"),
             caption="../../report/multiqc.rst",
-            category="4. MultiQC",
+            category="4. QC",
             labels={
                 "File": "MultiQC Report"
             }     
@@ -47,3 +47,25 @@ rule merge_overview:
         "../envs/python.yaml"     
     script:
         "../scripts/merge_overview.py"
+
+
+rule plot_overview:
+    input:
+        overview_table = local("results/qc/overview_table.txt")
+    output:
+        report(
+            local("results/qc/overview_plot.png"),
+            caption = "../../report/count_overview.rst",
+            category="4. QC",
+            labels={
+                "File": "Count Overview"
+            }       
+        )
+    params:
+        sample_name = samples,
+    log:
+        local("logs/plot_overview/combined.log")
+    conda:
+        "../envs/python.yaml"     
+    script:
+        "../scripts/plot_overview.py"

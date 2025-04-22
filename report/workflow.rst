@@ -11,18 +11,10 @@ Config Parameters
 - **seq_tech**: "{{ snakemake.config["seq_tech"] }}" - Sequencing technology used (e.g., "Illumina" or "ONT"), guiding read preprocessing and analysis.  
 - **min_similarity**: "{{ snakemake.config["min_similarity"] }}" - Minimum percentage identity to pre-filter similarity search results. Helps reduce noise by excluding low-confidence matches.  
 - **sim_search_mode**: "{{ snakemake.config["similarity_search_mode"] }}" - Fast: compares only one strand against the more extensive SILVA database; Extensive compares both.
-
-Performance Optimization
-============================
-
 - **num_parts**: "{{ snakemake.config["num_parts"] }}" - Number of chunks to split input FASTQ files into. Higher values increase parallelization but require more resources.  
 - **max_threads**: "{{ snakemake.config["max_threads"] }}" - Maximum number of threads to use for parallel processing, optimizing performance based on available cores.  
 
----
-
 This setup ensures reproducible, scalable, and efficient analyses of microbial communities and AMR genes. The workflow leverages high-performance tools, including DIAMOND and BLAST, to provide rapid and accurate results.
-
-
 
 Author: 
 `Adrian Doerr <Adrian.Doerr@uk-essen.de>`_

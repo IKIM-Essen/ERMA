@@ -60,7 +60,7 @@ if config["similarity_search_mode"] == "extensive":
         shell:
             """
             usearch -usearch_local {input.fasta} -db {input.silva} -blast6out {output.silva_results} -evalue 1e-5 -threads {params.internal_threads} -strand both -mincols 200 2> {log}
-            echo -ne "usearch_output,{wildcards.sample},{wildcards.part},$(cat {output.silva_result}|wc -l)\n" >> {input.overview_table}
+            echo -ne "usearch_output,{wildcards.sample},{wildcards.part},$(cat {output.silva_results}|wc -l)\n" >> {input.overview_table}
             """
 
 rule integrate_blast_data:

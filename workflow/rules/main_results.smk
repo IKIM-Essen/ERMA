@@ -71,24 +71,3 @@ rule reads_per_AMR:
     threads: config["max_threads"]
     script:
         "../scripts/reads_per_amr.py"
-
-rule plot_overview:
-    input:
-        overview_table = local("results/qc/overview_table.txt")
-    output:
-        report(
-            local("results/qc/overview_plot.png"),
-            caption = "../../report/boxplot.rst",
-            category="4. QC",
-            labels={
-                "File": "Overview"
-            }       
-        )
-    params:
-        sample_name = samples,
-    log:
-        local("logs/plot_overview/combined.log")
-    conda:
-        "../envs/python.yaml"     
-    script:
-        "../scripts/plot_overview.py"
