@@ -31,7 +31,7 @@ def plot_summary(input_path, output_path):
 
     # Reorder columns
     main_order = ["Raw Fasta Input", "Diamond and Usearch hits", "Hits after filtration"]
-    filter_order = ["ABR < similarity threshold", "16S < similarity threshold", "Query hit not in both databases"]
+    filter_order = ["ABR < similarity threshold","ABR Hit not max identity for query ID", "16S < similarity threshold","16S Hit not max identity for query ID","Query hit not in both databases"]
 
     main_summary = main_summary[main_order]
     overlay_summary = overlay_summary[filter_order]
@@ -52,7 +52,9 @@ def plot_summary(input_path, output_path):
     }
     filter_colors = {
         "ABR < similarity threshold": "royalblue",
+        "ABR Hit not max identity for query ID": "#ff7f00",
         "16S < similarity threshold": "#a6d854",
+        "16S Hit not max identity for query ID": "#66c2a5",
         "Query hit not in both databases": "#ffd92f"
     }
 

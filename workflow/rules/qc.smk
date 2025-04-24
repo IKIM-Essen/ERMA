@@ -31,11 +31,35 @@ rule multiqc_report:
     log:
         local("logs/multiqc/multiqc.log"),
     wrapper:
-        "v5.8.3/bio/multiqc"
+        "v5.8.3/bio/multiqc"  
 
-rule merge_overview:
+rule merge_overview_per_sample:
     input:
-        filtered_data = local(expand("results/{sample}/{part}/filtered_results.csv.gz",sample=samples,part=get_numpart_list())),
+        checkpoint = local(expand("results/{sample}/{part}/checkpoint.txt",sample=samples,part=get_numpart_list())),
+        overview_tables = local(expand("results/{{sample}}/{part}/overview_table.txt",part=get_numpart_list()))
+    output:
+        report(
+            local("results/{sample}/overview_table.html"),
+            caption = "../../report/count_overview_per_sample.rst",
+            category="2. Single Sample Abundance Data",
+            subcategory="{sample}",
+            labels={
+                "sample": "{sample}",
+                "table": "Count Overview"
+            }
+        )             
+    params:
+        sample_name = "{sample}",
+    log:
+        local("logs/merge_overview/{sample}/combined.log")
+    conda:
+        "../envs/python.yaml"     
+    script:
+        "../scripts/merge_overview_smpl.py"
+
+rule merge_overview_to_one:
+    input:
+        checkpoint = local(expand("results/{sample}/{part}/checkpoint.txt",sample=samples,part=get_numpart_list())),
         overview_tables = local(expand("results/{sample}/{part}/overview_table.txt",sample=samples,part=get_numpart_list()))
     output:
         local("results/qc/overview_table.txt"),
@@ -46,8 +70,7 @@ rule merge_overview:
     conda:
         "../envs/python.yaml"     
     script:
-        "../scripts/merge_overview.py"
-
+        "../scripts/merge_overview_all.py"
 
 rule plot_overview:
     input:

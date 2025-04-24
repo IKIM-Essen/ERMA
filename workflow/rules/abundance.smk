@@ -1,20 +1,22 @@
 rule genera_abundance_table:
     input:
-        filtered_data = local("results/{sample}/{part}/filtered_results.csv.gz"),
+        filtered_data = local(expand("results/{{sample}}/{part}/filtered_results.csv.gz",part=get_numpart_list())),
     output:
         report(
-            local(temp("results/{sample}/{part}/genus_abundance.html")),
+            local("results/{sample}/genus_abundance.html"),
             caption = "../../report/genus_abundance_table.rst",
             category="2. Single Sample Abundance Data",
             subcategory="{sample}",
             labels={
                 "sample": "{sample}",
-                "table":"Genera Abundance"}
-        ),
+                "table": "Genera Abundance"
+            }
+        )        
     params:
-        sample_name = "{sample}"
+        sample_name = "{sample}",
+        parts = get_numpart_list()
     log:
-        local("logs/{sample}/{part}/genera_abundance_table.log")
+        local("logs/{sample}/genera_abundance_table.log")
     conda:
         "../envs/python.yaml"
     threads: config["max_threads"]

@@ -32,7 +32,7 @@ def filter_blast_results(input_file, output_file, min_similarity, overview_table
     # Filter results based on percentage identity for ABR
     abr_data_pre = df[df['part'] == 'ABR']
     abr_filtered = abr_data_pre[abr_data_pre["perc_identity"] > float(min_similarity) * 100]
-    filtered_abr_identity = len(abr_data_pre) - len(abr_data)
+    filtered_abr_identity = len(abr_data_pre) - len(abr_filtered)
     
     abr_summary = abr_filtered.groupby("query_id").agg(max_perc_identity=("perc_identity", "max")).reset_index()
     abr_merged = abr_filtered.merge(abr_summary,on="query_id",how="inner")
@@ -44,14 +44,13 @@ def filter_blast_results(input_file, output_file, min_similarity, overview_table
     sixteen_s_data_pre = df[df['part'] == '16S']
     sixteen_s_filtered = sixteen_s_data_pre[sixteen_s_data_pre['perc_identity'] > float(min_similarity) * 100].copy()
     sixteen_s_filtered["query_id"] = sixteen_s_filtered["query_id"].str.split().str[0]
-    filtered_16s_identity = len(sixteen_s_data_pre) - len(sixteen_s_data)
+    filtered_16s_identity = len(sixteen_s_data_pre) - len(sixteen_s_filtered)
     
     sixteen_s_summary = sixteen_s_filtered.groupby("query_id").agg(max_perc_identity=("perc_identity", "max")).reset_index()
     sixteen_s_merged = sixteen_s_filtered.merge(sixteen_s_summary,on="query_id",how="inner")
     sixteen_s_data = sixteen_s_merged[sixteen_s_merged["perc_identity"] == sixteen_s_merged["max_perc_identity"]].copy()
     
     filtered_16s_max = len(sixteen_s_filtered) - len(sixteen_s_data)
-    print(f"filtered_max_identity_16S: {filtered_16s_max}")
 
     if len(sixteen_s_data) == 1 and sixteen_s_data.iloc[0]["query_id"] == "dummy.dummy":
         write_dummy_line(output_file)
@@ -76,9 +75,9 @@ def filter_blast_results(input_file, output_file, min_similarity, overview_table
         # Write summary lines
         with open(overview_table, "a") as file:
             file.write(f"filtered_min_similarity_ABR,{sample},{part},{filtered_abr_identity}\n")
-            file.write(f"filtered_max_identity_ABR,{sample},{part},{filtered_abr_max}")            
+            file.write(f"filtered_max_identity_ABR,{sample},{part},{filtered_abr_max}\n")            
             file.write(f"filtered_min_similarity_16S,{sample},{part},{filtered_16s_identity}\n")
-            file.write(f"filtered_max_identity_16S,{sample},{part},{filtered_16s_max}")            
+            file.write(f"filtered_max_identity_16S,{sample},{part},{filtered_16s_max}\n")            
             file.write(f"filtered_query_id_mismatch,{sample},{part},{removed_due_to_query_id}\n")
             file.write(f"filtration_output,{sample},{part},{final_count}\n")   
 

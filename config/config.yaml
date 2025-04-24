@@ -1,4 +1,4 @@
-runname: "test_report"
+runname: "test"
 base_dir: "/local/work/adrian/ERMA"  # User should change this path
 seq_tech: "ONT" # Put here "Illumina" or "ONT"
 

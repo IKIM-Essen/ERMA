@@ -8,7 +8,7 @@ include: "rules/qc.smk"
 include: "rules/load_db.smk"
 include: "rules/simsearch_and_process.smk"
 include: "rules/create_boxplots.smk"
-include: "rules/main_results.smk"
+include: "rules/abundance.smk"
 include: "rules/preprocess.smk"
 
 # Build a list of all "fastq.gz" files in "/ERMA/data/fastq" which will be processed subsequently
@@ -34,8 +34,9 @@ rule snakemake_report:
         local("results/boxplots/combined_percidt_boxplot.png"),        
         local("results/qc/multiqc.html"),
         local("results/qc/overview_plot.png"),
+        local(expand("results/{sample}/overview_table.html",sample=samples)),
+        local(expand("results/{sample}/genus_abundance.html", sample=samples)),        
         local(expand("results/{sample}/genus_idt_per_genus_plot.png", sample=samples)),        
-        local(expand("results/{sample}/{part}/genus_abundance.html", sample=samples,part=get_numpart_list())),        
     log:
         local("logs/report/report.log"),
     conda:

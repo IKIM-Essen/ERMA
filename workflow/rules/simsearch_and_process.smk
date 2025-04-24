@@ -15,7 +15,7 @@ rule diamond_card:
     shell:
         """
         diamond blastx -d {input.card} -q {input.fasta} -o {output.card_results} --outfmt 6 --evalue 1e-5 --threads {params.internal_threads} 2> {log}
-        echo -ne "fasta_input,{wildcards.sample},{wildcards.part},$(cat {input.fasta}|wc -l)\n" >> {output.overview_table}
+        echo -ne "fasta_input,{wildcards.sample},{wildcards.part},$(cat {input.fasta}|grep -c '^>')\n" >> {output.overview_table}
         echo -ne "diamond_output,{wildcards.sample},{wildcards.part},$(cat {output.card_results}|wc -l)\n" >> {output.overview_table}
         """
 
@@ -108,6 +108,7 @@ rule gzip_intermediates:
         card_zip = local("results/{sample}/{part}/card_results.txt.gz"),
         integrated_data = local("results/{sample}/{part}/integrated_filtered_results.csv.gz"),     
         filt_data_zip = local("results/{sample}/{part}/filtered_results.csv.gz"),
+        checkpoint = local(temp("results/{sample}/{part}/checkpoint.txt"))
     log:
         local("logs/gzip_blast_results/{sample}_{part}.log")
     shell:
@@ -116,4 +117,5 @@ rule gzip_intermediates:
         gzip {input.card_results} 2>> {log}
         gzip {input.int_data} 2>> {log}
         gzip {input.filt_data} 2>> {log}
+        touch {output.checkpoint}
         """
