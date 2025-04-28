@@ -1,4 +1,4 @@
-runname: "test_report"
+runname: "PosC_batch"
 base_dir: "/local/work/adrian/ERMA"  # User should change this path
 seq_tech: "ONT" # Put here "Illumina" or "ONT"
 
@@ -11,7 +11,7 @@ silva:
 card:
   download-path: "https://card.mcmaster.ca/download/0/broadstreet-v3.3.0.tar.bz2"
 
-num_parts: 1 # number of chunks the fastqs are split into
-max_threads: 16
+num_parts: 4 # number of chunks the fastqs are split into
+max_threads: 32
 
 similarity_search_mode: "extensive" # Put here fast or extensive
