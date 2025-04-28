@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 # Necessary columns to load from each CSV file
 necessary_columns = [
@@ -64,14 +65,33 @@ def combine_blast_data(input_file, sample_name):
     genus_counts = process_combined_data(df, sample_name)
     return genus_counts
 
-def export_genera_abundance(input_file, sample_name, output_html):
-    sample_data = combine_blast_data(input_file, sample_name)
-    sample_data = sample_data.sort_values(by=["genus_count"], ascending=False)
-    sample_data.to_html(output_html, index=False)
+def export_genera_abundance(input_files, sample_names, parts, output_html):
+    sample_input_files = [f for f in input_files if f"/{sample_name}/" in f]
+    # Load and combine all parts for the current sample
+    part_dfs = []
+    for part in parts:
+        matching_files = [f for f in sample_input_files if f"/{part}/" in f]
+        if not matching_files:
+            continue
+        input_file = matching_files[0]
+        df = pd.read_csv(input_file, sep=",", usecols=necessary_columns, header=0, compression='gzip')
+        part_dfs.append(df)
+
+    if not part_dfs:
+        print(f"No valid parts found for sample: {sample_name}")
+
+    full_sample_df = pd.concat(part_dfs, ignore_index=True)
+    processed_data = process_combined_data(full_sample_df, sample_name)
+
+    processed_data = processed_data.sort_values(by=["total_genus_count","genus_count"], ascending=False)
+
+    # Write to HTML        
+    processed_data.to_html(output_html, index=False)
 
 if __name__ == "__main__":
     input_file = snakemake.input.filtered_data
     output_html = snakemake.output[0]
     sample_name = snakemake.params.sample_name
-    sys.stderr = open(snakemake.log[0], "w")  
-    export_genera_abundance(input_file, sample_name, output_html)
+    parts = snakemake.params.parts
+    sys.stderr = open(snakemake.log[0], "w") 
+    export_genera_abundance(input_file, sample_name, parts, output_html)

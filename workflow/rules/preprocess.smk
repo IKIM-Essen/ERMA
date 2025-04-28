@@ -24,7 +24,7 @@ rule split_fasta_file:
         num_parts = config["num_parts"],   
     shell:
         """
-        seqkit split2 --by-part {params.num_parts} {input} --out-dir {params.outdir}/results/fastq/
+        seqkit split2 --by-part {params.num_parts} -w 0 {input} --out-dir {params.outdir}/results/fastq/
         """
 
 rule prepare_fastqs:

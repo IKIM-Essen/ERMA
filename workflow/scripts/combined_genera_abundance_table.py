@@ -1,7 +1,8 @@
 import pandas as pd
-import altair as alt
+import os
+from glob import glob
 
-# Necessary columns to load from each CSV file
+# Define necessary columns
 necessary_columns = [
     "query_id",
     "part",
@@ -19,69 +20,72 @@ def write_dummy_line(sample_name):
         'total_genus_count': 0,
         'relative_genus_count': 0,
     }
-    merged_data = pd.DataFrame([dummy_line])
-    return merged_data
+    return pd.DataFrame([dummy_line])
 
 def process_combined_data(combined_data, sample_name):
-    # Separate ABR and 16S data for merging by query_id
+    # Separate ABR and 16S data
     abr_data = combined_data[combined_data["part"] == "ABR"]
     sixteen_s_data = combined_data[combined_data["part"] == "16S"]
-    
-    if sixteen_s_data.iloc[0]["query_id"] == "dummy":
+
+    # Dummy handling
+    if sixteen_s_data.empty or abr_data.empty:
         return write_dummy_line(sample_name)
 
-    # Prepare to merge only unique hits
-    unique_abr_data = abr_data[['query_id', 'AMR Gene Family']].drop_duplicates()
-    unique_sixteen_s_data = sixteen_s_data[['query_id', 'genus']].drop_duplicates()
-    
-    # Merge on query_id to associate AMR Gene Family with genus information from 16S data
-    merged_data = pd.merge(
-        unique_abr_data[['query_id', 'AMR Gene Family']], 
-        unique_sixteen_s_data[['query_id', 'genus']],
-        on='query_id', 
-        how='inner'
-    )
-    
-    # Add the sample name
-    merged_data['sample'] = sample_name
-    
-    # Calculate genus counts per AMR Gene Family and genus for the sample
-    genus_counts = merged_data.groupby(['sample', 'AMR Gene Family', 'genus']).size().reset_index(name='genus_count')
-    
-    # Calculate total genus count per AMR Gene Family within each sample
-    total_counts = genus_counts.groupby(['sample', 'AMR Gene Family'])['genus_count'].sum().reset_index(name='total_genus_count')
-    
-    # Merge to get total counts for each genus entry and calculate relative counts
-    genus_counts = pd.merge(genus_counts, total_counts, on=['sample', 'AMR Gene Family'], how='left')
-    genus_counts['relative_genus_count'] = round(genus_counts['genus_count'] / genus_counts['total_genus_count'],4)
-    
-    return genus_counts
+    # Drop duplicates to ensure 1:1 merge
+    abr_unique = abr_data[["query_id", "AMR Gene Family"]].drop_duplicates()
+    sixteen_unique = sixteen_s_data[["query_id", "genus"]].drop_duplicates()
 
-def combine_blast_data(input_files, sample_name):
-    # Load and combine data from all parts for the given sample
-    all_data = [pd.read_csv(input_file, sep=",", usecols=necessary_columns, header=0, compression='gzip') for input_file in input_files]
-    combined_data = pd.concat(all_data, ignore_index=True)
-    
-    # Process combined data to get genus counts and relative values
-    genus_counts = process_combined_data(combined_data, sample_name)
-    return genus_counts
+    merged = pd.merge(abr_unique, sixteen_unique, on="query_id", how="inner")
+    merged["sample"] = sample_name
 
-def export_genera_abundance(input_files, sample_names, output_csv):
-    all_samples_data = pd.DataFrame()
-    
-    # Process each sample’s files to build the final DataFrame
-    for sample_name in sample_names:
-        sample_files = [f for f in input_files if f"/{sample_name}/" in f]
-        if sample_files:
-            sample_data = combine_blast_data(sample_files, sample_name)
-            all_samples_data = pd.concat([all_samples_data, sample_data], ignore_index=True)
-    
+    # Count per AMR Gene Family and genus
+    genus_counts = merged.groupby(["sample", "AMR Gene Family", "genus"]).size().reset_index(name="genus_count")
+
+    # Total genus count per AMR Gene Family
+    total_counts = genus_counts.groupby(["sample", "AMR Gene Family"])["genus_count"].sum().reset_index(name="total_genus_count")
+
+    # Join and calculate relative abundance
+    result = pd.merge(genus_counts, total_counts, on=["sample", "AMR Gene Family"])
+    result["relative_genus_count"] = round(result["genus_count"] / result["total_genus_count"], 4)
+
+    return result
+
+def load_and_merge_parts(file_list):
+    data_frames = []
+    for file in file_list:
+        try:
+            df = pd.read_csv(file, usecols=necessary_columns, compression="gzip")
+            data_frames.append(df)
+        except Exception as e:
+            print(f"Skipping {file}: {e}")
+    if data_frames:
+        merged_df = pd.concat(data_frames, ignore_index=True)
+    else:
+        merged_df = pd.DataFrame(columns=necessary_columns)
+    return merged_df
+
+def export_genera_abundance(input_files, output_html):
+    # Group input files by sample
+    sample_to_files = {}
+    for file in input_files:
+        sample = os.path.normpath(file).split(os.sep)[-3]
+        sample_to_files.setdefault(sample, []).append(file)
+
+    all_data = []
+
+    for sample_name, files in sample_to_files.items():
+        merged_data = load_and_merge_parts(files)
+        sample_data = process_combined_data(merged_data, sample_name)
+        all_data.append(sample_data)
+
+    final_df = pd.concat(all_data, ignore_index=True)
+    final_df = final_df.sort_values(by=["genus_count"], ascending=False)
+
     # Export the final aggregated data to a CSV file
-    all_samples_data.to_csv(output_csv, index=False)
+    final_df.to_csv(output_csv, index=False)
 
 if __name__ == "__main__":
     input_files = list(snakemake.input.filtered_data)
     output_csv = snakemake.output.csv
-    sample_name = snakemake.params.sample_name
     sys.stderr = open(snakemake.log[0], "w")  
-    export_genera_abundance(input_files, sample_name, output_csv)
+    export_genera_abundance(input_files, output_csv)
