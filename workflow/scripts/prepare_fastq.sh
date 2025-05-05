@@ -20,7 +20,7 @@ for r1 in *_R1_*.fastq.gz; do
     r2="${r1/_R1_/_R2_}"
     
     # Extract the sample name (remove _R1_001)
-    sample_name=$(echo "$r1" | sed 's/_R1_.*//')
+    sample_name=$(echo "$r1" | sed 's/_R1_.*//' | sed 's/_L001//')
     echo $sample_name
     # Run NGmerge
     echo "Merging $r1 and $r2 into ${sample_name}.fastq.gz..."

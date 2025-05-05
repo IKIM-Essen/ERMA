@@ -17,7 +17,7 @@ rule generate_percidt_genus:
     conda:
         "../envs/python.yaml"
     script:
-        "../scripts/percidt_per_genus.py"
+        "../scripts/boxplot_percidt_per_genus.py"
 
 rule plot_alignment_length_boxplot:
     input:
@@ -38,7 +38,7 @@ rule plot_alignment_length_boxplot:
     conda:
         "../envs/python.yaml"     
     script:
-        "../scripts/align_lengths_boxplots.py"
+        "../scripts/boxplot_align_lengths.py"
 
 rule plot_percentage_identity_boxplot:
     input:
@@ -59,7 +59,7 @@ rule plot_percentage_identity_boxplot:
     conda:
         "../envs/python.yaml"     
     script:
-        "../scripts/percidt_boxplots.py"
+        "../scripts/boxplot_percidt.py"
 
 rule plot_evalue_boxplot:
     input:
@@ -80,4 +80,4 @@ rule plot_evalue_boxplot:
     conda:
         "../envs/python.yaml"     
     script:
-        "../scripts/evalue_boxplots.py"
+        "../scripts/boxplot_evalue.py"

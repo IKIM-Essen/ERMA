@@ -36,7 +36,7 @@ def plot_boxplots(data, output_file):
     sns.boxplot(x='sample', y='align_length', hue='part', data=data, flierprops=flierprops)
     plt.title('Boxplot of alignment lengths for ABR and 16S parts across samples -Filtered-')
     plt.xlabel('Sample')
-    plt.ylabel('align_length')
+    plt.ylabel('Alignment length')
     plt.xticks(rotation=45)
     plt.tight_layout()
     plt.savefig(output_file)

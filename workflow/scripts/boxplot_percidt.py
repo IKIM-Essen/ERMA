@@ -11,9 +11,9 @@ def read_and_process_partitioned_data(partition_files,sample):
 
     for part_file in partition_files:
         if os.path.exists(part_file):
-            fields = ['query_id','evalue', 'part']
+            fields = ['query_id','perc_identity', 'part']
             df = pd.read_csv(part_file, header=0, sep=',', usecols=fields, compression='gzip')
-            df = df.drop_duplicates()            
+            df = df.drop_duplicates()
             df['sample'] = sample_name
             data_frames.append(df)
         else:
@@ -28,11 +28,10 @@ def plot_boxplots(data, output_file):
     """Plot boxplots based on the e-values for ABR and 16S parts across samples."""
     plt.figure(figsize=(15, 10))
     flierprops = dict(markerfacecolor='0.75', markersize=2, linestyle='none')
-    sns.boxplot(x='sample', y='evalue', hue='part', data=data, flierprops=flierprops)
-    plt.yscale('log')
-    plt.title('Boxplot of e-values for ABR and 16S parts across samples -Filtered-')
+    sns.boxplot(x='sample', y='perc_identity', hue='part', data=data, flierprops=flierprops)
+    plt.title('Boxplot of percentage identities for ABR and 16S parts across samples -Filtered-')
     plt.xlabel('Sample')
-    plt.ylabel('e-value (log scale)')
+    plt.ylabel('Percentage identity')
     plt.xticks(rotation=45)
     plt.tight_layout()
     plt.savefig(output_file)

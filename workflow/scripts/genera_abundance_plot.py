@@ -10,7 +10,7 @@ def create_bubble_plots_combined(input_csv, output_html, max_genera=20, min_over
     # Filter AMR gene families with sufficient total genus count
     df = df[df["total_genus_count"] > 100]
     amr_gene_families = df['AMR Gene Family'].unique()
-    num_families = len(amr_gene_families)
+    num_families = len(amr_gene_families)  if len(df) > 1 else 1
 
     # Create subplots
     fig = make_subplots(
