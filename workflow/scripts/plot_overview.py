@@ -2,100 +2,88 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-def categorize_output_state(state):
+main1 = "Diamond and Usearch hits"
+main2 = "Hits after filtration"
+dia1 = "Diamond hits < similarity threshold"
+dia2 = "Diamond hits ≠ max identity for query ID"
+usea1 = "Usearch hits < similarity threshold"
+usea2 = "Usearch hits ≠ max identity for query ID"
+comb = "No overlap for hits in both databases"
+
+def categorize_state(state):
     return {
-        "fasta_input": "Raw Fasta Input",
-        "integration_output": "Diamond and Usearch hits",
-        "filtration_output": "Hits after filtration"
+        "integration_output": main1,
+        "filtration_output": main2
     }.get(state)
 
 def categorize_filter_state(state):
     return {
-        "filtered_min_similarity_ABR": "ABR < similarity threshold",
-        "filtered_max_identity_ABR": "ABR Hit not max identity for query ID",
-        "filtered_min_similarity_16S": "16S < similarity threshold",
-        "filtered_max_identity_16S": "16S Hit not max identity for query ID",
-        "filtered_query_id_mismatch": "Query hit not in both databases"
+        "filtered_min_similarity_ABR": dia1,
+        "filtered_max_identity_ABR": dia2,
+        "filtered_min_similarity_16S": usea1,
+        "filtered_max_identity_16S": usea2,
+        "filtered_query_id_mismatch": comb,
     }.get(state)
 
 def plot_summary(input_path, output_path):
     df = pd.read_csv(input_path)
-    df["category"] = df["state"].apply(categorize_output_state)
+    df["category"] = df["state"].apply(categorize_state)
     df_main = df.dropna(subset=["category"])
     main_summary = df_main.groupby(["sample", "category"])["total_count"].sum().unstack().fillna(0)
 
-    # Overlay data
     df["filter_reason"] = df["state"].apply(categorize_filter_state)
     df_overlay = df.dropna(subset=["filter_reason"])
     overlay_summary = df_overlay.groupby(["sample", "filter_reason"])["total_count"].sum().unstack().fillna(0)
 
-    # Reorder columns
-    main_order = ["Raw Fasta Input", "Diamond and Usearch hits", "Hits after filtration"]
-    filter_order = ["ABR < similarity threshold","ABR Hit not max identity for query ID", "16S < similarity threshold","16S Hit not max identity for query ID","Query hit not in both databases"]
-
-    main_summary = main_summary[main_order]
-    overlay_summary = overlay_summary[filter_order]
-
-    # Plotting
-    fig, ax = plt.subplots(figsize=(14, 7))
+    # Plot setup
     samples = main_summary.index
     x = np.arange(len(samples))
-    bar_width = 0.3
-    overlay_width = 0.1
-    space = 0.01  # space between bars
+    bar_width = 0.25
+    overlay_width = 0.125  # thinner width for filter stack
+
+    fig, ax = plt.subplots(figsize=(12, 7))
 
     # Colors
     main_colors = {
-        "Raw Fasta Input": "seagreen",
-        "Diamond and Usearch hits": "#fc8d62",
-        "Hits after filtration": "#8da0cb"
+        main1: "#fc8d62",
+        main2: "#8da0cb"
     }
     filter_colors = {
-        "ABR < similarity threshold": "royalblue",
-        "ABR Hit not max identity for query ID": "#ff7f00",
-        "16S < similarity threshold": "#a6d854",
-        "16S Hit not max identity for query ID": "#66c2a5",
-        "Query hit not in both databases": "#ffd92f"
+        dia1: "royalblue",
+        dia2: "purple",
+        usea1: "#a6d854",
+        usea2: "#66c2a5",
+        comb: "#ffd92f"
     }
 
-    # Positions for main bars
-    positions = {
-        "Raw Fasta Input": x - bar_width - space,
-        "Diamond and Usearch hits": x,
-        "Hits after filtration": x + bar_width + space,
-    }
-    # Position for thin filter overlay
-    overlay_x = x - bar_width - overlay_width + 40*space
+    # Plot main bars
+    ax.bar(x - bar_width / 2, main_summary[main1], bar_width, label=main1, color=main_colors[main1])
+    ax.bar(x + bar_width / 2, main_summary[main2], bar_width, label=main2, color=main_colors[main2])
 
-    # Plot main (non-stacked) bars
-    for cat in main_order:
-        ax.bar(positions[cat], main_summary[cat], bar_width, label=cat, color=main_colors[cat])
-
-    # Plot stacked overlay bars
-    bottom_overlay = np.zeros(len(overlay_summary))
-    for cat in filter_order:
-        ax.bar(overlay_x, overlay_summary[cat], overlay_width, bottom=bottom_overlay, label=cat, color=filter_colors[cat])
-        bottom_overlay += overlay_summary[cat]
+    # Plot filter stack thinner, centered on same x as main2
+    bottom = main_summary[main2].values.copy()
+    for cat in [dia1,dia2,usea1,usea2,comb]:
+        ax.bar(x + bar_width / 2.1, overlay_summary[cat], overlay_width, bottom=bottom, label=cat, color=filter_colors[cat])
+        bottom += overlay_summary[cat]
 
     # Styling
     ax.set_xticks(x)
     ax.set_xticklabels(samples, rotation=45)
-    ax.set_ylabel("Total Count")
+    ax.set_ylabel("Similarity search hit count")
     ax.set_xlabel("Sample")
-    ax.set_title("Sample Processing Overview with Filtering Breakdown")
+    ax.set_title("Similarity Search Processing with Rejection Breakdown on Filtration Hits")
 
-    # Legend
+    # Legends
     handles, labels = ax.get_legend_handles_labels()
-    main_labels = [l for l in main_order]
-    filter_labels = [l for l in filter_order]
+    main_labels = [main1, main2]
+    filter_labels = [dia1,dia2,usea1,usea2,comb]
 
-    # Group legend entries
     main_handles = [handles[labels.index(l)] for l in main_labels]
     filter_handles = [handles[labels.index(l)] for l in filter_labels]
 
-    first_legend = ax.legend(main_handles, main_labels, loc="upper left", bbox_to_anchor=(1.05, 1), title="Main Categories")
-    second_legend = ax.legend(filter_handles, filter_labels, loc="upper left", bbox_to_anchor=(1.05, 0.5), title="Filter Reasons")
-    ax.add_artist(first_legend)
+    legend1 = ax.legend(main_handles, main_labels, loc="upper left", bbox_to_anchor=(1.02, 1), title="Hit Process")
+    legend2 = ax.legend(filter_handles, filter_labels, loc="upper left", bbox_to_anchor=(1.02, 0.55), title="Filtering reasons")
+    ax.add_artist(legend1)
 
     plt.tight_layout()
     plt.savefig(output_path)

@@ -14,24 +14,56 @@ def process_orientation_and_counts(group):
 
 def write_dummy_line(output_file, part):
     """Write a dummy line to ensure compatibility with pandas."""
-    dummy_data = {
-        "query_id": ["dummy.dummy"],
-        "subject_id": ["dummy"],
-        "perc_identity": [100],
-        "align_length": [0],
-        "mismatches": [0],
-        "gap_opens": [0],
-        "q_start": [0],
-        "q_end": [0],
-        "s_start": [0],
-        "s_end": [0],
-        "evalue": [0],
-        "bit_score": [0],
-        "part": [part],
-        "ARO Accession" if part == "ABR" else "primaryAccession": ["dummy"],
-        "distance": [0],
-        "orientation": ["dummy"]
-    }
+    if part == "ABR":
+        dummy_data = {
+            "query_id": ["dummy.dummy"],
+            "subject_id": ["dummy"],
+            "perc_identity": [100],
+            "align_length": [0],
+            "mismatches": [0],
+            "gap_opens": [0],
+            "q_start": [0],
+            "q_end": [0],
+            "s_start": [0],
+            "s_end": [0],
+            "evalue": [0],
+            "bit_score": [0],
+            "part": [part],
+            "ARO Accession" : ["dummy"],
+            "distance": [0],
+            "orientation": ["dummy"],
+            "CVTERM ID": [0],
+            "Model Sequence ID": [0],
+            "Model ID": [0],
+            "Model Name": ["dummy"],
+            "ARO Name": ["dummy"],
+            "Protein Accession": ["dummy"],
+            "DNA Accession": ["dummy"],
+            "AMR Gene Family" : ["dummy"],
+            "Drug Class": ["dummy"],
+            "Resistance Mechanism": ["dummy"],
+            "CARD Short Name": ["dummy"]
+        }
+    elif part == "16S":
+        dummy_data = {
+            "query_id": ["dummy.dummy"],
+            "subject_id": ["dummy"],
+            "perc_identity": [100],
+            "align_length": [0],
+            "mismatches": [0],
+            "gap_opens": [0],
+            "q_start": [0],
+            "q_end": [0],
+            "s_start": [0],
+            "s_end": [0],
+            "evalue": [0],
+            "bit_score": [0],
+            "part": [part],
+            "primaryAccession": ["dummy"],
+            "distance": [0],
+            "orientation": ["dummy"],
+            "genus": ["dummy"],
+        }
     pd.DataFrame(dummy_data).to_csv(output_file, index=False)
 
 def process_card_results(card_results_path, aro_mapping_path, output_path):

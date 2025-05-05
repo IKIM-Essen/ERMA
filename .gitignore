@@ -17,3 +17,5 @@ LICENSE
 config/config.yaml
 logs
 .test/.snakemake
+data/ONT/*
+!data/ONT/barcode-rename.csv

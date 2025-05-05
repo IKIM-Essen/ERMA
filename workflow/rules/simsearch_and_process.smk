@@ -101,12 +101,10 @@ rule gzip_intermediates:
     input:
         silva_results = local("results/{sample}/{part}/SILVA_results.txt"),
         card_results = local("results/{sample}/{part}/card_results.txt"),
-        int_data = local("results/{sample}/{part}/integrated_filtered_results.csv"),
         filt_data = local("results/{sample}/{part}/filtered_results.csv"),
     output:
         silva_zip = local("results/{sample}/{part}/SILVA_results.txt.gz"),
-        card_zip = local("results/{sample}/{part}/card_results.txt.gz"),
-        integrated_data = local("results/{sample}/{part}/integrated_filtered_results.csv.gz"),     
+        card_zip = local("results/{sample}/{part}/card_results.txt.gz"), 
         filt_data_zip = local("results/{sample}/{part}/filtered_results.csv.gz"),
         checkpoint = local(temp("results/{sample}/{part}/checkpoint.txt"))
     log:
@@ -115,7 +113,6 @@ rule gzip_intermediates:
         """
         gzip {input.silva_results} 2> {log}
         gzip {input.card_results} 2>> {log}
-        gzip {input.int_data} 2>> {log}
         gzip {input.filt_data} 2>> {log}
         touch {output.checkpoint}
         """

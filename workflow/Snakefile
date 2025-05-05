@@ -1,13 +1,11 @@
-import glob
-import os
-import re
+import glob, os
 configfile: "config/config.yaml"
 
 include: "rules/common.smk"
 include: "rules/qc.smk"
 include: "rules/load_db.smk"
 include: "rules/simsearch_and_process.smk"
-include: "rules/create_boxplots.smk"
+include: "rules/boxplots.smk"
 include: "rules/abundance.smk"
 include: "rules/preprocess.smk"
 
