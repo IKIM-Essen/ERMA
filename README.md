@@ -1,5 +1,7 @@
 # ERMA - epicPCR Resistome-Microbiome Analyzer
 
+![Snakemake CI](https://github.com/IKIM_Essen/ERMA/actions/workflows/snakemake-ci.yml/badge.svg)
+
 This pipeline is designed to process sequencing reads obtained from epicPCR experiments, linking antimicrobial resistance (AMR) genes with 16S rRNA genes. The pipeline uses **Snakemake** to manage the workflow and integrates tools for downloading necessary databases, running sequence alignments, filtering, and generating visual reports.
 
 ## Features
