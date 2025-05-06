@@ -23,6 +23,17 @@ jobs:
         snakefile: workflow/Snakefile
         args: "--lint"
 
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+
+    - name: Install black
+      run: pip install black
+
+    - name: Lint Python scripts with black
+      run: black --check workflow/scripts/
+
     - name: Lint Python scripts with black
       run: |
         black --check workflow/scripts/
