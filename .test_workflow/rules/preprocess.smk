@@ -26,31 +26,3 @@ rule split_fasta_file:
         """
         seqkit split2 --by-part {params.num_parts} -w 0 {input} --out-dir {params.outdir}/results/fastq/
         """
-
-if config["seq_tech"] == "Illumina":
-    rule prepare_fastqs:
-        output:
-            sentinel=local(temp("data/fastq/merged_done.txt")),
-        log:
-            local("logs/prepare_fastqs_Illumina/prepare.log")
-        conda:
-            "../envs/python.yaml"    
-        script:
-            "../scripts/prepare_fastq.sh"
-
-elif config["seq_tech"] == "ONT":
-    rule prepare_fastqs:
-        output:
-            sentinel=local(temp("data/fastq/merged_done.txt")),
-        params:
-            run_path = config["ONT"]["fastq_pass_path"],
-            sample_name_path = config["ONT"]["sample_name_path"],
-            target_fragment_length = config["ONT"]["target_fragment_length"],
-            filter_intervall = config["ONT"]["filter_intervall"],
-            output_dir = "data/fastq/",   
-        log:
-            local("logs/prepare_fastqs_ONT/prepare.log")            
-        conda:
-            "../envs/python.yaml"    
-        script:
-            "../scripts/prepare_fastq.py"
