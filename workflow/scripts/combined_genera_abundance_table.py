@@ -11,16 +11,18 @@ necessary_columns = [
     "perc_identity",
 ]
 
+
 def write_dummy_line(sample_name):
     dummy_line = {
-        'sample': sample_name,
-        'AMR Gene Family': 'NA',
-        'genus': 'NA',
-        'genus_count': 0,
-        'total_genus_count': 0,
-        'relative_genus_count': 0,
+        "sample": sample_name,
+        "AMR Gene Family": "NA",
+        "genus": "NA",
+        "genus_count": 0,
+        "total_genus_count": 0,
+        "relative_genus_count": 0,
     }
     return pd.DataFrame([dummy_line])
+
 
 def process_combined_data(combined_data, sample_name):
     # Separate ABR and 16S data
@@ -39,16 +41,27 @@ def process_combined_data(combined_data, sample_name):
     merged["sample"] = sample_name
 
     # Count per AMR Gene Family and genus
-    genus_counts = merged.groupby(["sample", "AMR Gene Family", "genus"]).size().reset_index(name="genus_count")
+    genus_counts = (
+        merged.groupby(["sample", "AMR Gene Family", "genus"])
+        .size()
+        .reset_index(name="genus_count")
+    )
 
     # Total genus count per AMR Gene Family
-    total_counts = genus_counts.groupby(["sample", "AMR Gene Family"])["genus_count"].sum().reset_index(name="total_genus_count")
+    total_counts = (
+        genus_counts.groupby(["sample", "AMR Gene Family"])["genus_count"]
+        .sum()
+        .reset_index(name="total_genus_count")
+    )
 
     # Join and calculate relative abundance
     result = pd.merge(genus_counts, total_counts, on=["sample", "AMR Gene Family"])
-    result["relative_genus_count"] = round(result["genus_count"] / result["total_genus_count"], 4)
+    result["relative_genus_count"] = round(
+        result["genus_count"] / result["total_genus_count"], 4
+    )
 
     return result
+
 
 def load_and_merge_parts(file_list):
     data_frames = []
@@ -63,6 +76,7 @@ def load_and_merge_parts(file_list):
     else:
         merged_df = pd.DataFrame(columns=necessary_columns)
     return merged_df
+
 
 def export_genera_abundance(input_files, output_html):
     # Group input files by sample
@@ -84,8 +98,9 @@ def export_genera_abundance(input_files, output_html):
     # Export the final aggregated data to a CSV file
     final_df.to_csv(output_csv, index=False)
 
+
 if __name__ == "__main__":
     input_files = list(snakemake.input.filtered_data)
     output_csv = snakemake.output.csv
-    sys.stderr = open(snakemake.log[0], "w")  
+    sys.stderr = open(snakemake.log[0], "w")
     export_genera_abundance(input_files, output_csv)

@@ -21,7 +21,7 @@ for r1 in *_R1_*.fastq.gz; do
     
     # Extract the sample name (remove _R1_001)
     sample_name=$(echo "$r1" | sed 's/_R1_.*//' | sed 's/_L001//')
-    echo $sample_name
+    echo "$sample_name"
     # Run NGmerge
     echo "Merging $r1 and $r2 into ${sample_name}.fastq.gz..."
     NGmerge -1 "$r1" -2 "$r2" -o "../${sample_name}.fastq.gz"
@@ -31,5 +31,5 @@ for r1 in *_R1_*.fastq.gz; do
 done
 
 # Move back to project root
-cd "$SM_DIR"
+cd "$SM_DIR" || exit
 touch "$FASTQ_DIR/merged_done.txt"

@@ -38,11 +38,13 @@ for barcode, sample_name in barcode_dict.items():
     # Build seqkit command
     cat_command = "zcat " + " ".join(str(f) for f in fastq_files)
     seqkit_command = f"seqkit seq --min-len {min_len} --max-len {max_len}"
-    
+
     # Run the pipeline
     with open(output_path, "wb") as out_f:
         cat_proc = subprocess.Popen(cat_command, shell=True, stdout=subprocess.PIPE)
-        seqkit_proc = subprocess.Popen(seqkit_command, shell=True, stdin=cat_proc.stdout, stdout=subprocess.PIPE)
+        seqkit_proc = subprocess.Popen(
+            seqkit_command, shell=True, stdin=cat_proc.stdout, stdout=subprocess.PIPE
+        )
         gzip_proc = subprocess.Popen(["gzip"], stdin=seqkit_proc.stdout, stdout=out_f)
         gzip_proc.communicate()
 

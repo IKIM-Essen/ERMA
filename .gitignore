@@ -12,7 +12,6 @@ results*
 .editorconfig
 !.gitkeep
 LICENSE
-.github/*
 .snakemake/*
 config/config.yaml
 logs

@@ -11,7 +11,7 @@ rule fastqc:
     threads: 8
     resources: mem_mb = 1024
     wrapper:
-        "v5.8.3/bio/fastqc"
+        "v6.0.1/bio/fastqc"
 
 rule multiqc_report:
     input:
@@ -31,7 +31,7 @@ rule multiqc_report:
     log:
         local("logs/multiqc/multiqc.log"),
     wrapper:
-        "v5.8.3/bio/multiqc"  
+        "v6.0.1/bio/multiqc"  
 
 rule merge_overview_per_sample:
     input:

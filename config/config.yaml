@@ -13,7 +13,7 @@ card:
 num_parts: 1 # number of chunks the fastqs are split into
 max_threads: 32
 
-similarity_search_mode: "extensive" # Put here fast or extensive
+similarity_search_mode: "fast" # Put here fast or extensive
 
 ### Preprocessing options: ###
 # if data is already in format one fastq.gz per sample, this can be ignored

@@ -2,6 +2,7 @@
 
 import pandas as pd
 
+
 def main():
     input_file = snakemake.input[1]  # overview_tables
     output_file = snakemake.output[0]
@@ -11,6 +12,7 @@ def main():
 
     # Convert to HTML and save
     df.to_html(output_file, index=False, escape=False)
+
 
 if __name__ == "__main__":
     main()

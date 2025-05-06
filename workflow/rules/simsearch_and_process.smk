@@ -77,7 +77,7 @@ rule integrate_blast_data:
         local("logs/integrate_blast_data/{sample}_{part}.log")    
     conda:            
         "../envs/python.yaml"
-    threads: config["max_threads"]
+    threads: config["max_threads"]    
     script:
         "../scripts/integrate_blast_data.py"
 
@@ -109,6 +109,8 @@ rule gzip_intermediates:
         checkpoint = local(temp("results/{sample}/{part}/checkpoint.txt"))
     log:
         local("logs/gzip_blast_results/{sample}_{part}.log")
+    conda:
+        "../envs/python.yaml"        
     shell:
         """
         gzip {input.silva_results} 2> {log}

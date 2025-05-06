@@ -1,0 +1,35 @@
+name: Snakemake CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Run Snakemake lint
+      uses: snakemake/snakemake-github-action@v1
+      with:
+        directory: .
+        snakefile: workflow/Snakefile
+        args: "--lint"
+
+    - name: Lint Python scripts with black
+      run: |
+        black --check workflow/scripts/
+
+    - name: Test workflow on test data
+      uses: snakemake/snakemake-github-action@v1
+      with:
+        directory: ".test_workflow"
+        snakefile: ".test_workflow/Snakefile"
+        args: "--use-conda --show-failed-logs --configfile config/test-config.yaml -j 2 -n
