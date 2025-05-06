@@ -43,4 +43,4 @@ jobs:
       with:
         directory: ".test_workflow"
         snakefile: ".test_workflow/Snakefile"
-        args: "--use-conda --show-failed-logs --configfile config/test-config.yaml -j 2 -n"
+        args: "--use-conda --show-failed-logs -j 2 -n"
