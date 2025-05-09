@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 
 def read_and_process_partitioned_data(partition_files, sample):
-    """Read and process partitioned files for a single sample."""
+    """ Read and process partitioned files for a single sample """
     data_frames = []
     sample_name = sample
 
@@ -34,7 +34,7 @@ def read_and_process_partitioned_data(partition_files, sample):
 
 
 def plot_boxplots(data, output_file):
-    """Plot boxplots based on the alignment lengths for ABR and 16S parts across samples."""
+    """ Plot boxplots based on the alignment lengths for ABR and 16S parts across samples """
     plt.figure(figsize=(15, 10))
     flierprops = dict(markerfacecolor="0.75", markersize=2, linestyle="none")
     sns.boxplot(
@@ -52,7 +52,7 @@ def plot_boxplots(data, output_file):
 
 
 def main(csv_files, sample_names, output_file):
-    """Main function to process partitioned files for each sample and generate the plot."""
+    """ Main function to process partitioned files for each sample and generate the plot """
     all_data = []
 
     # Loop over each sample's partitioned CSV files

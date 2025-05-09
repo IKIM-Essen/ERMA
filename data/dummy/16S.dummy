@@ -1,0 +1,2 @@
+query_id,subject_id,perc_identity,align_length,mismatches,gap_opens,q_start,q_end,s_start,s_end,evalue,bit_score,part,ARO Name,distance,orientation,genus
+dummy.dummy,dummy,100,0,0,0,0,0,0,0,0,0,16S,dummy,0,dummy,dummy

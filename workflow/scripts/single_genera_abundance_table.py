@@ -1,7 +1,13 @@
 import pandas as pd
-import os
+import os, sys
 
-# Necessary columns to load from each CSV file
+"""
+This script processes epicPCR data (ABR + 16S) distingly for one sample and its part
+to compute genus-level total and relative abundance per AMR Gene Family in a table.
+This table is later be imported as sample-wise information in the report.
+"""
+
+# Necessary columns to load in each dataframe
 necessary_columns = [
     "query_id",
     "part",
@@ -12,6 +18,8 @@ necessary_columns = [
 
 
 def write_dummy_line(sample_name):
+    # Create a dummy row when either ABR or 16S data is missing for a sample
+    # Returns Single-row dataframe with placeholder values
     dummy_line = {
         "sample": sample_name,
         "AMR Gene Family": "NA",
@@ -83,7 +91,7 @@ def combine_blast_data(input_file, sample_name):
     return genus_counts
 
 
-def export_genera_abundance(input_files, sample_names, parts, output_html):
+def export_genera_abundance(input_files, sample_name, parts, output_path):
     sample_input_files = [f for f in input_files if f"/{sample_name}/" in f]
     # Load and combine all parts for the current sample
     part_dfs = []
@@ -108,13 +116,13 @@ def export_genera_abundance(input_files, sample_names, parts, output_html):
     )
 
     # Write to HTML
-    processed_data.to_html(output_html, index=False)
+    processed_data.to_html(output_path, index=False)
 
 
 if __name__ == "__main__":
     input_file = snakemake.input.filtered_data
-    output_html = snakemake.output[0]
+    output_path = snakemake.output[0]
     sample_name = snakemake.params.sample_name
     parts = snakemake.params.parts
     sys.stderr = open(snakemake.log[0], "w")
-    export_genera_abundance(input_file, sample_name, parts, output_html)
+    export_genera_abundance(input_file, sample_name, parts, output_path)

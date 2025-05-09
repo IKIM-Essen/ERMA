@@ -1,90 +1,31 @@
 import pandas as pd
-import gzip
 import concurrent.futures
-import sys
-import os
+import os, sys
 
-
-def process_orientation_and_counts(group):
-    orientation = "mixed"
-    if (group["distance"] < 0).all():
-        orientation = "reverse"
-    if (group["distance"] >= 0).all():
-        orientation = "forward"
-    return pd.Series({"orientation": orientation})
+"""
+This script processes BLAST results from CARD (AMR gene hits) and SILVA 
+(16S rRNA gene hits), infers read orientation based on alignment coordinates, 
+merges metadata from the CARD ARO mapping file, and outputs cleaned, 
+standardized intermediate files. It then combines both parts into a 
+final merged output and logs the result in an overview table. 
+The script uses concurrent execution to process CARD and SILVA results 
+in parallel and ensures robustness by inserting dummy data for empty input files.
+"""
 
 
 def write_dummy_line(output_file, part):
-    """Write a dummy line to ensure compatibility with pandas."""
+    """ Write a dummy line to ensure compatibility with downstream analysis """
     if part == "ABR":
-        dummy_data = {
-            "query_id": ["dummy.dummy"],
-            "subject_id": ["dummy"],
-            "perc_identity": [100],
-            "align_length": [0],
-            "mismatches": [0],
-            "gap_opens": [0],
-            "q_start": [0],
-            "q_end": [0],
-            "s_start": [0],
-            "s_end": [0],
-            "evalue": [0],
-            "bit_score": [0],
-            "part": [part],
-            "ARO Accession": ["dummy"],
-            "distance": [0],
-            "orientation": ["dummy"],
-            "CVTERM ID": [0],
-            "Model Sequence ID": [0],
-            "Model ID": [0],
-            "Model Name": ["dummy"],
-            "ARO Name": ["dummy"],
-            "Protein Accession": ["dummy"],
-            "DNA Accession": ["dummy"],
-            "AMR Gene Family": ["dummy"],
-            "Drug Class": ["dummy"],
-            "Resistance Mechanism": ["dummy"],
-            "CARD Short Name": ["dummy"],
-        }
+        dummy_data = pd.read_csv(snakemake.input.dummy_ABR)
     elif part == "16S":
-        dummy_data = {
-            "query_id": ["dummy.dummy"],
-            "subject_id": ["dummy"],
-            "perc_identity": [100],
-            "align_length": [0],
-            "mismatches": [0],
-            "gap_opens": [0],
-            "q_start": [0],
-            "q_end": [0],
-            "s_start": [0],
-            "s_end": [0],
-            "evalue": [0],
-            "bit_score": [0],
-            "part": [part],
-            "primaryAccession": ["dummy"],
-            "distance": [0],
-            "orientation": ["dummy"],
-            "genus": ["dummy"],
-        }
+        dummy_data = pd.read_csv(snakemake.input.dummy_16S)
     pd.DataFrame(dummy_data).to_csv(output_file, index=False)
 
 
-def process_card_results(card_results_path, aro_mapping_path, output_path):
-    """Process CARD results and save them to an intermediate output file."""
-    blast_columns = [
-        "query_id",
-        "subject_id",
-        "perc_identity",
-        "align_length",
-        "mismatches",
-        "gap_opens",
-        "q_start",
-        "q_end",
-        "s_start",
-        "s_end",
-        "evalue",
-        "bit_score",
-    ]
+def process_card_results(
+    card_results_path, aro_mapping_path, blast_columns, output_path
+):
+    """ Process CARD results and save them to an intermediate output file """
 
     aro_df = pd.read_csv(aro_mapping_path, sep="\t")
 
@@ -97,13 +38,21 @@ def process_card_results(card_results_path, aro_mapping_path, output_path):
 
             card_df = pd.read_csv(f_in, sep="\t", names=blast_columns)
             card_df["part"] = "ABR"
+            # Extract ARO accession (formatted like: ARO|...|ACCESSION|...)
             card_df["ARO Accession"] = card_df["subject_id"].str.split(
                 "|", expand=True
             )[2]
             card_df["distance"] = card_df["q_start"] - card_df["q_end"]
             orientation_counts = (
-                card_df.groupby("query_id")
-                .apply(process_orientation_and_counts)
+                card_df.groupby("query_id")["distance"]
+                .agg(
+                    lambda x: "reverse"
+                    if (x < 0).all()
+                    else "forward"
+                    if (x >= 0).all()
+                    else "mixed"
+                )
+                .rename("orientation")
                 .reset_index()
             )
             merged_df = card_df.merge(orientation_counts, on="query_id")
@@ -114,23 +63,8 @@ def process_card_results(card_results_path, aro_mapping_path, output_path):
         write_dummy_line(output_path, "ABR")
 
 
-def process_silva_results(silva_results_path, output_path):
+def process_silva_results(silva_results_path, blast_columns, output_path):
     """Process SILVA results and save them to an intermediate output file."""
-    blast_columns = [
-        "query_id",
-        "subject_id",
-        "perc_identity",
-        "align_length",
-        "mismatches",
-        "gap_opens",
-        "q_start",
-        "q_end",
-        "s_start",
-        "s_end",
-        "evalue",
-        "bit_score",
-    ]
-    header_written = False
 
     try:
         with open(silva_results_path, "rt") as f_in, open(output_path, "w") as f_out:
@@ -141,26 +75,33 @@ def process_silva_results(silva_results_path, output_path):
 
             silva_df = pd.read_csv(f_in, sep="\t", names=blast_columns)
             silva_df["part"] = "16S"
+            # Extract the primary accession (before '.') from SILVA subject_id
             silva_df["primaryAccession"] = silva_df["subject_id"].str.split(
                 ".", expand=True
             )[0]
             silva_df["distance"] = silva_df["q_start"] - silva_df["q_end"]
             orientation_counts = (
-                silva_df.groupby("query_id")
-                .apply(process_orientation_and_counts)
+                silva_df.groupby("query_id")["distance"]
+                .agg(
+                    lambda x: "reverse"
+                    if (x < 0).all()
+                    else "forward"
+                    if (x >= 0).all()
+                    else "mixed"
+                )
+                .rename("orientation")
                 .reset_index()
             )
             merged_df = silva_df.merge(orientation_counts, on="query_id")
             merged_df["genus"] = merged_df["subject_id"].str.split(";").str[-2]
-            merged_df.to_csv(f_out, index=False, header=not header_written)
-            header_written = True
+            merged_df.to_csv(f_out, index=False)
     except Exception as e:
         print(f"Error processing {silva_results_path}: {e}")
         write_dummy_line(output_path, "16S")
 
 
 def merge_results(card_output, silva_output, final_output, overview_table):
-    """Merge processed CARD and SILVA results into one final output file and update overview table."""
+    """ Merge processed CARD and SILVA results into one final output file and update overview """
     card_df = pd.read_csv(card_output)
     silva_df = pd.read_csv(silva_output)
 
@@ -176,7 +117,8 @@ def merge_results(card_output, silva_output, final_output, overview_table):
     count = len(combined_df)
 
     with open(overview_table, "a") as file:
-        file.write(f"integration_output,{sample},{part},{count}\n")
+        line = f"integration_output,{sample},{part},{count}\n"
+        file.write(line)
 
 
 if __name__ == "__main__":
@@ -189,12 +131,27 @@ if __name__ == "__main__":
     final_output = snakemake.output.integrated_data
     sys.stderr = open(snakemake.log[0], "w")
 
+    blast_columns = [
+        "query_id",
+        "subject_id",
+        "perc_identity",
+        "align_length",
+        "mismatches",
+        "gap_opens",
+        "q_start",
+        "q_end",
+        "s_start",
+        "s_end",
+        "evalue",
+        "bit_score",
+    ]
+
     with concurrent.futures.ThreadPoolExecutor() as executor:
         future_card = executor.submit(
-            process_card_results, card_results, aro_mapping, card_output
+            process_card_results, card_results, aro_mapping, blast_columns, card_output
         )
         future_silva = executor.submit(
-            process_silva_results, silva_results, silva_output
+            process_silva_results, silva_results, blast_columns, silva_output
         )
 
         future_card.result()

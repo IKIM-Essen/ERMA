@@ -1,4 +1,4 @@
-rule genera_abundance_table:
+rule single_genera_abundance_table:
     input:
         filtered_data = local(expand("results/{{sample}}/{part}/filtered_results.csv.gz",part=get_numpart_list())),
     output:
@@ -21,7 +21,7 @@ rule genera_abundance_table:
         "../envs/python.yaml"
     threads: config["max_threads"]
     script:
-        "../scripts/genera_abundance_table.py"
+        "../scripts/single_genera_abundance_table.py"
 
 rule combined_genera_abundance_table:
     input:
@@ -54,7 +54,7 @@ rule abundance_bubble_plot:
         "../envs/python.yaml"
     threads: config["max_threads"]
     script:
-        "../scripts/genera_abundance_plot.py"
+        "../scripts/combined_genera_abundance_plot.py"
 
 rule reads_per_AMR:
     input:
@@ -72,4 +72,4 @@ rule reads_per_AMR:
         "../envs/python.yaml"
     threads: config["max_threads"]
     script:
-        "../scripts/reads_per_amr.py"
+        "../scripts/combined_reads_per_amr.py"

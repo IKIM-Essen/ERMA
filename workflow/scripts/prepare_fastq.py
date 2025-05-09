@@ -4,6 +4,13 @@ import pandas as pd
 import subprocess
 from pathlib import Path
 
+"""
+This script is meant to demultiplex a finished ONT run.
+For this, a csv is used as input containing the barcode - sample relation.
+The script loads every fastq.gz file for every barcode, merges and renames them.
+It is meant to use before the ERMA pipeline as preparation.
+"""
+
 # Inputs from Snakemake
 source_dir = snakemake.params.run_path
 barcode_csv_path = snakemake.params.sample_name_path

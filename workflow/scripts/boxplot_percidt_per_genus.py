@@ -96,7 +96,9 @@ def generate_percentage_idt_per_genus(input_files, output_file):
 
 
 if __name__ == "__main__":
-    input_files = sorted(snakemake.input.filtered_data)  # List of partitioned files
+    input_files = sorted(
+        snakemake.input.filtered_data
+    )  # List of all filtered fasta files
     output_file = snakemake.output[0]
     sys.stderr = open(snakemake.log[0], "w")
     generate_percentage_idt_per_genus(input_files, output_file)

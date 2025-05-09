@@ -51,14 +51,14 @@ def plot_boxplots(data, output_file):
     plt.close()
 
 
-def main(csv_files, sample_names, output_file):
+def main(filtered_fasta_files, sample_names, output_file):
     """Main function to process partitioned files for each sample and generate the plot."""
     all_data = []
 
     # Loop over each sample's partitioned CSV files
     for sample in sample_names:
         data = read_and_process_partitioned_data(
-            [file for file in csv_files if str(sample) in file], sample
+            [file for file in filtered_fasta_files if str(sample) in file], sample
         )
         if data is not None:
             all_data.append(data)
@@ -71,10 +71,10 @@ def main(csv_files, sample_names, output_file):
 
 
 if __name__ == "__main__":
-    partitioned_csv_files = sorted(
-        snakemake.input.csv_files
-    )  # Dict of sample -> list of partition files
-    output_file = snakemake.output[0]  # Path to save the output plot
+    filtered_fasta_files = sorted(
+        snakemake.input.filtered_data
+    )  # List of all filtered fasta files files
+    output_file = snakemake.output[0]  # Path to save the output boxplot
     sample_name = sorted(snakemake.params.sample_name)  # Minimum similarity filter
     sys.stderr = open(snakemake.log[0], "w")
-    main(partitioned_csv_files, sample_name, output_file)
+    main(filtered_fasta_files, sample_name, output_file)

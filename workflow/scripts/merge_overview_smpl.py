@@ -1,6 +1,11 @@
 import pandas as pd
 from collections import defaultdict
 
+"""
+This script merges overview table files for one sample, effectively
+creating a table for all metrics between input and output.
+"""
+
 
 def merge_overview_tables(input_paths, sample_name, output_path):
     # Dictionary of dictionaries: sample -> state -> total count

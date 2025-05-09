@@ -1,5 +1,11 @@
 #!/bin/bash
 
+"""
+This script is meant to merge paired-end Illumina reads to one file.
+The script loads every R1/R2_fastq.gz file and merges them together.
+It is meant to use before the ERMA pipeline as preparation.
+"""
+
 # Define paths
 FASTQ_DIR="data/fastq"
 MERGED_DIR="${FASTQ_DIR}/input"

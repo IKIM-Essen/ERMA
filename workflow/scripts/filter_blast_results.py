@@ -1,5 +1,16 @@
 import pandas as pd
 import os
+import sys
+
+"""
+This script filters and merges BLAST result data from ABR and 16S rRNA hits. The exact filtering steps are
+
+- Filtering ABR and 16S entries based on user-defined percent identity thresholds
+- Retaining only the highest-identity hit per query ID
+- Keeping only hits with overlapping query ID in both databases
+
+In case, one of the targets is empty, a dummy is created preventing workflow failure
+"""
 
 dtype_dict = {
     "query_id": "string",
@@ -13,6 +24,7 @@ dtype_dict = {
 
 
 def write_dummy_line(output_file):
+    """ Write a dummy line to the output if the input is a placeholder 16S hit """
     print("Detected only a dummy 16S line — generating merged dummy output.")
     dummy_line = {
         "query_id": "dummy",
@@ -23,113 +35,107 @@ def write_dummy_line(output_file):
         "genus": "Unclassified",
         "AMR Gene Family": "NA",
     }
-    merged_data = pd.DataFrame([dummy_line])
-    merged_data.to_csv(output_file, index=False)
-    return  # Exit the function early
+    dummy_df = pd.DataFrame(dummy_line, index=[0])
+    dummy_df.to_csv(output_file, index=False)
+    return
+
+
+def read_input_data(input_file):
+    """ Load relevant columns from input file with proper dtypes """
+    return pd.read_csv(input_file, sep=",", dtype=dtype_dict, usecols=dtype_dict.keys())
+
+
+def filter_by_identity(df, part, min_similarity):
+    """ Filter BLAST result for either ABR or 16S part based on percent identity """
+    data_pre = df[df["part"] == part]
+    filtered = data_pre[data_pre["perc_identity"] > min_similarity * 100]
+    filtered_count = len(data_pre) - len(filtered)
+    return filtered, filtered_count
+
+
+def keep_max_identity_per_query(df):
+    """ For each query_id, keep only rows with the highest percent identity """
+    max_identities = df.groupby("query_id")["perc_identity"].max().reset_index()
+    merged = df.merge(max_identities, on=["query_id", "perc_identity"])
+    return merged
+
+
+def clean_16s_query_ids(df):
+    """ Remove anything after the first whitespace in 16S query IDs """
+    df["query_id"] = df["query_id"].str.split().str[0]
+    return df
+
+
+def merge_parts_on_query_id(abr_data, s16_data):
+    """ Return only rows with query_ids present in both ABR and 16S data """
+    common_ids = pd.Index(abr_data["query_id"]).intersection(s16_data["query_id"])
+    return (
+        abr_data[abr_data["query_id"].isin(common_ids)],
+        s16_data[s16_data["query_id"].isin(common_ids)],
+    )
+
+
+def write_summary(overview_table, sample, part, stats):
+    """ Write all filtering summary statistics to the overview file """
+    with open(overview_table, "a") as file:
+        for stat_name, value in stats.items():
+            file.write(f"{stat_name},{sample},{part},{value}\n")
 
 
 def filter_blast_results(input_file, output_file, min_similarity, overview_table):
-    df = pd.read_csv(
-        input_file,
-        header=0,
-        sep=",",
-        dtype=dtype_dict,
-        usecols=[
-            "query_id",
-            "perc_identity",
-            "part",
-            "align_length",
-            "evalue",
-            "genus",
-            "AMR Gene Family",
-        ],
-    )
+    """ Main filtering logic for BLAST results across ABR and 16S data parts """
+    df = read_input_data(input_file)
 
-    # Filter results based on percentage identity for ABR
-    abr_data_pre = df[df["part"] == "ABR"]
-    abr_filtered = abr_data_pre[
-        abr_data_pre["perc_identity"] > float(min_similarity) * 100
-    ]
-    filtered_abr_identity = len(abr_data_pre) - len(abr_filtered)
+    # ABR filtering
+    abr_filtered, abr_removed_identity = filter_by_identity(df, "ABR", min_similarity)
+    abr_final = keep_max_identity_per_query(abr_filtered)
+    abr_removed_max = len(abr_filtered) - len(abr_final)
 
-    abr_summary = (
-        abr_filtered.groupby("query_id")
-        .agg(max_perc_identity=("perc_identity", "max"))
-        .reset_index()
-    )
-    abr_merged = abr_filtered.merge(abr_summary, on="query_id", how="inner")
-    abr_data = abr_merged[
-        abr_merged["perc_identity"] == abr_merged["max_perc_identity"]
-    ].copy()
+    # 16S filtering
+    s16_filtered, s16_removed_identity = filter_by_identity(df, "16S", min_similarity)
+    s16_filtered = clean_16s_query_ids(s16_filtered)
+    s16_final = keep_max_identity_per_query(s16_filtered)
+    s16_removed_max = len(s16_filtered) - len(s16_final)
 
-    filtered_abr_max = len(abr_filtered) - len(abr_data)
-
-    # Filter results based on percentage identity for 16S
-    sixteen_s_data_pre = df[df["part"] == "16S"]
-    sixteen_s_filtered = sixteen_s_data_pre[
-        sixteen_s_data_pre["perc_identity"] > float(min_similarity) * 100
-    ].copy()
-    sixteen_s_filtered["query_id"] = sixteen_s_filtered["query_id"].str.split().str[0]
-    filtered_16s_identity = len(sixteen_s_data_pre) - len(sixteen_s_filtered)
-
-    sixteen_s_summary = (
-        sixteen_s_filtered.groupby("query_id")
-        .agg(max_perc_identity=("perc_identity", "max"))
-        .reset_index()
-    )
-    sixteen_s_merged = sixteen_s_filtered.merge(
-        sixteen_s_summary, on="query_id", how="inner"
-    )
-    sixteen_s_data = sixteen_s_merged[
-        sixteen_s_merged["perc_identity"] == sixteen_s_merged["max_perc_identity"]
-    ].copy()
-
-    filtered_16s_max = len(sixteen_s_filtered) - len(sixteen_s_data)
-
-    if len(sixteen_s_data) == 1 and sixteen_s_data.iloc[0]["query_id"] == "dummy.dummy":
+    # Handle dummy 16S result
+    if len(s16_final) == 1 and s16_final.iloc[0]["query_id"] == "dummy.dummy":
         write_dummy_line(output_file)
-    else:
-        # Filter for common query IDs
-        common_query_ids = pd.Index(abr_data["query_id"]).intersection(
-            sixteen_s_data["query_id"]
-        )
-        abr_data_filtered = abr_data[abr_data["query_id"].isin(common_query_ids)]
-        sixteen_s_data_filtered = sixteen_s_data[
-            sixteen_s_data["query_id"].isin(common_query_ids)
-        ]
-
-        removed_due_to_query_id = (len(abr_data) + len(sixteen_s_data)) - (
-            len(abr_data_filtered) + len(sixteen_s_data_filtered)
-        )
-
-        # Concatenate the filtered ABR and 16S data
-        merged_data = pd.concat([abr_data_filtered, sixteen_s_data_filtered])
-        merged_data.to_csv(output_file, index=False)
-
-        # Extract sample and part from file path
         sample, part = os.path.normpath(input_file).split(os.sep)[-3:-1]
+        # Write summary in case of dummy
+        stats = {
+            "filtered_min_similarity_ABR": abr_removed_identity,
+            "filtered_max_identity_ABR": abr_removed_max,
+            "filtered_min_similarity_16S": 0,
+            "filtered_max_identity_16S": 0,
+            "filtered_query_id_mismatch": 0,
+            "filtration_output": 1,
+        }
+        write_summary(overview_table, sample, part, stats)
+        return
 
-        # Count number of rows in the final DataFrame
-        final_count = len(merged_data)
+    # Match ABR and 16S by query_id
+    abr_common, s16_common = merge_parts_on_query_id(abr_final, s16_final)
+    removed_query_id_mismatch = (len(abr_final) + len(s16_final)) - (
+        len(abr_common) + len(s16_common)
+    )
 
-        # Write summary lines
-        with open(overview_table, "a") as file:
-            file.write(
-                f"filtered_min_similarity_ABR,{sample},{part},{filtered_abr_identity}\n"
-            )
-            file.write(
-                f"filtered_max_identity_ABR,{sample},{part},{filtered_abr_max}\n"
-            )
-            file.write(
-                f"filtered_min_similarity_16S,{sample},{part},{filtered_16s_identity}\n"
-            )
-            file.write(
-                f"filtered_max_identity_16S,{sample},{part},{filtered_16s_max}\n"
-            )
-            file.write(
-                f"filtered_query_id_mismatch,{sample},{part},{removed_due_to_query_id}\n"
-            )
-            file.write(f"filtration_output,{sample},{part},{final_count}\n")
+    # Merge and write final output
+    merged = pd.concat([abr_common, s16_common])
+    merged.to_csv(output_file, index=False)
+
+    # Extract sample and part from file path
+    sample, part = os.path.normpath(input_file).split(os.sep)[-3:-1]
+
+    # Write summary
+    stats = {
+        "filtered_min_similarity_ABR": abr_removed_identity,
+        "filtered_max_identity_ABR": abr_removed_max,
+        "filtered_min_similarity_16S": s16_removed_identity,
+        "filtered_max_identity_16S": s16_removed_max,
+        "filtered_query_id_mismatch": removed_query_id_mismatch,
+        "filtration_output": len(merged),
+    }
+    write_summary(overview_table, sample, part, stats)
 
 
 if __name__ == "__main__":
@@ -138,4 +144,4 @@ if __name__ == "__main__":
     output_file = snakemake.output.filtered_data
     min_similarity = snakemake.params.min_similarity
     sys.stderr = open(snakemake.log[0], "w")
-    filter_blast_results(input_file, output_file, min_similarity, overview_table)
+    filter_blast_results(input_file, output_file, float(min_similarity), overview_table)
