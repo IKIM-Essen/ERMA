@@ -14,7 +14,7 @@ in parallel and ensures robustness by inserting dummy data for empty input files
 
 
 def write_dummy_line(output_file, part):
-    """ Write a dummy line to ensure compatibility with downstream analysis """
+    """Write a dummy line to ensure compatibility with downstream analysis"""
     if part == "ABR":
         dummy_data = pd.read_csv(snakemake.input.dummy_ABR)
     elif part == "16S":
@@ -25,7 +25,7 @@ def write_dummy_line(output_file, part):
 def process_card_results(
     card_results_path, aro_mapping_path, blast_columns, output_path
 ):
-    """ Process CARD results and save them to an intermediate output file """
+    """Process CARD results and save them to an intermediate output file"""
 
     aro_df = pd.read_csv(aro_mapping_path, sep="\t")
 
@@ -46,11 +46,11 @@ def process_card_results(
             orientation_counts = (
                 card_df.groupby("query_id")["distance"]
                 .agg(
-                    lambda x: "reverse"
-                    if (x < 0).all()
-                    else "forward"
-                    if (x >= 0).all()
-                    else "mixed"
+                    lambda x: (
+                        "reverse"
+                        if (x < 0).all()
+                        else "forward" if (x >= 0).all() else "mixed"
+                    )
                 )
                 .rename("orientation")
                 .reset_index()
@@ -83,11 +83,11 @@ def process_silva_results(silva_results_path, blast_columns, output_path):
             orientation_counts = (
                 silva_df.groupby("query_id")["distance"]
                 .agg(
-                    lambda x: "reverse"
-                    if (x < 0).all()
-                    else "forward"
-                    if (x >= 0).all()
-                    else "mixed"
+                    lambda x: (
+                        "reverse"
+                        if (x < 0).all()
+                        else "forward" if (x >= 0).all() else "mixed"
+                    )
                 )
                 .rename("orientation")
                 .reset_index()
@@ -101,7 +101,7 @@ def process_silva_results(silva_results_path, blast_columns, output_path):
 
 
 def merge_results(card_output, silva_output, final_output, overview_table):
-    """ Merge processed CARD and SILVA results into one final output file and update overview """
+    """Merge processed CARD and SILVA results into one final output file and update overview"""
     card_df = pd.read_csv(card_output)
     silva_df = pd.read_csv(silva_output)
 

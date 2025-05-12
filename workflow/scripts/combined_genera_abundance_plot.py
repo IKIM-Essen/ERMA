@@ -19,13 +19,13 @@ min_overlap, one of each samples top genus iteratively or every genus present.
 
 
 def load_filtered_data(input_csv, min_total_count=100):
-    """ Load CSV and filter AMR Gene Families by minimum total genus count """
+    """Load CSV and filter AMR Gene Families by minimum total genus count"""
     df = pd.read_csv(input_csv, sep=",")
     return df[df["total_genus_count"] > min_total_count]
 
 
 def get_top_genera_per_sample(df, top_n):
-    """ Return dicts of top genera per sample (set and list forms) """
+    """Return dicts of top genera per sample (set and list forms)"""
     top_sets = {}
     top_lists = {}
     for sample in df["sample"].unique():
@@ -41,7 +41,7 @@ def get_top_genera_per_sample(df, top_n):
 
 
 def select_genera(top_sets, top_lists, max_genera, min_overlap):
-    """ Select a list of genera to display using overlap or merged ranking """
+    """Select a list of genera to display using overlap or merged ranking"""
     if not top_sets:
         return []
 
@@ -74,7 +74,7 @@ def select_genera(top_sets, top_lists, max_genera, min_overlap):
 def add_amr_family_subplot(
     fig, df, amr_family, col_idx, max_genera, min_overlap, top_per_sample
 ):
-    """ Filter and add a subplot for one AMR Gene Family to the main figure """
+    """Filter and add a subplot for one AMR Gene Family to the main figure"""
     df_amr = df[df["AMR Gene Family"] == amr_family]
     if df_amr.empty:
         return
@@ -105,12 +105,15 @@ def add_amr_family_subplot(
 
 
 def create_bubble_plot_grid(df, max_genera, min_overlap, top_per_sample):
-    """ Create the full multi-subplot bubble chart """
+    """Create the full multi-subplot bubble chart"""
     families = df["AMR Gene Family"].unique()
     num_cols = len(families) if len(df) > 1 else 1
 
     fig = make_subplots(
-        rows=1, cols=num_cols, subplot_titles=list(families), horizontal_spacing=0.2,
+        rows=1,
+        cols=num_cols,
+        subplot_titles=list(families),
+        horizontal_spacing=0.2,
     )
 
     for idx, family in enumerate(families, start=1):
@@ -134,7 +137,7 @@ def create_bubble_plot_grid(df, max_genera, min_overlap, top_per_sample):
 def create_bubble_plots_combined(
     input_csv, output_html, max_genera=20, min_overlap=10, top_per_sample=20
 ):
-    """ Load input, pass to processing function and save plot """
+    """Load input, pass to processing function and save plot"""
     df = load_filtered_data(input_csv)
     fig = create_bubble_plot_grid(df, max_genera, min_overlap, top_per_sample)
     pio.write_html(fig, file=output_html)

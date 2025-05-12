@@ -18,7 +18,7 @@ necessary_columns = [
 
 
 def write_dummy_line(sample_name):
-    """ Create a dummy row for missing input and returns placeholder """
+    """Create a dummy row for missing input and returns placeholder"""
     dummy_line = {
         "sample": sample_name,
         "AMR Gene Family": "NA",
@@ -31,7 +31,7 @@ def write_dummy_line(sample_name):
 
 
 def process_combined_data(combined_data, sample_name):
-    """ Separate ABR and 16S data for merging by query_id """
+    """Separate ABR and 16S data for merging by query_id"""
     abr_data = combined_data[combined_data["part"] == "ABR"]
     sixteen_s_data = combined_data[combined_data["part"] == "16S"]
 
@@ -70,7 +70,7 @@ def process_combined_data(combined_data, sample_name):
 
 
 def load_and_merge_parts(file_list):
-    """ Load and merges dataframes over all samples """
+    """Load and merges dataframes over all samples"""
     data_frames = []
     for file in file_list:
         try:
@@ -86,7 +86,7 @@ def load_and_merge_parts(file_list):
 
 
 def export_genera_abundance(input_files, output_path):
-    """ Group input files by sample """
+    """Group input files by sample"""
     sample_to_files = {}
     for file in input_files:
         # Extract sample name from the file path, assuming 3rd-to-last split is the sample name

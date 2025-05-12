@@ -24,7 +24,7 @@ dtype_dict = {
 
 
 def write_dummy_line(output_file):
-    """ Write a dummy line to the output if the input is a placeholder 16S hit """
+    """Write a dummy line to the output if the input is a placeholder 16S hit"""
     print("Detected only a dummy 16S line — generating merged dummy output.")
     dummy_line = {
         "query_id": "dummy",
@@ -41,12 +41,12 @@ def write_dummy_line(output_file):
 
 
 def read_input_data(input_file):
-    """ Load relevant columns from input file with proper dtypes """
+    """Load relevant columns from input file with proper dtypes"""
     return pd.read_csv(input_file, sep=",", dtype=dtype_dict, usecols=dtype_dict.keys())
 
 
 def filter_by_identity(df, part, min_similarity):
-    """ Filter BLAST result for either ABR or 16S part based on percent identity """
+    """Filter BLAST result for either ABR or 16S part based on percent identity"""
     data_pre = df[df["part"] == part]
     filtered = data_pre[data_pre["perc_identity"] > min_similarity * 100]
     filtered_count = len(data_pre) - len(filtered)
@@ -54,20 +54,20 @@ def filter_by_identity(df, part, min_similarity):
 
 
 def keep_max_identity_per_query(df):
-    """ For each query_id, keep only rows with the highest percent identity """
+    """For each query_id, keep only rows with the highest percent identity"""
     max_identities = df.groupby("query_id")["perc_identity"].max().reset_index()
     merged = df.merge(max_identities, on=["query_id", "perc_identity"])
     return merged
 
 
 def clean_16s_query_ids(df):
-    """ Remove anything after the first whitespace in 16S query IDs """
+    """Remove anything after the first whitespace in 16S query IDs"""
     df["query_id"] = df["query_id"].str.split().str[0]
     return df
 
 
 def merge_parts_on_query_id(abr_data, s16_data):
-    """ Return only rows with query_ids present in both ABR and 16S data """
+    """Return only rows with query_ids present in both ABR and 16S data"""
     common_ids = pd.Index(abr_data["query_id"]).intersection(s16_data["query_id"])
     return (
         abr_data[abr_data["query_id"].isin(common_ids)],
@@ -76,14 +76,14 @@ def merge_parts_on_query_id(abr_data, s16_data):
 
 
 def write_summary(overview_table, sample, part, stats):
-    """ Write all filtering summary statistics to the overview file """
+    """Write all filtering summary statistics to the overview file"""
     with open(overview_table, "a") as file:
         for stat_name, value in stats.items():
             file.write(f"{stat_name},{sample},{part},{value}\n")
 
 
 def filter_blast_results(input_file, output_file, min_similarity, overview_table):
-    """ Main filtering logic for BLAST results across ABR and 16S data parts """
+    """Main filtering logic for BLAST results across ABR and 16S data parts"""
     df = read_input_data(input_file)
 
     # ABR filtering

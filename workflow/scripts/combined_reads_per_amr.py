@@ -9,7 +9,7 @@ the number of hits in relation to respective AMR families.
 
 
 def create_bubble_plots(df, output):
-    """ Group by unique AMR Gene Families and sum respective genus count """
+    """Group by unique AMR Gene Families and sum respective genus count"""
     # Filter data for the current AMR Gene Family
     df = pd.read_csv(df, header=0, sep=",")
     total_counts_per_abr = (
