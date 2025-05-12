@@ -1,5 +1,5 @@
 runname: "test"
-base_dir: ".github/test_data"
+base_dir: ".github"
 
 min_similarity: "0.8" # threshold to pre-filter blast hits by percentage identity
 
@@ -15,4 +15,4 @@ max_threads: 4
 
 similarity_search_mode: "fast" # Put here fast or extensive for search on only forward or both strands
 
-seq_tech: "ONT" # Put here "Illumina" or "ONT"
+seq_tech: "Illumina" # Put here "Illumina" or "ONT"

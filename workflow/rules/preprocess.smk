@@ -14,17 +14,16 @@ rule split_fasta_file:
     input:
         local("results/fastq/{sample}.fasta")
     output:
-        local(temp("results/fastq/{sample}.part_{part}.fasta"))
+        out = local(temp("results/fastq/{sample}.part_{part}.fasta"))
     log:
         local("logs/split_fasta/{sample}_{part}.log")
     conda:
         "../envs/python.yaml"        
     params:
-        outdir = config["base_dir"],
         num_parts = config["num_parts"],   
     shell:
         """
-        seqkit split2 --by-part {params.num_parts} -w 0 {input} --out-dir {params.outdir}/results/fastq/
+        seqkit split2 --by-part {params.num_parts} -w 0 {input} --out-dir results/fastq/
         """
 
 if config["seq_tech"] == "Illumina":
