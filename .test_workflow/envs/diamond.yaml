@@ -1,4 +1,8 @@
 channels:                                                                                                                                                                                                                                                                                                               
-  - bioconda  
+  - bioconda
+  - conda-forge
+  - anaconda
 dependencies:
+  - libzlib=1.2.13
+  - libgcc=13
   - diamond=2.1.10
