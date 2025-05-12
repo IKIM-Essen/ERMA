@@ -41,6 +41,6 @@ jobs:
     - name: Test workflow on test data
       uses: snakemake/snakemake-github-action@v1
       with:
-        directory: ".test_workflow"
-        snakefile: ".test_workflow/Snakefile"
-        args: "--use-conda --show-failed-logs -j 2"
+        directory: "workflow"
+        snakefile: "workflow/Snakefile"
+        args: "--use-conda --configfile .github/test_config.yaml --show-failed-logs -j 2"

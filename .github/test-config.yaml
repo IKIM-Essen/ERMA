@@ -1,14 +1,14 @@
 runname: "test"
-base_dir: "."
+base_dir: ".github/test_data"
 
 min_similarity: "0.8" # threshold to pre-filter blast hits by percentage identity
 
 silva:
-  download-path-seq: "file://data/silva_db/sub_silva_seq_RNA.fasta.gz"
-  download-path-tax: "file://data/silva_db/taxmap_slv_ssu_ref_nr_138.2.txt.gz"
+  download-path-seq: "file://.github/test_data/silva_db/sub_silva_seq_RNA.fasta.gz"
+  download-path-tax: "file://.github/test_data/silva_db/taxmap_slv_ssu_ref_nr_138.2.txt.gz"
 
 card:
-  download-path: "file://data/card_db/card_seq.tar.bz2"
+  download-path: "file://.github/test_data/card_db/card_seq.tar.bz2"
 
 num_parts: 1 # number of chunks the fastqs are split into
 max_threads: 4

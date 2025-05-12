@@ -1,5 +1,5 @@
 runname: "test"
-base_dir: "/local/work/adrian/ERMA"  # User should change this path
+base_dir: "."
 
 min_similarity: "0.8" # threshold to pre-filter blast hits by percentage identity
 
