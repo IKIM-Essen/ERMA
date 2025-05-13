@@ -1,4 +1,5 @@
 import glob, os
+from os import listdir
 configfile: "config/config.yaml"
 
 include: "rules/common.smk"
@@ -16,7 +17,9 @@ seq_tech = "".join(config["seq_tech"])
 
 print("Important Run Parameter:\n")
 print(f"Base directory: \t{os.path.abspath(config['base_dir'])}")
+print(f"Base directory content: \t{listdir(os.path.abspath(config['base_dir']))}")
 print(f"Sample location:\t{os.path.abspath(config['fastq_dir'])}")
+print(f"Sample location content:\t{listdir(os.path.abspath(config['fastq_dir']))}")
 print(f"Detected samples:\t{samples}")
 print(f"Detected Runname:\t{runname}")
 print(f"Detected Seqtech:\t{seq_tech} (This Parameter is for demultiplexing/merging preprocess only!)\n")

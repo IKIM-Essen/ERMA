@@ -32,9 +32,6 @@ jobs:
       run: pip install black
 
     - name: Lint Python scripts with black
-      run: black --check workflow/scripts/
-
-    - name: Lint Python scripts with black
       run: |
         black --check workflow/scripts/
 
