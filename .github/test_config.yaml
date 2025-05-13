@@ -1,6 +1,6 @@
 runname: "github action: test"
 base_dir: "."
-fastq_dir: data/fastq
+fastq_dir: .github/data/fastq
 
 min_similarity: "0.8" # threshold to pre-filter blast hits by percentage identity
 
