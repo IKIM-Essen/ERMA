@@ -38,6 +38,6 @@ jobs:
     - name: Test workflow on test data
       uses: snakemake/snakemake-github-action@v1
       with:
-        directory: "ERMA"
-        snakefile: "workflow/Snakefile"
+        directory: .
+        snakefile: workflow/Snakefile
         args: "--use-conda --configfile .github/test_config.yaml --show-failed-logs -j 2 --local-storage-prefix ../ --shared-fs-usage none"
