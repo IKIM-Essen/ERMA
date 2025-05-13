@@ -1,8 +1,8 @@
-samples = [os.path.basename(f).replace(".fastq.gz", "") for f in glob.glob(os.path.join(config["base_dir"], "data", "fastq", "*.fastq.gz"))]
+samples = [os.path.basename(f).replace(".fastq.gz", "") for f in glob.glob(os.path.join(config["base_dir"], config["fastq_dir"], "*.fastq.gz"))]
 
 rule fastqc:
     input:
-        lambda wildcards: os.path.join(config["fastq_dir"], f"{wildcards.sample}.fastq.gz")
+        lambda wildcards: local(os.path.join(config["fastq_dir"], f"{wildcards.sample}.fastq.gz"))
     output:
         html=local("results/fastqc/{sample}.html"),
         zip=local("results/fastqc/{sample}_fastqc.zip"),

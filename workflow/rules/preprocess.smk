@@ -1,6 +1,6 @@
 rule convert_fastq_to_fasta:
     input:
-        lambda wildcards: os.path.join(config["fastq_dir"], f"{wildcards.sample}.fastq.gz")
+        lambda wildcards: local(os.path.join(config["fastq_dir"], f"{wildcards.sample}.fastq.gz"))
     output:
         local(temp("results/fastq/{sample}.fasta"))
     log:
