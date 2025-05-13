@@ -9,12 +9,14 @@ rule get_16S_db:
     log:
         local("logs/get_silva_db/get_silva_db.log")        
     shell:
-        """
-        mkdir -p {params.path}
-        if [ ! -f {output.seq} ]; then \
-            wget -O {output.seq} {params.seq}; \
-        else \
-            echo "File {output.seq} already exists, skipping download."; \
+        r"""
+        mkdir -p {params.path}; 
+        if [[ "{params.seq}" == http* ]]; then 
+            echo "Downloading from {params.seq}" >> {log}; 
+            wget -O {output.seq} {params.seq} 2>> {log}
+        else
+            echo "Copying from local path {params.seq}" >> {log}; 
+            cp {params.seq} {output.seq} 
         fi
         """
 
@@ -55,12 +57,14 @@ rule get_card_db:
     conda:
         "../envs/python.yaml"        
     shell:
-        """
-        mkdir -p {params.path}
-        if [ ! -f {output.seq} ]; then \
-            wget -O {output.seq} {params.seq}; \
-        else \
-            echo "File {output.seq} already exists, skipping download."; \
+        r"""
+        mkdir -p {params.path}; 
+        if [[ "{params.seq}" == http* ]]; then 
+            echo "Downloading from {params.seq}" >> {log}; 
+            wget -O {output.seq} {params.seq} 2>> {log}
+        else
+            echo "Copying from local path {params.seq}" >> {log}; 
+            cp {params.seq} {output.seq} 
         fi
         """
 

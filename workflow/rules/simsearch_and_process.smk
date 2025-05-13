@@ -1,6 +1,6 @@
 rule diamond_card:
     input:
-        fasta = local("results/fastq/{sample}.part_{part}.fasta"),
+        fasta = local("results/fastq/split/{sample}.part_{part}.fasta"),
         card = local("data/card_db/card_db.dmnd"),
     output:
         card_results = local("results/{sample}/{part}/card_results.txt"),
@@ -23,7 +23,7 @@ if config["similarity_search_mode"] == "fast":
     rule usearch_silva:
         input:
             overview_table = local("results/{sample}/{part}/overview_table.txt"),
-            fasta = local("results/fastq/{sample}.part_{part}.fasta"),
+            fasta = local("results/fastq/split/{sample}.part_{part}.fasta"),
             silva = local("data/silva_db/silva_seq.fasta")
         output:
             silva_results = local(temp("results/{sample}/{part}/SILVA_results.txt"))
@@ -45,7 +45,7 @@ if config["similarity_search_mode"] == "extensive":
     rule usearch_silva:
         input:
             overview_table = local("results/{sample}/{part}/overview_table.txt"),
-            fasta = local("results/fastq/{sample}.part_{part}.fasta"),
+            fasta = local("results/fastq/split/{sample}.part_{part}.fasta"),
             silva = local("data/silva_db/silva_seq.fasta")
         output:
             silva_results = local(temp("results/{sample}/{part}/SILVA_results.txt"))

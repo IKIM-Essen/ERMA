@@ -1,12 +1,12 @@
 rule convert_fastq_to_fasta:
     input:
-        local("data/fastq/{sample}.fastq.gz")
+        lambda wildcards: os.path.join(config["fastq_dir"], f"{wildcards.sample}.fastq.gz")
     output:
         local(temp("results/fastq/{sample}.fasta"))
     log:
         local("logs/convert_fastq_to_fasta/{sample}.log")
     conda:
-        "../envs/python.yaml"        
+        "../envs/python.yaml"      
     shell:
         "seqtk seq -a {input} > {output} 2> {log}"
 
@@ -14,16 +14,17 @@ rule split_fasta_file:
     input:
         local("results/fastq/{sample}.fasta")
     output:
-        out = local(temp("results/fastq/{sample}.part_{part}.fasta"))
+        local(temp("results/fastq/split/{sample}.part_{part}.fasta"))
     log:
         local("logs/split_fasta/{sample}_{part}.log")
     conda:
         "../envs/python.yaml"        
     params:
+        outdir = config["base_dir"],
         num_parts = config["num_parts"],   
     shell:
         """
-        seqkit split2 --by-part {params.num_parts} -w 0 {input} --out-dir results/fastq/
+        seqkit split2 --by-part {params.num_parts} -w 0 {input} --out-dir {params.outdir}/results/fastq/split/
         """
 
 if config["seq_tech"] == "Illumina":

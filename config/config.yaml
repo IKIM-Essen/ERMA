@@ -1,5 +1,6 @@
 runname: "test"
 base_dir: "."
+fastq_dir: "data/fastq"
 
 min_similarity: "0.8" # threshold to pre-filter blast hits by percentage identity
 
@@ -15,11 +16,12 @@ max_threads: 16
 
 similarity_search_mode: "fast" # Put here fast or extensive
 
-### Preprocessing options: ###
-# if data is already in format one fastq.gz per sample, this can be ignored
+### Preprocessing ###
+# if data is already in format 'one fastq.gz per sample', this section can be ignored
 
-seq_tech: "Illumina" # Put here "Illumina" or "ONT"
+seq_tech: "Illumina" # Put here "Illumina" or "ONT" befor using rule prepare_fastqs
 
+# In case of Demultiplexing ONT data, provide information for this section
 ONT:
   fastq_pass_path: "data/ONT/fastq_pass" # copy your fastq_pass folder here
   sample_name_path: "data/ONT/barcode-rename.csv" # change this file with your barcode-sample name combinations
