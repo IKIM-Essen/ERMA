@@ -5,11 +5,11 @@ fastq_dir: .github/data/fastq
 min_similarity: "0.8" # threshold to pre-filter blast hits by percentage identity
 
 silva:
-  download-path-seq: "data/silva_db/sub_silva_seq_RNA.fasta.gz"
-  download-path-tax: "data/silva_db/taxmap_slv_ssu_ref_nr_138.2.txt.gz"
+  download-path-seq: ".github/data/silva_db/sub_silva_seq_RNA.fasta.gz"
+  download-path-tax: ".github/data/silva_db/taxmap_slv_ssu_ref_nr_138.2.txt.gz"
 
 card:
-  download-path: "data/card_db/card_seq.tar.bz2"
+  download-path: ".github/data/card_db/card_seq.tar.bz2"
 
 num_parts: 1 # number of chunks the fastqs are split into
 max_threads: 4
