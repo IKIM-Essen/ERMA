@@ -13,16 +13,16 @@ filtered hits with color-coded stacked bars.
 
 # === Constants for category mapping ===
 MAIN_CATEGORIES = {
-    "integration_output": "Diamond and Usearch hits",
-    "filtration_output": "Hits after filtration",
+    "merge output": "Diamond and Usearch hits",
+    "filtration output": "Hits after filtration",
 }
 
 FILTER_REASONS = {
-    "filtered_min_similarity_ABR": "Diamond hits < similarity threshold",
-    "filtered_max_identity_ABR": "Diamond hits ≠ max identity for query ID",
-    "filtered_min_similarity_16S": "Usearch hits < similarity threshold",
-    "filtered_max_identity_16S": "Usearch hits ≠ max identity for query ID",
-    "filtered_query_id_mismatch": "No overlap for hits in both databases",
+    "filtered min similarity ABR": "Diamond hits < similarity threshold",
+    "filtered max identity ABR": "Diamond hits ≠ max identity for query ID",
+    "filtered min similarity 16S": "Usearch hits < similarity threshold",
+    "filtered max identity 16S": "Usearch hits ≠ max identity for query ID",
+    "filtered query id mismatch": "No overlap for hits in both databases",
 }
 
 
@@ -41,6 +41,7 @@ def load_and_summarize_data(input_path):
     # Assign main and filter categories
     df["category"] = df["state"].apply(map_main_category)
     df["filter_reason"] = df["state"].apply(map_filter_reason)
+    df["total_count"] = df["total_count"].astype(int).abs()
 
     # Group main categories
     main_summary = (
@@ -74,8 +75,8 @@ def plot_summary(main_summary, overlay_summary, output_path):
 
     # Define colors
     main_colors = {
-        MAIN_CATEGORIES["integration_output"]: "#fc8d62",
-        MAIN_CATEGORIES["filtration_output"]: "#8da0cb",
+        MAIN_CATEGORIES["merge output"]: "#fc8d62",
+        MAIN_CATEGORIES["filtration output"]: "#8da0cb",
     }
     filter_colors = {
         FILTER_REASONS[k]: c
@@ -87,21 +88,21 @@ def plot_summary(main_summary, overlay_summary, output_path):
     # Plot main bars
     ax.bar(
         x - bar_width / 2,
-        main_summary[MAIN_CATEGORIES["integration_output"]],
+        main_summary[MAIN_CATEGORIES["merge output"]],
         bar_width,
-        label=MAIN_CATEGORIES["integration_output"],
-        color=main_colors[MAIN_CATEGORIES["integration_output"]],
+        label=MAIN_CATEGORIES["merge output"],
+        color=main_colors[MAIN_CATEGORIES["merge output"]],
     )
     ax.bar(
         x + bar_width / 2,
-        main_summary[MAIN_CATEGORIES["filtration_output"]],
+        main_summary[MAIN_CATEGORIES["filtration output"]],
         bar_width,
-        label=MAIN_CATEGORIES["filtration_output"],
-        color=main_colors[MAIN_CATEGORIES["filtration_output"]],
+        label=MAIN_CATEGORIES["filtration output"],
+        color=main_colors[MAIN_CATEGORIES["filtration output"]],
     )
 
     # Stack filter bars on top of filtration bar
-    bottom = main_summary[MAIN_CATEGORIES["filtration_output"]].values.copy()
+    bottom = main_summary[MAIN_CATEGORIES["filtration output"]].values.copy()
     for reason in FILTER_REASONS.values():
         heights = (
             overlay_summary[reason]

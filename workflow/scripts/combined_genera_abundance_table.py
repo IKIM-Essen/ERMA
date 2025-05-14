@@ -24,7 +24,7 @@ def write_dummy_line(sample_name):
         "AMR Gene Family": "NA",
         "genus": "NA",
         "genus_count": 0,
-        "total_genus_count": 0,
+        "total_count": 0,
         "relative_genus_count": 0,
     }
     return pd.DataFrame([dummy_line])
@@ -57,13 +57,13 @@ def process_combined_data(combined_data, sample_name):
     total_counts = (
         genus_counts.groupby(["sample", "AMR Gene Family"])["genus_count"]
         .sum()
-        .reset_index(name="total_genus_count")
+        .reset_index(name="total_count")
     )
 
     # Join and calculate relative abundance
     result = pd.merge(genus_counts, total_counts, on=["sample", "AMR Gene Family"])
     result["relative_genus_count"] = round(
-        result["genus_count"] / result["total_genus_count"], 4
+        result["genus_count"] / result["total_count"], 4
     )
 
     return result

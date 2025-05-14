@@ -25,7 +25,7 @@ def write_dummy_line(sample_name):
         "AMR Gene Family": "NA",
         "genus": "NA",
         "genus_count": 0,
-        "total_genus_count": 0,
+        "total_count": 0,
         "relative_genus_count": 0,
     }
     merged_data = pd.DataFrame([dummy_line])
@@ -66,7 +66,7 @@ def process_combined_data(combined_data, sample_name):
     total_counts = (
         genus_counts.groupby(["sample", "AMR Gene Family"])["genus_count"]
         .sum()
-        .reset_index(name="total_genus_count")
+        .reset_index(name="total_count")
     )
 
     # Merge to get total counts for each genus entry and calculate relative counts
@@ -74,7 +74,7 @@ def process_combined_data(combined_data, sample_name):
         genus_counts, total_counts, on=["sample", "AMR Gene Family"], how="left"
     )
     genus_counts["relative_genus_count"] = round(
-        genus_counts["genus_count"] / genus_counts["total_genus_count"], 4
+        genus_counts["genus_count"] / genus_counts["total_count"], 4
     )
 
     return genus_counts
@@ -112,7 +112,7 @@ def export_genera_abundance(input_files, sample_name, parts, output_path):
     processed_data = process_combined_data(full_sample_df, sample_name)
 
     processed_data = processed_data.sort_values(
-        by=["total_genus_count", "genus_count"], ascending=False
+        by=["total_count", "genus_count"], ascending=False
     )
 
     # Write to HTML

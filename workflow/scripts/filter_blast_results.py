@@ -85,7 +85,10 @@ def write_summary(overview_table, sample, part, stats):
 def filter_blast_results(input_file, output_file, min_similarity, overview_table):
     """Main filtering logic for BLAST results across ABR and 16S data parts"""
     df = read_input_data(input_file)
-
+    df_overview = pd.read_csv(
+        overview_table, names=["state", "sample", "No", "total_count"]
+    )
+    print(df_overview)
     # ABR filtering
     abr_filtered, abr_removed_identity = filter_by_identity(df, "ABR", min_similarity)
     abr_final = keep_max_identity_per_query(abr_filtered)
@@ -100,15 +103,25 @@ def filter_blast_results(input_file, output_file, min_similarity, overview_table
     # Handle dummy 16S result
     if len(s16_final) == 1 and s16_final.iloc[0]["query_id"] == "dummy.dummy":
         write_dummy_line(output_file)
+        merge_output = df_overview.loc[
+            df_overview["state"] == "merge output", "total_count"
+        ].values[0]
+        filtered = (
+            abr_removed_identity
+            + abr_removed_max
+            + s16_removed_identity
+            + s16_removed_max
+        )
+        remaining = merge_output - filtered
         sample, part = os.path.normpath(input_file).split(os.sep)[-3:-1]
         # Write summary in case of dummy
         stats = {
-            "filtered_min_similarity_ABR": abr_removed_identity,
-            "filtered_max_identity_ABR": abr_removed_max,
-            "filtered_min_similarity_16S": 0,
-            "filtered_max_identity_16S": 0,
-            "filtered_query_id_mismatch": 0,
-            "filtration_output": 1,
+            "filtered min similarity ABR": "-" + str(abr_removed_identity),
+            "filtered max identity ABR": "-" + str(abr_removed_max),
+            "filtered min similarity 16S": "-" + str(s16_removed_identity),
+            "filtered max identity 16S": "-" + str(s16_removed_max),
+            "filtered query id mismatch": "-" + str(remaining),
+            "filtration output": 1,
         }
         write_summary(overview_table, sample, part, stats)
         return
@@ -128,12 +141,12 @@ def filter_blast_results(input_file, output_file, min_similarity, overview_table
 
     # Write summary
     stats = {
-        "filtered_min_similarity_ABR": abr_removed_identity,
-        "filtered_max_identity_ABR": abr_removed_max,
-        "filtered_min_similarity_16S": s16_removed_identity,
-        "filtered_max_identity_16S": s16_removed_max,
-        "filtered_query_id_mismatch": removed_query_id_mismatch,
-        "filtration_output": len(merged),
+        "filtered min similarity ABR": "-" + str(abr_removed_identity),
+        "filtered max identity ABR": "-" + str(abr_removed_max),
+        "filtered min similarity 16S": "-" + str(s16_removed_identity),
+        "filtered max identity 16S": "-" + str(s16_removed_max),
+        "filtered query id mismatch": "-" + str(removed_query_id_mismatch),
+        "filtration output": len(merged),
     }
     write_summary(overview_table, sample, part, stats)
 

@@ -15,8 +15,8 @@ rule diamond_card:
     shell:
         """
         diamond blastx -d {input.card} -q {input.fasta} -o {output.card_results} --outfmt 6 --evalue 1e-5 --threads {params.internal_threads} 2> {log}
-        echo -ne "fasta_input,{wildcards.sample},{wildcards.part},$(cat {input.fasta}|grep -c '^>')\n" >> {output.overview_table}
-        echo -ne "diamond_output,{wildcards.sample},{wildcards.part},$(cat {output.card_results}|wc -l)\n" >> {output.overview_table}
+        echo -ne "fastq input reads,{wildcards.sample},{wildcards.part},$(cat {input.fasta}|grep -c '^>')\n" >> {output.overview_table}
+        echo -ne "diamond output hits,{wildcards.sample},{wildcards.part},$(cat {output.card_results}|wc -l)\n" >> {output.overview_table}
         """
 
 if config["similarity_search_mode"] == "fast":
@@ -38,7 +38,7 @@ if config["similarity_search_mode"] == "fast":
         shell:
             """
             usearch -usearch_local {input.fasta} -db {input.silva} -blast6out {output.silva_results} -evalue 1e-5 -threads {params.internal_threads} -strand plus -mincols 200 2> {log}
-            echo -ne "usearch_output,{wildcards.sample},{wildcards.part},$(cat {output.silva_results}|wc -l)\n" >> {input.overview_table}
+            echo -ne "usearch output hits,{wildcards.sample},{wildcards.part},$(cat {output.silva_results}|wc -l)\n" >> {input.overview_table}
             """
 
 if config["similarity_search_mode"] == "extensive":
@@ -60,7 +60,7 @@ if config["similarity_search_mode"] == "extensive":
         shell:
             """
             usearch -usearch_local {input.fasta} -db {input.silva} -blast6out {output.silva_results} -evalue 1e-5 -threads {params.internal_threads} -strand both -mincols 200 2> {log}
-            echo -ne "usearch_output,{wildcards.sample},{wildcards.part},$(cat {output.silva_results}|wc -l)\n" >> {input.overview_table}
+            echo -ne "usearch output hits,{wildcards.sample},{wildcards.part},$(cat {output.silva_results}|wc -l)\n" >> {input.overview_table}
             """
 
 rule integrate_blast_data:

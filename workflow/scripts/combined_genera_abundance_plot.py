@@ -21,7 +21,7 @@ min_overlap, one of each samples top genus iteratively or every genus present.
 def load_filtered_data(input_csv, min_total_count=100):
     """Load CSV and filter AMR Gene Families by minimum total genus count"""
     df = pd.read_csv(input_csv, sep=",")
-    return df[df["total_genus_count"] > min_total_count]
+    return df[df["total_count"] > min_total_count]
 
 
 def get_top_genera_per_sample(df, top_n):
@@ -88,12 +88,12 @@ def add_amr_family_subplot(
         x="sample",
         y="genus",
         size="relative_genus_count",
-        color="total_genus_count",
+        color="total_count",
         hover_name="genus",
         hover_data={
             "genus_count": True,
             "relative_genus_count": True,
-            "total_genus_count": True,
+            "total_count": True,
             "sample": False,
         },
         size_max=20,
@@ -126,7 +126,7 @@ def create_bubble_plot_grid(df, max_genera, min_overlap, top_per_sample):
         plot_bgcolor="lightgrey",
         height=900,
         width=500 * num_cols,
-        coloraxis_colorbar=dict(title="Total Genus Count"),
+        coloraxis_colorbar=dict(title="Filtered Hit Count"),
     )
     fig.update_yaxes(categoryorder="category descending")
     fig.update_xaxes(categoryorder="category ascending")

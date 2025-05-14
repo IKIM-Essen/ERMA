@@ -117,7 +117,7 @@ def merge_results(card_output, silva_output, final_output, overview_table):
     count = len(combined_df)
 
     with open(overview_table, "a") as file:
-        line = f"integration_output,{sample},{part},{count}\n"
+        line = f"merge output,{sample},{part},{count}\n"
         file.write(line)
 
 
