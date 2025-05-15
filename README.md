@@ -24,8 +24,7 @@ mamba install -c conda-forge -c bioconda snakemake --yes; mamba install -c bioco
 
 Alternatively, follow the official [Snakemake installation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) guide for more options.
 
-Install Dependencies
-This pipeline uses conda environments to manage its dependencies. Snakemake will automatically create and manage these environments when run with the `--use-conda` flag (default in profile).
+Install Dependencies: This pipeline uses conda environments to manage its dependencies. Snakemake will automatically create and manage these environments when run with the `--use-conda` flag (default in profile).
 
 ## Usage Instructions
 
@@ -35,13 +34,16 @@ Clone the repository: First, clone the pipeline repository to your local machine
 git clone https://github.com/your-username/ERMA.git
 cd ERMA
 ```
-Prepare Data Folder: You need to place your raw sequencing files (fastq.gz format) in the data/fastq/ directory. This folder must exist before running the pipeline.
+Prepare Data Folder: You need to place your raw sequencing files (fastq.gz format) in the data/fastq/ directory or change this path to the desired directory.
 
 Modify the Config File: Open the config/config.yaml file and change the base_dir parameter to the base directory where the pipeline is located. The config file should look like this:
 
 ```yaml
 runname: "ERMA_runname123"
-base_dir: "/path/to/your/ERMA"
+# setting up base directory and location of input and output. Generally, no changes needed here.
+base_dir: "."
+fastq_dir: "data/fastq" # copy target fastq.gz files in ERMA/data/fastq or change this path
+outdir: "results" # Output directory of the final report
 
 min_similarity: "0.8" # threshold to filter blast hits by percentage identity
 
@@ -53,14 +55,22 @@ card:
   download-path: "https://card.mcmaster.ca/download/0/broadstreet-v3.3.0.tar.bz2"
 
 num_parts: 1 # number of subfiles the fastqs are split into
-max_threads: 16 # 
+max_threads: 16 
 
-similarity_search_mode: "extensive" # Put here fast or extensive for search on only forward or both strands
+similarity_search_mode: "fast" # Put here fast or extensive
 
-seq_tech: "ONT"
+### Preprocessing ###
+# if data is already in format 'one fastq.gz per sample', this section can be ignored
+
+seq_tech: "Illumina" # Put here "Illumina" or "ONT" befor using rule prepare_fastqs
+
+# In case of Demultiplexing ONT data, provide information for this section
+ONT:
+  fastq_pass_path: "data/ONT/fastq_pass" # copy your fastq_pass folder here
+  sample_name_path: "data/ONT/barcode-rename.csv" # change this file with your barcode-sample name combinations
+  target_fragment_length: 1250 # Length of the theoretical fragment after nested PCR
+  filter_intervall: 0.1 # +/- Intervall used to filter too large/small fragments; 0.1 filters in a +/- 10% intervall
 ```
-
-Replace /path/to/your/project with the actual path to your local pipeline directory.
 
 ### Illumina input
 
@@ -73,14 +83,14 @@ When analyzing paired-end reads, they must be merged before starting the pipelin
 3. Run:
 
 ```bash
-snakemake prepare-fastqs
+snakemake prepare_fastqs
 ```
 
 ### ONT input
 
-Skip this when the input files are already in fastq.gz format.
+Skip this when the input files are already in "one fastq.gz file per sample" - format.
 
-When starting with raw ONT output, this command can be used to demultiplex the samples according to the respective barcodes. For that, following must be prepared:
+When starting with raw ONT output, this routine can be used to demultiplex the samples according to the respective barcodes. For that, following must be prepared:
 
 1. Enter the desired Sample name - barcode combinations in the file "barcode-rename.csv" which can be found at data/ONT
 2. Copy the fastq_pass folder of the targeted ONT run in data/ONT or change the respective path in the config file
@@ -89,7 +99,7 @@ When starting with raw ONT output, this command can be used to demultiplex the s
 5. Run:
 
 ```bash
-snakemake prepare-fastqs
+snakemake prepare_fastqs
 ```
 
 ### Run Pipeline
@@ -102,7 +112,7 @@ snakemake --profile profile
 
 ## Additional Notes
 
-The pipeline is designed to handle large sequencing datasets in parallel, so it's recommended to run it on a machine with sufficient computational resources. However, to run the pipeline on machines with less resources, it is recommended to split the fastq files or the tables in smaller chunks to prevent the RAM to overflow. This can be done by increase num_parts in the config file. However, the higher the number of parts per FASTQ file, the higher the chance some blast results for the same read will be split and lost.
+The pipeline is designed to handle large sequencing datasets in parallel, so it's recommended to run it on a machine with sufficient computational resources. However, to run the pipeline on machines with less resources, it is recommended to split the fastq files or the tables in smaller chunks to prevent RAM  overflow. This can be done by increase num_parts in the config file. However, the higher the number of parts per FASTQ file, the higher the chance some blast results for the same read will be split and lost.
 If any errors occur during the pipeline run, Snakemake will provide detailed logs, allowing you to debug and troubleshoot any issues. You are most welcome to create an Issue when running into problems.
 
 License

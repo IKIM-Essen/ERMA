@@ -1,6 +1,8 @@
 runname: "test"
+# setting up base directory and location of fastq files. Generally, no changes needed here.
 base_dir: "."
-fastq_dir: "data/fastq"
+fastq_dir: "data/fastq" # Copy target fastq.gz files in ERMA/data/fastq or change this path
+outdir: "results" # Output directory of the final report
 
 min_similarity: "0.8" # threshold to pre-filter blast hits by percentage identity
 
