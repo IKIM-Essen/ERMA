@@ -46,7 +46,7 @@ def read_input_data(input_file):
 
 
 def filter_by_identity(df, part, min_similarity):
-    """Filter BLAST result for either ABR or 16S part based on percent identity"""
+    """Filter BLAST result for either ABR and 16S part based on percent identity"""
     data_pre = df[df["part"] == part]
     filtered = data_pre[data_pre["perc_identity"] > min_similarity * 100]
     filtered_count = len(data_pre) - len(filtered)
@@ -88,7 +88,6 @@ def filter_blast_results(input_file, output_file, min_similarity, overview_table
     df_overview = pd.read_csv(
         overview_table, names=["state", "sample", "No", "total_count"]
     )
-    print(df_overview)
     # ABR filtering
     abr_filtered, abr_removed_identity = filter_by_identity(df, "ABR", min_similarity)
     abr_final = keep_max_identity_per_query(abr_filtered)
