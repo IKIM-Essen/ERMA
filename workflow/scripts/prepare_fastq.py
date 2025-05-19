@@ -19,8 +19,8 @@ filter_intervall = float(snakemake.params.filter_intervall)
 output_dir = snakemake.params.output_dir
 
 # Set filter range around the target length
-min_len = target_length * (1 - filter_intervall)
-max_len = target_length * (1 + filter_intervall)
+min_len = int(target_length * (1 - filter_intervall))
+max_len = int(target_length * (1 + filter_intervall))
 
 Path(output_dir).mkdir(parents=True, exist_ok=True)
 
