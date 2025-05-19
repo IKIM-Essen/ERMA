@@ -50,7 +50,6 @@ rule snakemake_report:
     shell:
         """        
         snakemake --nolock --report {output} --report-stylesheet config/custom-stylesheet.css 2>> {log}
-        rm -r fs
         """
 
 # Prevents wildcard confusion by preventing dots or slashes in sample and keeps part numerical
