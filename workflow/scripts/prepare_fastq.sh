@@ -1,4 +1,8 @@
 #!/bin/bash
+# Copyright 2024 Adrian Dörr.
+# Licensed under the MIT License (https://opensource.org/license/mit)
+# This file may not be copied, modified, or distributed
+# except according to those terms.
 
 """
 This script is meant to merge paired-end Illumina reads to one file.
