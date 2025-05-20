@@ -3,7 +3,7 @@
 [![Snakemake](https://img.shields.io/badge/snakemake-≥9.0-brightgreen.svg)](https://snakemake.bitbucket.io)
 [![Snakemake CI](https://github.com/IKIM-Essen/ERMA/actions/workflows/snakemake-ci.yml/badge.svg)](https://github.com/IKIM-Essen/ERMA/actions/workflows/snakemake-ci.yml)
 
-This pipeline is designed to process sequencing reads obtained from epicPCR experiments, linking antimicrobial resistance (AMR) genes with 16S rRNA genes. The pipeline uses **Snakemake** to manage the workflow and integrates tools for downloading necessary databases, running sequence alignments, filtering, and generating visual reports.
+This **Snakemake**-based pipeline processes sequencing reads from epicPCR experiments to link antimicrobial resistance (AMR) genes with genus-specific 16S rRNA gene sequences from prokaryotic cells. It orchestrates all workflow steps, including database downloads, sequence alignment, read filtering, and the generation of visual reports, ensuring reproducibility and streamlined analysis.
 
 ## Features
 - Downloads and prepares SILVA and CARD databases for use in the analysis.
@@ -17,10 +17,11 @@ This pipeline is designed to process sequencing reads obtained from epicPCR expe
 ## Prerequisites
 
 ### Install Snakemake
-The pipeline requires **Snakemake** with support for conda environments. You can install it using conda (via Miniconda or Anaconda):
+The pipeline requires **Snakemake** (≥ Version 9.0) with support for conda environments. You can install it using conda (via Miniconda or Anaconda):
 
 ```bash
-mamba install -c conda-forge -c bioconda snakemake --yes; mamba install -c bioconda snakemake-storage-plugin-fs --yes
+mamba create -n snakemake9 -c conda-forge -c bioconda snakemake=9 --yes; mamba install -n snakemake9 -c bioconda snakemake-storage-plugin-fs --yes
+mamba activate snakemake9
 ```
 
 Alternatively, follow the official [Snakemake installation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) guide for more documentation and options.
@@ -29,7 +30,7 @@ Install Dependencies: This pipeline uses conda environments to manage its depend
 
 ## Usage Instructions
 
-Clone the repository: First, clone the pipeline repository to your local machine:
+First, clone the pipeline repository to your local machine:
 
 ```bash
 git clone https://github.com/your-username/ERMA.git
@@ -109,6 +110,14 @@ To run the pipeline in the default mode, a profile with snakemake specific param
 
 ```bash
 snakemake --profile profile
+```
+
+### Testing
+
+For testing the workflow you can copy the provided dummy data:
+
+```
+cp .github/data/fastq/test_epic_data.fastq.gz data/fastq/
 ```
 
 ## Additional Notes
