@@ -1,5 +1,8 @@
 import glob, os
+
+
 configfile: "config/config.yaml"
+
 
 include: "rules/common.smk"
 include: "rules/qc.smk"
@@ -9,50 +12,56 @@ include: "rules/boxplots.smk"
 include: "rules/abundance.smk"
 include: "rules/preprocess.smk"
 
+
 # Build a list of all "fastq.gz" files in "ERMA/data/fastq" which will be processed subsequently
-samples = [os.path.basename(f).replace(".fastq.gz", "") for f in glob.glob(os.path.join(config["base_dir"], config["fastq_dir"], "*.fastq.gz"))]
+samples = [
+    os.path.basename(f).replace(".fastq.gz", "")
+    for f in glob.glob(
+        os.path.join(config["base_dir"], config["fastq_dir"], "*.fastq.gz")
+    )
+]
 runname = "".join(config["runname"])
 seq_tech = "".join(config["seq_tech"])
 outdir = "".join(config["outdir"])
 
-print("Important Run Parameter:\n")
+print("Run Parameters:\n")
 print(f"Base directory: \t{os.path.abspath(config['base_dir'])}")
-print(f"Sample location:\t{os.path.abspath(config['fastq_dir'])}")
-print(f"Report out location:\t{os.path.abspath(config['outdir'])}")
+print(f"Input location:\t{os.path.abspath(config['fastq_dir'])}")
+print(f"Output location:\t{os.path.abspath(config['outdir'])}")
 print(f"Detected samples:\t{samples}")
-print(f"Detected Runname:\t{runname}")
-print(f"Detected Seqtech:\t{seq_tech} (This Parameter is for demultiplexing/merging preprocess only!)\n")
+print(f"Detected runname:\t{runname}")
+print(
+    f"Configured sequencing technology in preprocessing (for merging/demultiplexing):\t{seq_tech}\n"
+)
+
 
 rule all:
     input:
-        local(f"{outdir}/{runname}_report.zip")
+        local(f"{outdir}/{runname}_report.zip"),
+
 
 report: "../report/workflow.rst"
 
+
 rule snakemake_report:
-    input:              
+    input:
         local("results/abundance/combined_genus_abundance_bubbleplot.html"),
         local("results/abundance/reads_per_found_AMR.html"),
-        local("results/boxplots/combined_allength_boxplot.png"),        
-        local("results/boxplots/combined_evalue_boxplot.png"),        
-        local("results/boxplots/combined_percidt_boxplot.png"),        
+        local("results/boxplots/combined_allength_boxplot.png"),
+        local("results/boxplots/combined_evalue_boxplot.png"),
+        local("results/boxplots/combined_percidt_boxplot.png"),
         local("results/qc/multiqc.html"),
         local("results/qc/overview_plot.png"),
-        local(expand("results/{sample}/overview_table.html",sample=samples)),
-        local(expand("results/{sample}/genus_abundance.html", sample=samples)),        
-        local(expand("results/{sample}/genus_idt_per_genus_plot.png", sample=samples)),        
+        local(expand("results/{sample}/overview_table.html", sample=samples)),
+        local(expand("results/{sample}/genus_abundance.html", sample=samples)),
+        local(expand("results/{sample}/genus_idt_per_genus_plot.png", sample=samples)),
     log:
         local("logs/report/report.log"),
     conda:
         "envs/snakemake.yaml"
     output:
-        local(f"{outdir}/{runname}_report.zip")
+        local(f"{outdir}/{runname}_report.zip"),
     shell:
         """        
         snakemake --nolock --report {output} --report-stylesheet config/custom-stylesheet.css 2>> {log}
         """
-
-# Prevents wildcard confusion by preventing dots or slashes in sample and keeps part numerical
-wildcard_constraints:
-    sample = "[a-zA-Z0-9_]+",
-    part = "\\d+"
