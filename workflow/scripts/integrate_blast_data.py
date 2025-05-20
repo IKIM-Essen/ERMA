@@ -42,21 +42,7 @@ def process_card_results(
             card_df["ARO Accession"] = card_df["subject_id"].str.split(
                 "|", expand=True
             )[2]
-            card_df["distance"] = card_df["q_start"] - card_df["q_end"]
-            orientation_counts = (
-                card_df.groupby("query_id")["distance"]
-                .agg(
-                    lambda x: (
-                        "reverse"
-                        if (x < 0).all()
-                        else "forward" if (x >= 0).all() else "mixed"
-                    )
-                )
-                .rename("orientation")
-                .reset_index()
-            )
-            merged_df = card_df.merge(orientation_counts, on="query_id")
-            merged_df = merged_df.merge(aro_df, on="ARO Accession", how="left")
+            merged_df = card_df.merge(aro_df, on="ARO Accession", how="left")
             merged_df.to_csv(f_out, index=False)
     except Exception as e:
         print(f"Error processing {card_results_path}: {e}")
@@ -79,22 +65,8 @@ def process_silva_results(silva_results_path, blast_columns, output_path):
             silva_df["primaryAccession"] = silva_df["subject_id"].str.split(
                 ".", expand=True
             )[0]
-            silva_df["distance"] = silva_df["q_start"] - silva_df["q_end"]
-            orientation_counts = (
-                silva_df.groupby("query_id")["distance"]
-                .agg(
-                    lambda x: (
-                        "reverse"
-                        if (x < 0).all()
-                        else "forward" if (x >= 0).all() else "mixed"
-                    )
-                )
-                .rename("orientation")
-                .reset_index()
-            )
-            merged_df = silva_df.merge(orientation_counts, on="query_id")
-            merged_df["genus"] = merged_df["subject_id"].str.split(";").str[-2]
-            merged_df.to_csv(f_out, index=False)
+            silva_df["genus"] = silva_df["subject_id"].str.split(";").str[-2]
+            silva_df.to_csv(f_out, index=False)
     except Exception as e:
         print(f"Error processing {silva_results_path}: {e}")
         write_dummy_line(output_path, "16S")
