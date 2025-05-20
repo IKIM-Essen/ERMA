@@ -33,7 +33,7 @@ Install Dependencies: This pipeline uses conda environments to manage its depend
 First, clone the pipeline repository to your local machine:
 
 ```bash
-git clone https://github.com/your-username/ERMA.git
+git clone https://github.com/IKIM-essen/ERMA.git
 cd ERMA
 ```
 Prepare Data Folder: You need to place your raw sequencing files (fastq.gz format) in the data/fastq/ directory or change this path to the desired directory.
