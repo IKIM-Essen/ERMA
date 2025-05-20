@@ -1,5 +1,6 @@
 # ERMA - epicPCR Resistome-Microbiome Analyzer
 
+[![Snakemake](https://img.shields.io/badge/snakemake-≥9.0-brightgreen.svg)](https://snakemake.bitbucket.io)
 [![Snakemake CI](https://github.com/IKIM-Essen/ERMA/actions/workflows/snakemake-ci.yml/badge.svg)](https://github.com/IKIM-Essen/ERMA/actions/workflows/snakemake-ci.yml)
 
 This pipeline is designed to process sequencing reads obtained from epicPCR experiments, linking antimicrobial resistance (AMR) genes with 16S rRNA genes. The pipeline uses **Snakemake** to manage the workflow and integrates tools for downloading necessary databases, running sequence alignments, filtering, and generating visual reports.
@@ -22,7 +23,7 @@ The pipeline requires **Snakemake** with support for conda environments. You can
 mamba install -c conda-forge -c bioconda snakemake --yes; mamba install -c bioconda snakemake-storage-plugin-fs --yes
 ```
 
-Alternatively, follow the official [Snakemake installation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) guide for more options.
+Alternatively, follow the official [Snakemake installation](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) guide for more documentation and options.
 
 Install Dependencies: This pipeline uses conda environments to manage its dependencies. Snakemake will automatically create and manage these environments when run with the `--use-conda` flag (default in profile).
 
@@ -57,7 +58,7 @@ card:
 num_parts: 1 # number of subfiles the fastqs are split into
 max_threads: 16 
 
-similarity_search_mode: "fast" # Put here fast or extensive
+similarity_search_mode: "test" # Put here "test" or "full" for strand/s to be included in the similarity search
 
 ### Preprocessing ###
 # if data is already in format 'one fastq.gz per sample', this section can be ignored

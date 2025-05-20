@@ -88,7 +88,7 @@ def filter_blast_results(input_file, output_file, min_similarity, overview_table
     df_overview = pd.read_csv(
         overview_table, names=["state", "sample", "No", "total_count"]
     )
-    print(df_overview)
+
     # ABR filtering
     abr_filtered, abr_removed_identity = filter_by_identity(df, "ABR", min_similarity)
     abr_final = keep_max_identity_per_query(abr_filtered)

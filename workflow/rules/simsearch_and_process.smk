@@ -19,7 +19,7 @@ rule diamond_card:
         echo -ne "diamond output hits,{wildcards.sample},{wildcards.part},$(cat {output.card_results}|wc -l)\n" >> {output.overview_table}
         """
 
-if config["similarity_search_mode"] == "fast":
+if config["similarity_search_mode"] == "test":
     rule usearch_silva:
         input:
             overview_table = local("results/{sample}/{part}/overview_table.txt"),
@@ -41,7 +41,7 @@ if config["similarity_search_mode"] == "fast":
             echo -ne "usearch output hits,{wildcards.sample},{wildcards.part},$(cat {output.silva_results}|wc -l)\n" >> {input.overview_table}
             """
 
-if config["similarity_search_mode"] == "extensive":
+if config["similarity_search_mode"] == "full":
     rule usearch_silva:
         input:
             overview_table = local("results/{sample}/{part}/overview_table.txt"),
