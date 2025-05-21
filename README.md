@@ -104,6 +104,15 @@ When starting with raw ONT output, this routine can be used to demultiplex the s
 snakemake prepare_fastqs
 ```
 
+### Sample naming
+
+To ensure a robust run of the pipeline, sample names are restricted to only contain:
+- Uppercase and/or lowercase letters
+- digits 
+- underscores
+
+Sample names containing other special characters ("-" "," "." "/" "$" "@" etc.) will result in an error
+
 ### Run Pipeline
 
 To run the pipeline in the default mode, a profile with snakemake specific parameters is provided. Therefore, the only neccessary command to start is:
@@ -119,6 +128,8 @@ For testing the workflow you can copy the provided dummy data:
 ```
 cp .github/data/fastq/test_epic_data.fastq.gz data/fastq/
 ```
+
+In this case, the similarity search mode in the config file can be changed to "test"
 
 ## Additional Notes
 
