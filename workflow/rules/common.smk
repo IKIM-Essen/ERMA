@@ -16,6 +16,9 @@ wildcard_constraints:
 def get_base_dir():
     return config["base_dir"]
 
+def validate_script():
+    return os.path.join(get_base_dir(), "workflow", "scripts", "validate_inputs.py")
+
 
 def get_card_db_dir():
     return os.path.join(get_base_dir(), "data", "card_db")

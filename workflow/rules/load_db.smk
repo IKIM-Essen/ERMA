@@ -9,7 +9,7 @@ rule get_16S_db:
         seq=local("data/silva_db/silva_seq_RNA.fasta.gz"),
     params:
         path=get_silva_db_dir(),
-        seq=config["silva"]["download-path-seq"],
+        seq=config["silva"]["download_path_seq"],
     conda:
         "../envs/python.yaml"
     log:
@@ -60,7 +60,7 @@ rule get_card_db:
         seq=local("data/card_db/card_seq.tar.bz2"),
     params:
         path=get_card_db_dir(),
-        seq=config["card"]["download-path"],
+        seq=config["card"]["download_path"],
     log:
         local("logs/get_card_db/get_silva_db.log"),
     conda:

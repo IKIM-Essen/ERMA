@@ -18,3 +18,4 @@ logs
 .test/.snakemake
 data/ONT/*
 !data/ONT/barcode-rename.csv
+workflow/scripts/__pycache__/
