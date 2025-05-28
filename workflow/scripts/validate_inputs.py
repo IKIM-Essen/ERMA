@@ -9,6 +9,7 @@ import re
 import sys
 import os
 
+
 def validate_samples(samples, fastq_dir):
     sample_pattern = re.compile(r"^[a-zA-Z0-9_]+$")
 
@@ -56,24 +57,31 @@ def validate_samples(samples, fastq_dir):
                 lines = [next(f) for _ in range(8)]
                 for i in range(0, len(lines), 4):
                     if not lines[i].startswith("@"):
-                        sample_errors.append("Malformed FASTQ: Read does not start with '@'")
+                        sample_errors.append(
+                            "Malformed FASTQ: Read does not start with '@'"
+                        )
                         break
         except Exception as e:
             sample_errors.append(f"Error parsing FASTQ format: {e}")
-        
+
         # 5. Check sample name against wildcard constraint
         if not sample_pattern.fullmatch(sample):
-            sample_errors.append("Sample name violates wildcard constraint: check README.md")
-        
+            sample_errors.append(
+                "Sample name violates wildcard constraint: check README.md"
+            )
+
         if sample_errors:
             errors_found = True
             print_errors(sample, sample_errors)
 
     if errors_found:
-        print("\nERROR: One or more input validation errors occurred. Aborting Snakemake run.\n")
+        print(
+            "\nERROR: One or more input validation errors occurred. Aborting Snakemake run.\n"
+        )
         sys.exit(1)
     else:
         print("\nInput validation passed!\n")
+
 
 def print_errors(sample, errors):
     print(f"\nERROR: Sample '{sample}' failed validation with the following issues:")
