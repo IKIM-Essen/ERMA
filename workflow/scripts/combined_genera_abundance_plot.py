@@ -115,7 +115,10 @@ def create_bubble_plot_grid(df, max_genera, min_overlap, top_per_sample):
     num_cols = len(families) if len(df) > 1 else 1
 
     fig = make_subplots(
-        rows=1, cols=num_cols, subplot_titles=list(families), horizontal_spacing=0.2,
+        rows=1,
+        cols=num_cols,
+        subplot_titles=list(families),
+        horizontal_spacing=0.2,
     )
 
     for idx, family in enumerate(families, start=1):
