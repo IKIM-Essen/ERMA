@@ -8,8 +8,8 @@ This **Snakemake**-based pipeline processes sequencing reads from epicPCR experi
 ## Features
 - Downloads and prepares SILVA and CARD databases for use in the analysis.
 - Converts raw FASTQ sequencing files to FASTA format.
-- Performs BLAST sequence alignments against both CARD (AMR genes) and SILVA (16S rRNA).
-- Integrates BLAST results to identify linked AMR and microbial markers.
+- Performs Diamond/Usearch sequence alignments against both CARD (AMR genes) and SILVA (16S rRNA).
+- Integrates similarity search results to identify linked AMR and microbial markers.
 - Generates filtered results based on alignment quality and similarity thresholds.
 - Produces graphical outputs such as genus abundance plots, boxplots, and tables.
 - Generates an HTML report summarizing the analysis.
@@ -17,10 +17,10 @@ This **Snakemake**-based pipeline processes sequencing reads from epicPCR experi
 ## Prerequisites
 
 ### Install Snakemake
-The pipeline requires **Snakemake** (≥ Version 9.0) with support for conda environments. You can install it using conda (via Miniconda or Anaconda):
+The pipeline requires **Snakemake** (≥ Version 9.0) with support for conda environments. You can install it using conda/mamba (via Miniconda or Anaconda):
 
 ```bash
-mamba create -n snakemake9 -c conda-forge -c bioconda snakemake=9 --yes; mamba install -n snakemake9 -c bioconda snakemake-storage-plugin-fs --yes
+mamba create -n snakemake9 -c conda-forge -c bioconda snakemake=9 --yes
 mamba activate snakemake9
 ```
 
@@ -50,11 +50,11 @@ outdir: "results" # Output directory of the final report
 min_similarity: "0.8" # threshold to filter blast hits by percentage identity
 
 silva:
-  download-path-seq: "path/to/silva_db"
-  download-path-tax: "path/to/silva_taxmap"
+  download_path_seq: "path/to/silva_db"
+  download_path_tax: "path/to/silva_taxmap"
 
 card:
-  download-path: "https://card.mcmaster.ca/download/0/broadstreet-v3.3.0.tar.bz2"
+  download_path: "https://card.mcmaster.ca/download/0/broadstreet-v3.3.0.tar.bz2"
 
 num_parts: 1 # number of subfiles the fastqs are split into
 max_threads: 16 
