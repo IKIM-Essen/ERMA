@@ -19,16 +19,17 @@ filtered hits with color-coded stacked bars.
 
 # === Constants for category mapping ===
 MAIN_CATEGORIES = {
+    "fastq input reads": "Number of FastQ input reads",
     "merge output": "Diamond and Usearch hits",
-    "filtration output": "Hits after filtration",
+    "filtration output": "Filtered fusion reads",
 }
 
 FILTER_REASONS = {
     "filtered min similarity ABR": "Diamond hits < similarity threshold",
-    "filtered max identity ABR": "Diamond hits ≠ max identity for query ID",
+    "filtered max identity ABR": "Diamond hits NOT highest percentage identity per query",
     "filtered min similarity 16S": "Usearch hits < similarity threshold",
-    "filtered max identity 16S": "Usearch hits ≠ max identity for query ID",
-    "filtered query id mismatch": "No overlap for hits in both databases",
+    "filtered max identity 16S": "Usearch hits NOT highest percentage identity per query",
+    "filtered query id mismatch": "Query hit in only one of two databases",
 }
 
 
@@ -74,13 +75,14 @@ def plot_summary(main_summary, overlay_summary, output_path):
     """Generate and save a stacked bar plot showing filtering breakdown."""
     samples = main_summary.index
     x = np.arange(len(samples))
-    bar_width = 0.25
-    overlay_width = 0.125
+    bar_width = 0.20
+    overlay_width = 0.1
 
     fig, ax = plt.subplots(figsize=(12, 7))
 
     # Define colors
     main_colors = {
+        MAIN_CATEGORIES["fastq input reads"]: "seagreen",
         MAIN_CATEGORIES["merge output"]: "#fc8d62",
         MAIN_CATEGORIES["filtration output"]: "#8da0cb",
     }
@@ -91,21 +93,18 @@ def plot_summary(main_summary, overlay_summary, output_path):
         )
     }
 
-    # Plot main bars
-    ax.bar(
-        x - bar_width / 2,
-        main_summary[MAIN_CATEGORIES["merge output"]],
-        bar_width,
-        label=MAIN_CATEGORIES["merge output"],
-        color=main_colors[MAIN_CATEGORIES["merge output"]],
-    )
-    ax.bar(
-        x + bar_width / 2,
-        main_summary[MAIN_CATEGORIES["filtration output"]],
-        bar_width,
-        label=MAIN_CATEGORIES["filtration output"],
-        color=main_colors[MAIN_CATEGORIES["filtration output"]],
-    )
+    # Dynamically plot all main categories
+    offsets = np.linspace(-bar_width, bar_width, len(MAIN_CATEGORIES))  # Even spacing
+    for i, (key, label) in enumerate(MAIN_CATEGORIES.items()):
+        if label not in main_summary.columns:
+            continue
+        ax.bar(
+            x + offsets[i],
+            main_summary[label],
+            bar_width,
+            label=label,
+            color=main_colors.get(label, "gray"),
+        )
 
     # Stack filter bars on top of filtration bar
     bottom = main_summary[MAIN_CATEGORIES["filtration output"]].values.copy()
@@ -116,7 +115,7 @@ def plot_summary(main_summary, overlay_summary, output_path):
             else np.zeros_like(bottom)
         )
         ax.bar(
-            x + bar_width / 2.1,
+            x + bar_width,
             heights,
             overlay_width,
             bottom=bottom,

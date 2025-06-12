@@ -34,12 +34,14 @@ def write_dummy_line(output_file):
     print("Detected only a dummy 16S line — generating merged dummy output.")
     dummy_line = {
         "query_id": "dummy",
-        "perc_identity": 0,
-        "align_length": 0,
-        "evalue": 0,
-        "part": "16S",
-        "genus": "Unclassified",
         "AMR Gene Family": "NA",
+        "perc_identity_ABR": 0,
+        "align_length_ABR": 0,
+        "evalue_ABR": 0,
+        "genus": "Unclassified",
+        "perc_identity_16S": 0,
+        "align_length_16S": 0,
+        "evalue_16S": 0,
     }
     dummy_df = pd.DataFrame(dummy_line, index=[0])
     dummy_df.to_csv(output_file, index=False)
@@ -66,6 +68,18 @@ def keep_max_identity_per_query(df):
     return merged
 
 
+def keep_best_per_query(
+    df, sort_by=["perc_identity", "evalue"], ascending=[False, True]
+):
+    """
+    For each query_id, keep the row with the highest perc_identity and lowest evalue.
+    Faster than groupby + merge.
+    """
+    return df.sort_values(
+        by=["query_id"] + sort_by, ascending=[True] + ascending
+    ).drop_duplicates(subset="query_id", keep="first")
+
+
 def clean_16s_query_ids(df):
     """Remove anything after the first whitespace in 16S query IDs"""
     df["query_id"] = df["query_id"].str.split().str[0]
@@ -79,6 +93,17 @@ def merge_parts_on_query_id(abr_data, s16_data):
         abr_data[abr_data["query_id"].isin(common_ids)],
         s16_data[s16_data["query_id"].isin(common_ids)],
     )
+
+
+def rename_for_merge(df, part):
+    df_renamed = df.rename(
+        columns={
+            "perc_identity": "perc_identity_" + part,
+            "align_length": "align_length_" + part,
+            "evalue": "evalue_" + part,
+        }
+    )
+    return df_renamed
 
 
 def write_summary(overview_table, sample, part, stats):
@@ -95,15 +120,23 @@ def filter_blast_results(input_file, output_file, min_similarity, overview_table
         overview_table, names=["state", "sample", "No", "total_count"]
     )
     # ABR filtering
-    abr_filtered, abr_removed_identity = filter_by_identity(df, "ABR", min_similarity)
-    abr_final = keep_max_identity_per_query(abr_filtered)
-    abr_removed_max = len(abr_filtered) - len(abr_final)
+    abr_threshold_filtered, abr_removed_identity = filter_by_identity(
+        df, "ABR", min_similarity
+    )
+    abr_best_identity = keep_max_identity_per_query(abr_threshold_filtered)
+    abr_best_query = keep_best_per_query(abr_best_identity)
+    abr_final = rename_for_merge(abr_best_query, "ABR")
+    abr_removed_max = len(abr_threshold_filtered) - len(abr_final)
 
     # 16S filtering
-    s16_filtered, s16_removed_identity = filter_by_identity(df, "16S", min_similarity)
-    s16_filtered = clean_16s_query_ids(s16_filtered)
-    s16_final = keep_max_identity_per_query(s16_filtered)
-    s16_removed_max = len(s16_filtered) - len(s16_final)
+    s16_threshold_filtered, s16_removed_identity = filter_by_identity(
+        df, "16S", min_similarity
+    )
+    s16_cleaned = clean_16s_query_ids(s16_threshold_filtered)
+    s16_best_identity = keep_max_identity_per_query(s16_cleaned)
+    s16_best_query = keep_best_per_query(s16_best_identity)
+    s16_final = rename_for_merge(s16_best_query, "16S")
+    s16_removed_max = len(s16_threshold_filtered) - len(s16_final)
 
     # Handle dummy 16S result
     if len(s16_final) == 1 and s16_final.iloc[0]["query_id"] == "dummy.dummy":
@@ -137,8 +170,23 @@ def filter_blast_results(input_file, output_file, min_similarity, overview_table
         len(abr_common) + len(s16_common)
     )
 
-    # Merge and write final output
-    merged = pd.concat([abr_common, s16_common])
+    # Merge side-by-side on query_id
+    merged = pd.merge(
+        abr_final[
+            [
+                "query_id",
+                "AMR Gene Family",
+                "perc_identity_ABR",
+                "align_length_ABR",
+                "evalue_ABR",
+            ]
+        ],
+        s16_final[
+            ["query_id", "genus", "perc_identity_16S", "align_length_16S", "evalue_16S"]
+        ],
+        on="query_id",
+        how="inner",
+    )
     merged.to_csv(output_file, index=False)
 
     # Extract sample and part from file path
