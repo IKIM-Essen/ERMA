@@ -132,7 +132,7 @@ def create_bubble_plot_grid(df, max_genera, min_overlap, top_per_sample):
         title="Bubble Plots of Top Genera for Each AMR Gene Family",
         plot_bgcolor="lightgrey",
         height=900,
-        width=250 * np.log(len(samples)) if len(samples) > 2 else 300,
+        width=250 * np.log(len(samples)) if len(samples) > 2 else 600,
         coloraxis_colorbar=dict(title="Filtered Hit Count"),
     )
     fig.update_yaxes(categoryorder="category descending")

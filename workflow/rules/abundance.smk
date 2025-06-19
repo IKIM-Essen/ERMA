@@ -90,3 +90,24 @@ rule reads_per_AMR:
     threads: config["max_threads"]
     script:
         "../scripts/combined_reads_per_amr.py"
+
+        
+rule stacked_bar_abundance_plot:
+    input:
+        abundance_data=local("results/abundance/combined_genus_abundance.csv"),
+    output:
+        report(
+            local("results/abundance/stacked_bar_abundance_plot.html"),
+            caption="../../report/stacked_bar_abundance_plot.rst",
+            category="1. Combined Abundance Data",
+            labels={"figure": "Stacked bar abundance Plot"},
+        ),
+    log:
+        local("logs/stacked_bar_abundance_plot.log"),
+    params:
+        min_abundance = config["min_abundance"]
+    conda:
+        "../envs/python.yaml"
+    threads: config["max_threads"]
+    script:
+        "../scripts/stacked_bar_abundance_plot.py"

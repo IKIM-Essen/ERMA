@@ -48,6 +48,7 @@ report: "../report/workflow.rst"
 
 rule snakemake_report:
     input:
+        local("results/abundance/stacked_bar_abundance_plot.html"),
         local("results/abundance/combined_genus_abundance_bubbleplot.html"),
         local("results/abundance/reads_per_found_AMR.html"),
         local("results/boxplots/combined_allength_boxplot.png"),

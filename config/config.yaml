@@ -7,6 +7,7 @@ fastq_dir: "data/fastq" # Copy target fastq.gz files in ERMA/data/fastq or chang
 outdir: "results" # Output directory of the final report
 
 min_similarity: "0.8" # threshold to pre-filter blast hits by percentage identity
+min_abundance: "0.01" # genera with lower abundance will be binned as "Other" in main plot
 
 silva:
   download_path_seq: "https://www.arb-silva.de/fileadmin/silva_databases/release_138_2/Exports/SILVA_138.2_SSURef_NR99_tax_silva.fasta.gz"

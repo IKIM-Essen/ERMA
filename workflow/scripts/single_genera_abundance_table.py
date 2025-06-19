@@ -32,8 +32,7 @@ def write_dummy_line(sample_name):
 def process_combined_data(combined_data, sample_name):
     # Separate ABR and 16S data for merging by query_id
     df = combined_data
-
-    if df.iloc[0]["query_id"] == "dummy":
+    if df.iloc[0]["query_id"] == "dummy" or df.empty:
         return write_dummy_line(sample_name)
 
     # Add the sample name
