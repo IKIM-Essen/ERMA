@@ -16,9 +16,9 @@ rule generate_percidt_genus:
         report(
             local("results/{sample}/genus_idt_per_genus_plot.png"),
             caption="../../report/identity_read_count_per_genus.rst",
-            category="2. Single Sample Abundance Data",
+            category="2. Samplewise Genus per Percentage Identity",
             subcategory="{sample}",
-            labels={"sample": "{sample}", "figure": "Identity/Read Count per Genus"},
+            labels={"sample": "{sample}", "Plot": "Identity/Read Count per Genus"},
         ),
     log:
         local("logs/generate_percidt_genus/{sample}.log"),

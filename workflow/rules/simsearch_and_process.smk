@@ -21,8 +21,8 @@ rule diamond_card:
     shell:
         """
         diamond blastx -d {input.card} -q {input.fasta} -o {output.card_results} --outfmt 6 --evalue 1e-5 --quiet --threads {params.internal_threads} 2> {log}
-        echo -ne "fastq input reads,{wildcards.sample},{wildcards.part},$(cat {input.fasta}|grep -c '^>')\n" >> {output.overview_table}
-        echo -ne "diamond output hits,{wildcards.sample},{wildcards.part},$(cat {output.card_results}|wc -l)\n" >> {output.overview_table}
+        echo -ne "Number of FastQ input reads,{wildcards.sample},{wildcards.part},$(cat {input.fasta}|grep -c '^>')\n" >> {output.overview_table}
+        echo -ne "Diamond output hits,{wildcards.sample},{wildcards.part},$(cat {output.card_results}|wc -l)\n" >> {output.overview_table}
         """
 
 
@@ -46,7 +46,7 @@ if config["similarity_search_mode"] == "test":
         shell:
             """
             usearch -usearch_local {input.fasta} -db {input.silva} -blast6out {output.silva_results} -evalue 1e-5 -threads {params.internal_threads} -strand plus -mincols 200 > {log} 2>&1
-            echo -ne "usearch output hits,{wildcards.sample},{wildcards.part},$(cat {output.silva_results}|wc -l)\n" >> {input.overview_table}
+            echo -ne "Usearch output hits,{wildcards.sample},{wildcards.part},$(cat {output.silva_results}|wc -l)\n" >> {input.overview_table}
             """
 
 
@@ -70,7 +70,7 @@ if config["similarity_search_mode"] == "full":
         shell:
             """
             usearch -usearch_local {input.fasta} -db {input.silva} -blast6out {output.silva_results} -evalue 1e-5 -threads {params.internal_threads} -strand both -mincols 200 2> {log}
-            echo -ne "usearch output hits,{wildcards.sample},{wildcards.part},$(cat {output.silva_results}|wc -l)\n" >> {input.overview_table}
+            echo -ne "Usearch output hits,{wildcards.sample},{wildcards.part},$(cat {output.silva_results}|wc -l)\n" >> {input.overview_table}
             """
 
 
@@ -139,3 +139,25 @@ rule gzip_intermediates:
         gzip {input.filt_data} 2>> {log}
         touch {output.checkpoint}
         """
+
+
+rule table_combined_genera_abundance:
+    input:
+        filtered_data=local(
+            expand(
+                "results/{sample}/{part}/filtered_results.csv.gz",
+                sample=samples,
+                part=get_numpart_list(),
+            )
+        ),
+    output:
+        csv=local("results/abundance/combined_genus_abundance.csv"),
+    params:
+        sample_name=samples,
+    log:
+        local("logs/genera_abundance_table.log"),
+    conda:
+        "../envs/python.yaml"
+    threads: config["max_threads"]
+    script:
+        "../scripts/table_combined_genera_abundance.py"

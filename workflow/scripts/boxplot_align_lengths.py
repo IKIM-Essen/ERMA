@@ -44,7 +44,6 @@ def read_and_process_partitioned_data(partition_files, sample, param):
             long_df["part"] = long_df["part"].str.replace(param + "_", "")
             long_df["sample"] = sample_name
             data_frames.append(long_df)
-
     if data_frames:
         return pd.concat(data_frames)
     else:
@@ -62,9 +61,8 @@ def plot_boxplots(data, param, output_file):
     plt.figure(figsize=(15, 10))
     flierprops = dict(markerfacecolor="0.75", markersize=2, linestyle="none")
     sns.boxplot(x="sample", y=param, hue="part", data=data, flierprops=flierprops)
-    plt.yscale("log")
     plt.title(
-        f"Boxplot of{PRETTY_LABELS[param]} for ABR and 16S parts across samples -Filtered-"
+        f"Boxplot of {PRETTY_LABELS[param]} for ABR and 16S parts across samples -Filtered-"
     )
     plt.xlabel("Sample")
     plt.ylabel(f"{PRETTY_LABELS[param]}")
@@ -85,6 +83,7 @@ def main(filtered_fasta_files, sample_names, param, output_file):
             sample,
             param,
         )
+        data = data[data[param] > 0]
         if data is not None:
             all_data.append(data)
 

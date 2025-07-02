@@ -68,16 +68,14 @@ def keep_max_identity_per_query(df):
     return merged
 
 
-def keep_best_per_query(
-    df, sort_by=["perc_identity", "evalue"], ascending=[False, True]
-):
-    """
-    For each query_id, keep the row with the highest perc_identity and lowest evalue.
-    Faster than groupby + merge.
-    """
-    return df.sort_values(
-        by=["query_id"] + sort_by, ascending=[True] + ascending
-    ).drop_duplicates(subset="query_id", keep="first")
+def keep_best_per_query(df):
+    """For each query_id, keep the row with the highest perc_identity and lowest evalue"""
+    return (
+        df.sort_values(
+            by=["query_id"] + ["perc_identity", "evalue"], 
+            ascending=[True,False, True]
+            ).drop_duplicates(subset="query_id", keep="first")
+    )
 
 
 def clean_16s_query_ids(df):
@@ -142,7 +140,7 @@ def filter_blast_results(input_file, output_file, min_similarity, overview_table
     if len(s16_final) == 1 and s16_final.iloc[0]["query_id"] == "dummy.dummy":
         write_dummy_line(output_file)
         merge_output = df_overview.loc[
-            df_overview["state"] == "merge output", "total_count"
+            df_overview["state"] == "Merged similarity hits", "total_count"
         ].values[0]
         filtered = (
             abr_removed_identity
@@ -154,12 +152,12 @@ def filter_blast_results(input_file, output_file, min_similarity, overview_table
         sample, part = os.path.normpath(input_file).split(os.sep)[-3:-1]
         # Write summary in case of dummy
         stats = {
-            "filtered min similarity ABR": "-" + str(abr_removed_identity),
-            "filtered max identity ABR": "-" + str(abr_removed_max),
-            "filtered min similarity 16S": "-" + str(s16_removed_identity),
-            "filtered max identity 16S": "-" + str(s16_removed_max),
-            "filtered query id mismatch": "-" + str(remaining),
-            "filtration output": 1,
+            "Diamond hits < similarity threshold": "-" + str(abr_removed_identity),
+            "Diamond hits NOT highest percentage identity per query": "-" + str(abr_removed_max),
+            "Usearch hits < similarity threshold": "-" + str(s16_removed_identity),
+            "Usearch hits NOT highest percentage identity per query": "-" + str(s16_removed_max),
+            "Query hit in only one of two databases": "-" + str(remaining),
+            "Filtered fusion reads": 0,
         }
         write_summary(overview_table, sample, part, stats)
         return
@@ -167,7 +165,7 @@ def filter_blast_results(input_file, output_file, min_similarity, overview_table
     # Match ABR and 16S by query_id
     abr_common, s16_common = merge_parts_on_query_id(abr_final, s16_final)
     removed_query_id_mismatch = (len(abr_final) + len(s16_final)) - (
-        len(abr_common) + len(s16_common)
+        len(abr_common)
     )
 
     # Merge side-by-side on query_id
@@ -194,12 +192,12 @@ def filter_blast_results(input_file, output_file, min_similarity, overview_table
 
     # Write summary
     stats = {
-        "filtered min similarity ABR": "-" + str(abr_removed_identity),
-        "filtered max identity ABR": "-" + str(abr_removed_max),
-        "filtered min similarity 16S": "-" + str(s16_removed_identity),
-        "filtered max identity 16S": "-" + str(s16_removed_max),
-        "filtered query id mismatch": "-" + str(removed_query_id_mismatch),
-        "filtration output": len(merged),
+        "Diamond hits < similarity threshold": "-" + str(abr_removed_identity),
+        "Diamond hits NOT highest percentage identity per query": "-" + str(abr_removed_max),
+        "Usearch hits < similarity threshold": "-" + str(s16_removed_identity),
+        "Usearch hits NOT highest percentage identity per query": "-" + str(s16_removed_max),
+        "Query hit in only one of two databases": "-" + str(removed_query_id_mismatch),
+        "Filtered fusion reads": len(merged),
     }
     write_summary(overview_table, sample, part, stats)
 

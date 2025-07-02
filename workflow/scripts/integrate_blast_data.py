@@ -95,7 +95,7 @@ def merge_results(card_output, silva_output, final_output, overview_table):
     count = len(combined_df)
 
     with open(overview_table, "a") as file:
-        line = f"merge output,{sample},{part},{count}\n"
+        line = f"Merged similarity hits,{sample},{part},{count}\n"
         file.write(line)
 
 
@@ -131,7 +131,8 @@ if __name__ == "__main__":
         future_silva = executor.submit(
             process_silva_results, silva_results, blast_columns, silva_output
         )
-
+        
+        # Wait for both processes to complete
         future_card.result()
         future_silva.result()
 

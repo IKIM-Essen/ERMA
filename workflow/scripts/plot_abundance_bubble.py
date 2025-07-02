@@ -133,7 +133,7 @@ def create_bubble_plot_grid(df, max_genera, min_overlap, top_per_sample):
         plot_bgcolor="lightgrey",
         height=900,
         width=250 * np.log(len(samples)) if len(samples) > 2 else 600,
-        coloraxis_colorbar=dict(title="Filtered Hit Count"),
+        coloraxis_colorbar=dict(title="Fusion Read Count"),
     )
     fig.update_yaxes(categoryorder="category descending")
     fig.update_xaxes(categoryorder="category ascending")

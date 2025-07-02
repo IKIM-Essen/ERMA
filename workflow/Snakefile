@@ -7,12 +7,12 @@ configfile: "config/config.yaml"
 
 
 include: "rules/common.smk"
-include: "rules/qc.smk"
 include: "rules/load_db.smk"
+include: "rules/preprocess.smk"
+include: "rules/qc.smk"
 include: "rules/simsearch_and_process.smk"
 include: "rules/boxplots.smk"
-include: "rules/abundance.smk"
-include: "rules/preprocess.smk"
+include: "rules/visualizing.smk"
 
 # Build a list of all "fastq.gz" files in "ERMA/data/fastq" which will be processed subsequently
 samples = [
@@ -50,14 +50,13 @@ rule snakemake_report:
     input:
         local("results/abundance/stacked_bar_abundance_plot.html"),
         local("results/abundance/combined_genus_abundance_bubbleplot.html"),
-        local("results/abundance/reads_per_found_AMR.html"),
+        local("results/abundance/abundance_data.html"),
         local("results/boxplots/combined_allength_boxplot.png"),
         local("results/boxplots/combined_evalue_boxplot.png"),
         local("results/boxplots/combined_percidt_boxplot.png"),
         local("results/qc/multiqc.html"),
-        local("results/qc/overview_plot.png"),
-        local(expand("results/{sample}/overview_table.html", sample=samples)),
-        local(expand("results/{sample}/genus_abundance.html", sample=samples)),
+        local("results/qc/attrition_plot.png"),
+        local("results/qc/overview_table.html"),        
         local(expand("results/{sample}/genus_idt_per_genus_plot.png", sample=samples)),
     log:
         local("logs/report/report.log"),

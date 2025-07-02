@@ -76,7 +76,7 @@ def generate_percentage_idt_per_genus(input_files, output_file):
         color="purple",
         order=genus_order,
     )
-    ax2.set_ylabel("Number of hits (bar)", color="violet")
+    ax2.set_ylabel("Number of fusion reads (bar)", color="violet")
 
     plt.tight_layout()
     plt.savefig(output_file)
