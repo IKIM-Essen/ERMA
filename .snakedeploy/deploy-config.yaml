@@ -1,0 +1,55 @@
+name: ERMA
+description: >
+  This Snakemake-based pipeline processes sequencing reads from epicPCR experiments
+  to link antimicrobial resistance (AMR) genes with genus-specific 16S rRNA gene sequences.
+  It orchestrates steps including database download, sequence alignment, filtering, and visualization.
+
+author: Adrian Dörr
+documentation: https://github.com/IKIM-Essen/ERMA/blob/main/README.md
+url: https://github.com/IKIM-Essen/ERMA
+
+# Default configuration values exposed to the user
+defaults:
+  runname: test
+  base_dir: .
+  fastq_dir: data/fastq
+  outdir: results
+  min_similarity: "0.8"
+  min_abundance: "0.01"
+  similarity_search_mode: test
+  max_threads: 16
+  num_parts: 1
+  seq_tech: Illumina
+  silva:
+    download_path_seq: https://www.arb-silva.de/fileadmin/silva_databases/release_138_2/Exports/SILVA_138.2_SSURef_NR99_tax_silva.fasta.gz
+    download_path_tax: https://www.arb-silva.de/fileadmin/silva_databases/release_138_2/Exports/taxonomy/taxmap_slv_ssu_ref_nr_138.2.txt.gz
+  card:
+    download_path: https://card.mcmaster.ca/download/0/broadstreet-v3.3.0.tar.bz2
+  ONT:
+    fastq_pass_path: data/ONT/fastq_pass
+    sample_name_path: data/ONT/barcode-rename.csv
+    target_fragment_length: 1250
+    filter_intervall: 0.1
+
+# Example usage dataset and configuration
+example:
+  configfile: .github/test_config.yaml
+  input:
+    - .github/data/fastq/*.fastq.gz
+    - .github/data/card_db/*
+    - .github/data/silva_db/*
+  output:
+    - results/test_report.zip
+    - results/test_stacked_bar_abundance_plot.html
+  environment: .github/workflows/snakemake-ci.yml
+  test: |
+    snakemake --cores 1 --configfile .github/test_config.yaml
+
+# Technical details for Snakedeploy
+workflow:
+  path: workflow
+  snakefile: Snakefile
+  configfile: config.yaml
+  main_snakefile: workflow/Snakefile
+
+license: MIT
