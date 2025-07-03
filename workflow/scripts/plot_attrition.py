@@ -38,15 +38,25 @@ MAIN_COLOR_MAP = {
     "Filtered fusion reads": "#8da0cb",
 }
 
+
 # === Load and summarize the table ===
 def load_and_summarize_data(path):
     df = pd.read_csv(path, header=0)
     df["total_count"] = df["total_count"].astype(int).abs()
 
-    main_df = df[df["step"].isin(MAIN_CATEGORIES)].pivot(index="sample", columns="step", values="total_count").fillna(0)
-    filter_df = df[df["step"].isin(FILTER_REASONS)].pivot(index="sample", columns="step", values="total_count").fillna(0)
+    main_df = (
+        df[df["step"].isin(MAIN_CATEGORIES)]
+        .pivot(index="sample", columns="step", values="total_count")
+        .fillna(0)
+    )
+    filter_df = (
+        df[df["step"].isin(FILTER_REASONS)]
+        .pivot(index="sample", columns="step", values="total_count")
+        .fillna(0)
+    )
 
     return main_df, filter_df
+
 
 # === Plotting function ===
 def plot_summary(main_df, filter_df, output_path):
@@ -77,7 +87,11 @@ def plot_summary(main_df, filter_df, output_path):
         bottom = np.zeros_like(x)
 
     for reason in FILTER_REASONS:
-        heights = filter_df[reason].values if reason in filter_df.columns else np.zeros_like(x)
+        heights = (
+            filter_df[reason].values
+            if reason in filter_df.columns
+            else np.zeros_like(x)
+        )
         ax.bar(
             x + bar_width,
             heights,

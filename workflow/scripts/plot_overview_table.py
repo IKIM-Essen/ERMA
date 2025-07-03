@@ -28,11 +28,12 @@ step_to_state = {
     "Usearch hits < similarity threshold": "Filtration",
     "Usearch hits NOT highest percentage identity per query": "Filtration",
     "Query hit in only one of two databases": "Filtration",
-    "Filtered fusion reads": "Output reads"
+    "Filtered fusion reads": "Output reads",
 }
 
+
 # === Load and summarize the table ===
-def table_to_html(input_path,output_path):
+def table_to_html(input_path, output_path):
     df = pd.read_csv(input_path, header=0)
 
     df["state"] = df["step"].map(step_to_state)
@@ -81,11 +82,11 @@ def table_to_html(input_path,output_path):
     """
 
     # Group and track rowspans
-    grouped = df.groupby(["sample", "state"],observed=False)
+    grouped = df.groupby(["sample", "state"], observed=False)
     for (sample, state), group in grouped:
         sample_rowspan = len(df[df["sample"] == sample])
         state_rowspan = len(group)
-        
+
         first_state = True
         for i, row in group.iterrows():
             html += "<tr>"
@@ -112,4 +113,4 @@ if __name__ == "__main__":
     input_path = snakemake.input.overview_table
     output_path = snakemake.output[0]
 
-    table_to_html(input_path,output_path)
+    table_to_html(input_path, output_path)

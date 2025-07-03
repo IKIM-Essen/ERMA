@@ -70,12 +70,9 @@ def keep_max_identity_per_query(df):
 
 def keep_best_per_query(df):
     """For each query_id, keep the row with the highest perc_identity and lowest evalue"""
-    return (
-        df.sort_values(
-            by=["query_id"] + ["perc_identity", "evalue"], 
-            ascending=[True,False, True]
-            ).drop_duplicates(subset="query_id", keep="first")
-    )
+    return df.sort_values(
+        by=["query_id"] + ["perc_identity", "evalue"], ascending=[True, False, True]
+    ).drop_duplicates(subset="query_id", keep="first")
 
 
 def clean_16s_query_ids(df):
@@ -153,9 +150,11 @@ def filter_blast_results(input_file, output_file, min_similarity, overview_table
         # Write summary in case of dummy
         stats = {
             "Diamond hits < similarity threshold": "-" + str(abr_removed_identity),
-            "Diamond hits NOT highest percentage identity per query": "-" + str(abr_removed_max),
+            "Diamond hits NOT highest percentage identity per query": "-"
+            + str(abr_removed_max),
             "Usearch hits < similarity threshold": "-" + str(s16_removed_identity),
-            "Usearch hits NOT highest percentage identity per query": "-" + str(s16_removed_max),
+            "Usearch hits NOT highest percentage identity per query": "-"
+            + str(s16_removed_max),
             "Query hit in only one of two databases": "-" + str(remaining),
             "Filtered fusion reads": 0,
         }
@@ -164,9 +163,7 @@ def filter_blast_results(input_file, output_file, min_similarity, overview_table
 
     # Match ABR and 16S by query_id
     abr_common, s16_common = merge_parts_on_query_id(abr_final, s16_final)
-    removed_query_id_mismatch = (len(abr_final) + len(s16_final)) - (
-        len(abr_common)
-    )
+    removed_query_id_mismatch = (len(abr_final) + len(s16_final)) - (len(abr_common))
 
     # Merge side-by-side on query_id
     merged = pd.merge(
@@ -193,9 +190,11 @@ def filter_blast_results(input_file, output_file, min_similarity, overview_table
     # Write summary
     stats = {
         "Diamond hits < similarity threshold": "-" + str(abr_removed_identity),
-        "Diamond hits NOT highest percentage identity per query": "-" + str(abr_removed_max),
+        "Diamond hits NOT highest percentage identity per query": "-"
+        + str(abr_removed_max),
         "Usearch hits < similarity threshold": "-" + str(s16_removed_identity),
-        "Usearch hits NOT highest percentage identity per query": "-" + str(s16_removed_max),
+        "Usearch hits NOT highest percentage identity per query": "-"
+        + str(s16_removed_max),
         "Query hit in only one of two databases": "-" + str(removed_query_id_mismatch),
         "Filtered fusion reads": len(merged),
     }

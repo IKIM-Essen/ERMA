@@ -84,7 +84,7 @@ def main(filtered_fasta_files, sample_names, param, output_file):
             sample,
             param,
         )
-        data = data[data[param] > 0]        
+        data = data[data[param] > 0]
         if data is not None:
             all_data.append(data)
 

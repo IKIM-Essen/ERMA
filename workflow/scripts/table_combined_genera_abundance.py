@@ -87,7 +87,9 @@ def export_genera_abundance(input_files, output_path):
         all_data.append(sample_data)
 
     final_df = pd.concat(all_data, ignore_index=True)
-    final_df = final_df.sort_values(by=["sample","AMR Gene Family","genus_count"], ascending=False)
+    final_df = final_df.sort_values(
+        by=["sample", "AMR Gene Family", "genus_count"], ascending=False
+    )
 
     # Export the final aggregated data to a CSV file
     final_df.to_csv(output_path, index=False)

@@ -131,7 +131,7 @@ if __name__ == "__main__":
         future_silva = executor.submit(
             process_silva_results, silva_results, blast_columns, silva_output
         )
-        
+
         # Wait for both processes to complete
         future_card.result()
         future_silva.result()
