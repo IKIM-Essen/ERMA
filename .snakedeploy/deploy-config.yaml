@@ -42,12 +42,7 @@ example:
     - results/test_report.zip
     - results/test_stacked_bar_abundance_plot.html
   environment: .github/workflows/snakemake-ci.yml
-  cores: all
-  software-deployment-method: conda
-  shared-fs-usage: none
-  latency-wait: 5
-  printshellcmds: True
-  local-storage-prefix: ../
+  profile: profile
   test: |
     snakemake --cores 1 --configfile .github/test_config.yaml
 

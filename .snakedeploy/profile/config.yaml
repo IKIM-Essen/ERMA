@@ -1,0 +1,6 @@
+cores: all
+software-deployment-method: conda
+shared-fs-usage: none
+latency-wait: 5
+printshellcmds: True
+local-storage-prefix: ../
