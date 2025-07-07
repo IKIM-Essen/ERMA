@@ -21,7 +21,8 @@ samples = [
         os.path.join(config["base_dir"], config["fastq_dir"], "*.fastq.gz")
     )
 ]
-validate_samples(samples, os.path.join(config["base_dir"], config["fastq_dir"]))
+if config["input_validation"] == "yes":
+    validate_samples(samples, os.path.join(config["base_dir"], config["fastq_dir"]))
 
 runname = "".join(config["runname"])
 seq_tech = "".join(config["seq_tech"])

@@ -17,6 +17,7 @@ defaults:
   min_similarity: "0.8"
   min_abundance: "0.01"
   similarity_search_mode: test
+  input_validation: "no"
   max_threads: 16
   num_parts: 1
   seq_tech: Illumina
@@ -42,7 +43,6 @@ example:
     - results/test_report.zip
     - results/test_stacked_bar_abundance_plot.html
   environment: .github/workflows/snakemake-ci.yml
-  profile: profile
   test: |
     snakemake --cores 1 --configfile .github/test_config.yaml
 
