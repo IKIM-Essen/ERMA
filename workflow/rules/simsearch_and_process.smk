@@ -80,8 +80,6 @@ rule integrate_blast_data:
         card_results=local("results/{sample}/{part}/card_results.txt"),
         silva_results=local("results/{sample}/{part}/SILVA_results.txt"),
         aro_mapping=local("data/card_db/aro_index.tsv"),
-        dummy_ABR=local("data/dummy/ABR.dummy"),
-        dummy_16S=local("data/dummy/16S.dummy"),
     output:
         intermed_card_results=local(
             temp("results/{sample}/{part}/intermed_card_results.csv")

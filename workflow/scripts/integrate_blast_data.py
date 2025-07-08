@@ -21,11 +21,24 @@ in parallel and ensures robustness by inserting dummy data for empty input files
 
 def write_dummy_line(output_file, part):
     """Write a dummy line to ensure compatibility with downstream analysis"""
-    if part == "ABR":
-        dummy_data = pd.read_csv(snakemake.input.dummy_ABR)
-    elif part == "16S":
-        dummy_data = pd.read_csv(snakemake.input.dummy_16S)
-    pd.DataFrame(dummy_data).to_csv(output_file, index=False)
+    
+    additional_columns = [
+        "part",
+        "ARO Name",
+        "distance",
+        "orientation",
+        "genus"
+    ]
+    header = blast_columns + additional_columns
+    dummy_row = ["dummy.dummy", "dummy", "100"] + ["0"]* 9 
+    if part == "16S":
+        dummy_row = dummy_row + ["16S", "dummy", "0", "dummy", "dummy"]
+    elif part == "ABR":
+        dummy_row = dummy_row + ["ABR", "dummy"] + ["0"] * 3 + ["dummy"] * 8
+    else:
+        raise ValueError("Invalid part specified. Must be 'ABR' or '16S'.")
+    dummy_df = pd.DataFrame([dummy_row], columns=header)
+    dummy_df.to_csv(output_file, index=False)
 
 
 def process_card_results(
