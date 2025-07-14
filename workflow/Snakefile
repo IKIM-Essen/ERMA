@@ -1,6 +1,4 @@
 import glob, sys, os
-sys.path.append("workflow/scripts")
-#from validate_inputs import validate_samples
 
 
 configfile: "config/config.yaml"
@@ -21,7 +19,12 @@ samples = [
         os.path.join(config["base_dir"], config["fastq_dir"], "*.fastq.gz")
     )
 ]
-#validate_samples(samples, os.path.join(config["base_dir"], config["fastq_dir"]))
+
+# Validate sample input if not started from snakedeploy
+if config["input_validation"] == "yes":
+    sys.path.append("workflow/scripts")
+    from validate_inputs import validate_samples
+    validate_samples(samples, os.path.join(config["base_dir"], config["fastq_dir"]))
 
 runname = "".join(config["runname"])
 seq_tech = "".join(config["seq_tech"])
