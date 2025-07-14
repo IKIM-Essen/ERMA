@@ -4,11 +4,11 @@
 # This file may not be copied, modified, or distributed
 # except according to those terms.
 
-"""
+: '
 This script is meant to merge paired-end Illumina reads to one file.
 The script loads every R1/R2_fastq.gz file and merges them together.
 It is meant to use before the ERMA pipeline as preparation.
-"""
+'
 
 # Define paths
 FASTQ_DIR="data/fastq"
@@ -31,7 +31,7 @@ for r1 in *_R1_*.fastq.gz; do
     
     # Extract the sample name (remove _R1_001)
     sample_name=$(echo "$r1" | sed 's/_R1_.*//' | sed 's/_L001//')
-    echo "$sample_name"
+    echo "Preparing: $sample_name"
     # Run NGmerge
     echo "Merging $r1 and $r2 into ${sample_name}.fastq.gz..."
     NGmerge -1 "$r1" -2 "$r2" -o "../${sample_name}.fastq.gz"

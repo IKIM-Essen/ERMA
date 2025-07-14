@@ -16,7 +16,27 @@ This **Snakemake**-based pipeline processes sequencing reads from epicPCR experi
 
 ## Prerequisites
 
-### Install Snakemake
+### Minimum Installation
+
+This pipeline is possible to deploy with snakedeploy. We recommend to only use this with already present experience with snakemake and snakedeploy. If this is not the case, we recommend to use the full installation guide.
+
+For usage:
+1. Install snakedeploy and snakemake≥v9 (if necessary)
+2. deploy minimum workflow distribution (with desired destination)
+```bash
+snakedeploy deploy-workflow https://github.com/IKIM-Essen/ERMA --dest . --branch snakedeploy
+```
+3. prepare setup
+```bash
+mkdir -p data/fastq
+cp "files-to-analyze" data/fastq
+```
+4. start pipeline (change config if necessary)
+```bash
+snakemake --cores all --sdm conda
+```
+
+### Full Installation
 The pipeline requires **Snakemake** (≥ Version 9.0) with support for conda environments. You can install it using conda/mamba (via Miniconda or Anaconda):
 
 ```bash
@@ -48,6 +68,7 @@ fastq_dir: "data/fastq" # copy target fastq.gz files in ERMA/data/fastq or chang
 outdir: "results" # Output directory of the final report
 
 min_similarity: "0.8" # threshold to filter blast hits by percentage identity
+min_abundance: "0.01" # genera with lower abundance will be binned as "Other" in stacked bar abundance plot
 
 silva:
   download_path_seq: "path/to/silva_db"
@@ -59,7 +80,7 @@ card:
 num_parts: 1 # number of subfiles the fastqs are split into
 max_threads: 16 
 
-similarity_search_mode: "test" # Put here "test" or "full" for strand/s to be included in the similarity search
+similarity_search_mode: "full" # Put here "test" or "full" for strand/s to be included in the similarity search
 
 ### Preprocessing ###
 # if data is already in format 'one fastq.gz per sample', this section can be ignored
@@ -78,15 +99,17 @@ ONT:
 
 Skip this when analyzing single-end or already merged paired-end reads.
 
-When analyzing paired-end reads, they must be merged before starting the pipeline. For this ERMA provides a module. Load your paired end FASTQ-files in the data/fastq folder and execute from the folder where also the Snakefile is
+When analyzing paired-end reads, they must be merged before starting the pipeline. For this, ERMA provides a module. Follow the steps:
 
-1. Copy the paired-end fastq.gz files in data/fastq
-2. Set the seq_tech parameter to "Illumina"
-3. Run:
+1. Copy the to-be-merged paired-end fastq.gz files in data/fastq
+2. Set the seq_tech parameter to "Illumina" in config/config.yaml (if not already)
+3. Run from the ERMA root folder:
 
 ```bash
 snakemake prepare_fastqs
 ```
+
+This will execute a bash script with the essential step of merging R1 and R2 read with NGmerge
 
 ### ONT input
 
@@ -94,19 +117,21 @@ Skip this when the input files are already in "one fastq.gz file per sample" - f
 
 When starting with raw ONT output, this routine can be used to demultiplex the samples according to the respective barcodes. For that, following must be prepared:
 
-1. Enter the desired Sample name - barcode combinations in the file "barcode-rename.csv" which can be found at data/ONT
+1. Enter the desired sample name - barcode combinations in the file "barcode-rename.csv" which can be found at data/ONT
 2. Copy the fastq_pass folder of the targeted ONT run in data/ONT or change the respective path in the config file
 3. Define the target fragment lengths parameter in the config file - everything outside the filter intervall parameter gets filtered out beforehand
-4. Set the seq_tech parameter to "ONT"
-5. Run:
+4. Set the seq_tech parameter to "ONT" in config/config.yaml (if not already)
+5. Run from the ERMA root folder:
 
 ```bash
 snakemake prepare_fastqs
 ```
 
+This will execute a python script that filters and demultiplex the ONT output in one fastq file per sample.
+
 ### Sample naming
 
-To ensure a robust run of the pipeline, sample names are restricted to only contain:
+To ensure a robust running of the pipeline, sample names are restricted to only contain:
 - Uppercase and/or lowercase letters
 - digits 
 - underscores
