@@ -21,11 +21,18 @@ in parallel and ensures robustness by inserting dummy data for empty input files
 
 def write_dummy_line(output_file, part):
     """Write a dummy line to ensure compatibility with downstream analysis"""
-    if part == "ABR":
-        dummy_data = pd.read_csv(snakemake.input.dummy_ABR)
-    elif part == "16S":
-        dummy_data = pd.read_csv(snakemake.input.dummy_16S)
-    pd.DataFrame(dummy_data).to_csv(output_file, index=False)
+
+    additional_columns = ["part", "ARO Name", "distance", "orientation", "genus"]
+    header = blast_columns + additional_columns
+    dummy_row = ["dummy.dummy", "dummy", "100"] + ["0"] * 9
+    if part == "16S":
+        dummy_row = dummy_row + ["16S", "dummy", "0", "dummy", "dummy"]
+    elif part == "ABR":
+        dummy_row = dummy_row + ["ABR", "dummy"] + ["0"] * 3 + ["dummy"] * 8
+    else:
+        raise ValueError("Invalid part specified. Must be 'ABR' or '16S'.")
+    dummy_df = pd.DataFrame([dummy_row], columns=header)
+    dummy_df.to_csv(output_file, index=False)
 
 
 def process_card_results(
@@ -95,7 +102,7 @@ def merge_results(card_output, silva_output, final_output, overview_table):
     count = len(combined_df)
 
     with open(overview_table, "a") as file:
-        line = f"merge output,{sample},{part},{count}\n"
+        line = f"Merged similarity hits,{sample},{part},{count}\n"
         file.write(line)
 
 
@@ -132,6 +139,7 @@ if __name__ == "__main__":
             process_silva_results, silva_results, blast_columns, silva_output
         )
 
+        # Wait for both processes to complete
         future_card.result()
         future_silva.result()
 

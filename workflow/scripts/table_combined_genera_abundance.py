@@ -14,13 +14,6 @@ This table is later used to create the main result bubble plot.
 """
 
 # Necessary columns to load in each dataframe
-necessary_columns = [
-    "query_id",
-    "part",
-    "genus",
-    "AMR Gene Family",
-    "perc_identity",
-]
 
 
 def write_dummy_line(sample_name):
@@ -37,24 +30,11 @@ def write_dummy_line(sample_name):
 
 
 def process_combined_data(combined_data, sample_name):
-    """Separate ABR and 16S data for merging by query_id"""
-    abr_data = combined_data[combined_data["part"] == "ABR"]
-    sixteen_s_data = combined_data[combined_data["part"] == "16S"]
+    combined_data["sample"] = sample_name
 
-    # Dummy handling
-    if sixteen_s_data.empty or abr_data.empty:
-        return write_dummy_line(sample_name)
-
-    # Prepare to merge only unique hits
-    abr_unique = abr_data[["query_id", "AMR Gene Family"]].drop_duplicates()
-    sixteen_unique = sixteen_s_data[["query_id", "genus"]].drop_duplicates()
-
-    merged = pd.merge(abr_unique, sixteen_unique, on="query_id", how="inner")
-    merged["sample"] = sample_name
-
-    # Calculate genus counts per AMR Gene Family and genus for the sample
+    # Count genus occurrences per AMR Gene Family
     genus_counts = (
-        merged.groupby(["sample", "AMR Gene Family", "genus"])
+        combined_data.groupby(["sample", "AMR Gene Family", "genus"])
         .size()
         .reset_index(name="genus_count")
     )
@@ -80,14 +60,14 @@ def load_and_merge_parts(file_list):
     data_frames = []
     for file in file_list:
         try:
-            df = pd.read_csv(file, usecols=necessary_columns, compression="gzip")
+            df = pd.read_csv(file, compression="gzip")
             data_frames.append(df)
         except Exception as e:
             print(f"Skipping file due to read error [{file}]: {repr(e)}")
     if data_frames:
         merged_df = pd.concat(data_frames, ignore_index=True)
     else:
-        merged_df = pd.DataFrame(columns=necessary_columns)
+        merged_df = pd.DataFrame()
     return merged_df
 
 
@@ -107,7 +87,9 @@ def export_genera_abundance(input_files, output_path):
         all_data.append(sample_data)
 
     final_df = pd.concat(all_data, ignore_index=True)
-    final_df = final_df.sort_values(by=["genus_count"], ascending=False)
+    final_df = final_df.sort_values(
+        by=["sample", "AMR Gene Family", "genus_count"], ascending=False
+    )
 
     # Export the final aggregated data to a CSV file
     final_df.to_csv(output_path, index=False)

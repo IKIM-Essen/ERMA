@@ -9,22 +9,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import sys
 
-necessary_columns = [
-    "query_id",
-    "part",
-    "genus",
-    "AMR Gene Family",
-    "perc_identity",
-]
-
-dtype_dict = {
-    "query_id": "string",
-    "part": "string",
-    "genus": "string",
-    "AMR Gene Family": "string",
-    "perc_identity": "float",
-}
-
 
 def generate_percentage_idt_per_genus(input_files, output_file):
     all_data = []  # List to hold DataFrames from all input files
@@ -33,9 +17,7 @@ def generate_percentage_idt_per_genus(input_files, output_file):
         df = pd.read_csv(
             input_file,
             sep=",",
-            usecols=necessary_columns,
             header=0,
-            dtype=dtype_dict,
             compression="gzip",
         )
         all_data.append(df)
@@ -69,7 +51,7 @@ def generate_percentage_idt_per_genus(input_files, output_file):
     fig, ax1 = plt.subplots(figsize=(15, 8))
     sns.boxplot(
         x="genus",
-        y="perc_identity",
+        y="perc_identity_16S",
         data=combined_data,
         ax=ax1,
         order=genus_order,
@@ -94,7 +76,7 @@ def generate_percentage_idt_per_genus(input_files, output_file):
         color="purple",
         order=genus_order,
     )
-    ax2.set_ylabel("Number of hits (bar)", color="violet")
+    ax2.set_ylabel("Number of fusion reads (bar)", color="violet")
 
     plt.tight_layout()
     plt.savefig(output_file)

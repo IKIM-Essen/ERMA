@@ -9,6 +9,7 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 import plotly.io as pio
 import sys
+import numpy as np
 
 """
 This script creates interactive bubble plots showing the top genera per AMR Gene Family
@@ -111,6 +112,7 @@ def add_amr_family_subplot(
 
 def create_bubble_plot_grid(df, max_genera, min_overlap, top_per_sample):
     """Create the full multi-subplot bubble chart"""
+    samples = df["sample"].unique()
     families = df["AMR Gene Family"].unique()
     num_cols = len(families) if len(df) > 1 else 1
 
@@ -130,8 +132,8 @@ def create_bubble_plot_grid(df, max_genera, min_overlap, top_per_sample):
         title="Bubble Plots of Top Genera for Each AMR Gene Family",
         plot_bgcolor="lightgrey",
         height=900,
-        width=500 * num_cols,
-        coloraxis_colorbar=dict(title="Filtered Hit Count"),
+        width=250 * np.log(len(samples)) if len(samples) > 2 else 600,
+        coloraxis_colorbar=dict(title="Fusion Read Count"),
     )
     fig.update_yaxes(categoryorder="category descending")
     fig.update_xaxes(categoryorder="category ascending")
