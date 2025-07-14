@@ -21,16 +21,10 @@ in parallel and ensures robustness by inserting dummy data for empty input files
 
 def write_dummy_line(output_file, part):
     """Write a dummy line to ensure compatibility with downstream analysis"""
-    
-    additional_columns = [
-        "part",
-        "ARO Name",
-        "distance",
-        "orientation",
-        "genus"
-    ]
+
+    additional_columns = ["part", "ARO Name", "distance", "orientation", "genus"]
     header = blast_columns + additional_columns
-    dummy_row = ["dummy.dummy", "dummy", "100"] + ["0"]* 9 
+    dummy_row = ["dummy.dummy", "dummy", "100"] + ["0"] * 9
     if part == "16S":
         dummy_row = dummy_row + ["16S", "dummy", "0", "dummy", "dummy"]
     elif part == "ABR":
