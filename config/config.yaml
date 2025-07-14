@@ -21,6 +21,8 @@ max_threads: 16
 
 similarity_search_mode: "full" # Put here "test" or "full" for strand/s to be included in the similarity search
 
+input_validation: "yes"
+
 ### Preprocessing ###
 # if data is already in format 'one fastq.gz per sample', this section can be ignored
 
