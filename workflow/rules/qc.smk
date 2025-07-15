@@ -14,14 +14,13 @@ samples = [
 
 rule fastqc:
     input:
-        lambda wildcards: local(
-            os.path.join(config["fastq_dir"], f"{wildcards.sample}.fastq.gz")
-        ),
+        lambda wildcards: 
+            os.path.join(config["fastq_dir"], f"{wildcards.sample}.fastq.gz"),
     output:
-        html=local("results/fastqc/{sample}.html"),
-        zip=local("results/fastqc/{sample}_fastqc.zip"),
+        html="results/fastqc/{sample}.html",
+        zip="results/fastqc/{sample}_fastqc.zip",
     log:
-        local("logs/input/{sample}.log"),
+        "logs/input/{sample}.log",
     threads: 8
     resources:
         mem_mb=1024,
@@ -31,42 +30,39 @@ rule fastqc:
 
 rule multiqc_report:
     input:
-        local(expand("results/fastqc/{sample}_fastqc.zip", sample=samples)),
+        expand("results/fastqc/{sample}_fastqc.zip", sample=samples),
     output:
         report(
-            local("results/qc/multiqc.html"),
+            "results/qc/multiqc.html",
             caption="../../report/multiqc.rst",
             category="4. QC",
-            labels={"HTML": "MultiQC Report"},
-        ),
+            labels={"HTML": "MultiQC Report"}),
     log:
-        local("logs/multiqc/multiqc.log"),
+        "logs/multiqc/multiqc.log",
     wrapper:
         "v6.0.1/bio/multiqc"
 
 
 rule table_overview_to_one:
     input:
-        checkpoint=local(
+        checkpoint=
             expand(
                 "results/{sample}/{part}/checkpoint.txt",
                 sample=samples,
                 part=get_numpart_list(),
-            )
-        ),
-        overview_tables=local(
+            ),
+        overview_tables=
             expand(
                 "results/{sample}/{part}/overview_table.txt",
                 sample=samples,
                 part=get_numpart_list(),
-            )
-        ),
+            ),
     output:
-        local("results/qc/overview_table.txt"),
+        "results/qc/overview_table.txt",
     params:
         sample_name=samples,
     log:
-        local("logs/table_overview/combined.log"),
+        "logs/table_overview/combined.log",
     conda:
         "../envs/python.yaml"
     script:

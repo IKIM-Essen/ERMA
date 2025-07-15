@@ -5,16 +5,15 @@
 
 rule plot_abundance_data:
     input:
-        abundance_data=local("results/abundance/combined_genus_abundance.csv"),
+        abundance_data="results/abundance/combined_genus_abundance.csv",
     output:
         report(
-            local("results/abundance/abundance_data.html"),
+            "results/abundance/abundance_data.html",
             caption="../../report/abundance_data.rst",
             category="1. Combined Abundance Data",
-            labels={"HTML": "Abundance data"},
-        ),
+            labels={"HTML": "Abundance data"}),
     log:
-        local("logs/genera_abundance_plot.log"),
+        "logs/genera_abundance_plot.log",
     conda:
         "../envs/python.yaml"
     threads: config["max_threads"]
@@ -24,16 +23,15 @@ rule plot_abundance_data:
 
 rule plot_abundance_bubble:
     input:
-        abundance_data=local("results/abundance/combined_genus_abundance.csv"),
+        abundance_data="results/abundance/combined_genus_abundance.csv",
     output:
         report(
-            local("results/abundance/combined_genus_abundance_bubbleplot.html"),
+            "results/abundance/combined_genus_abundance_bubbleplot.html",
             caption="../../report/abundance_bubble_plot.rst",
             category="1. Combined Abundance Data",
-            labels={"figure": "Abundance Bubble Plot"},
-        ),
+            labels={"figure": "Abundance Bubble Plot"}),
     log:
-        local("logs/genera_abundance_plot.log"),
+        "logs/genera_abundance_plot.log",
     conda:
         "../envs/python.yaml"
     threads: config["max_threads"]
@@ -43,16 +41,15 @@ rule plot_abundance_bubble:
         
 rule plot_stacked_bar_abundance:
     input:
-        abundance_data=local("results/abundance/combined_genus_abundance.csv"),
+        abundance_data="results/abundance/combined_genus_abundance.csv",
     output:
         report(
-            local("results/abundance/stacked_bar_abundance_plot.html"),
+            "results/abundance/stacked_bar_abundance_plot.html",
             caption="../../report/stacked_bar_abundance_plot.rst",
             category="1. Combined Abundance Data",
-            labels={"figure": "Stacked Bar Abundance Plot"},
-        ),
+            labels={"figure": "Stacked Bar Abundance Plot"}),
     log:
-        local("logs/stacked_bar_abundance_plot.log"),
+        "logs/stacked_bar_abundance_plot.log",
     params:
         min_abundance = config["min_abundance"]
     conda:
@@ -64,16 +61,15 @@ rule plot_stacked_bar_abundance:
 
 rule plot_overview_table:
     input:
-        overview_table=local("results/qc/overview_table.txt"),
+        overview_table="results/qc/overview_table.txt",
     output:
         report(
-            local("results/qc/overview_table.html"),
+            "results/qc/overview_table.html",
             caption="../../report/count_overview.rst",
             category="4. QC",
-            labels={"HTML": "Count Overview Table"},
-        ),
+            labels={"HTML": "Count Overview Table"}),
     log:
-        local("logs/plot_overview_table/combined.log"),
+        "logs/plot_overview_table/combined.log",
     conda:
         "../envs/python.yaml"
     script:
@@ -81,18 +77,17 @@ rule plot_overview_table:
 
 rule plot_attrition:
     input:
-        overview_table=local("results/qc/overview_table.txt"),
+        overview_table="results/qc/overview_table.txt",
     output:
         report(
-            local("results/qc/attrition_plot.png"),
+            "results/qc/attrition_plot.png",
             caption="../../report/attrition_plot.rst",
             category="4. QC",
-            labels={"Plot": "Attrition"},
-        ),
+            labels={"Plot": "Attrition"}),
     params:
         sample_name=samples,
     log:
-        local("logs/plot_attrition/combined.log"),
+        "logs/plot_attrition/combined.log",
     conda:
         "../envs/python.yaml"
     script:

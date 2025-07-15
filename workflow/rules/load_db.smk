@@ -6,14 +6,14 @@
 
 rule get_16S_db:
     output:
-        seq=local("data/silva_db/silva_seq_RNA.fasta.gz"),
+        seq="data/silva_db/silva_seq_RNA.fasta.gz",
     params:
         path=get_silva_db_dir(),
         seq=config["silva"]["download_path_seq"],
     conda:
         "../envs/python.yaml"
     log:
-        local("logs/get_silva_db/get_silva_db.log"),
+        "logs/get_silva_db/get_silva_db.log",
     shell:
         r"""
         mkdir -p {params.path}; 
@@ -29,11 +29,11 @@ rule get_16S_db:
 
 rule unzip_silva_db:
     input:
-        seq=local("data/silva_db/silva_seq_RNA.fasta.gz"),
+        seq="data/silva_db/silva_seq_RNA.fasta.gz",
     output:
-        seq=local(temp("data/silva_db/silva_seq_RNA.fasta")),
+        seq=temp("data/silva_db/silva_seq_RNA.fasta"),
     log:
-        local("logs/unzip_silva_db/get_silva_db.log"),
+        "logs/unzip_silva_db/get_silva_db.log",
     conda:
         "../envs/python.yaml"
     shell:
@@ -44,11 +44,11 @@ rule unzip_silva_db:
 
 rule translate_silva_db:
     input:
-        seq=local("data/silva_db/silva_seq_RNA.fasta"),
+        seq="data/silva_db/silva_seq_RNA.fasta",
     output:
-        seq=local(temp("data/silva_db/silva_seq.fasta")),
+        seq=temp("data/silva_db/silva_seq.fasta"),
     log:
-        local("logs/translate_silva_db/translate_silva_db.log"),
+        "logs/translate_silva_db/translate_silva_db.log",
     conda:
         "../envs/python.yaml"
     shell:
@@ -57,12 +57,12 @@ rule translate_silva_db:
 
 rule get_card_db:
     output:
-        seq=local("data/card_db/card_seq.tar.bz2"),
+        seq="data/card_db/card_seq.tar.bz2",
     params:
         path=get_card_db_dir(),
         seq=config["card"]["download_path"],
     log:
-        local("logs/get_card_db/get_silva_db.log"),
+        "logs/get_card_db/get_silva_db.log",
     conda:
         "../envs/python.yaml"
     shell:
@@ -80,14 +80,14 @@ rule get_card_db:
 
 rule unzip_card_db:
     input:
-        seq=local("data/card_db/card_seq.tar.bz2"),
+        seq="data/card_db/card_seq.tar.bz2",
     output:
-        seq=local("data/card_db/protein_fasta_protein_homolog_model.fasta"),
-        aro_mapping=local("data/card_db/aro_index.tsv"),
+        seq="data/card_db/protein_fasta_protein_homolog_model.fasta",
+        aro_mapping="data/card_db/aro_index.tsv",
     params:
         path=get_card_db_dir(),
     log:
-        local("logs/unzip_card_db/unzip_card_db.log"),
+        "logs/unzip_card_db/unzip_card_db.log",
     conda:
         "../envs/python.yaml"
     shell:
@@ -99,13 +99,13 @@ rule unzip_card_db:
 
 rule makeblastdb_card:
     input:
-        seq=local("data/card_db/protein_fasta_protein_homolog_model.fasta"),
+        seq="data/card_db/protein_fasta_protein_homolog_model.fasta",
     output:
-        db=local("data/card_db/card_db.dmnd"),
+        db="data/card_db/card_db.dmnd",
     params:
         path=get_card_db_dir(),
     log:
-        local("logs/diamond_makedb_card/makedb_card.log"),
+        "logs/diamond_makedb_card/makedb_card.log",
     conda:
         "../envs/diamond.yaml"
     shell:

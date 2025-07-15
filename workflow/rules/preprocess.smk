@@ -6,13 +6,12 @@
 
 rule convert_fastq_to_fasta:
     input:
-        lambda wildcards: local(
+        lambda wildcards: 
             os.path.join(config["fastq_dir"], f"{wildcards.sample}.fastq.gz")
-        ),
     output:
-        local(temp("results/fastq/{sample}.fasta")),
+        temp("results/fastq/{sample}.fasta"),
     log:
-        local("logs/convert_fastq_to_fasta/{sample}.log"),
+        "logs/convert_fastq_to_fasta/{sample}.log",
     conda:
         "../envs/python.yaml"
     shell:
@@ -21,11 +20,11 @@ rule convert_fastq_to_fasta:
 
 rule split_fasta_file:
     input:
-        local("results/fastq/{sample}.fasta"),
+        "results/fastq/{sample}.fasta",
     output:
-        local(temp("results/fastq/split/{sample}.part_{part}.fasta")),
+        temp("results/fastq/split/{sample}.part_{part}.fasta"),
     log:
-        local("logs/split_fasta/{sample}_{part}.log"),
+        "logs/split_fasta/{sample}_{part}.log",
     conda:
         "../envs/python.yaml"
     params:
@@ -41,9 +40,9 @@ if config["seq_tech"] == "Illumina":
 
     rule prepare_fastqs:
         output:
-            sentinel=local(temp("data/fastq/merged_done.txt")),
+            sentinel=temp("data/fastq/merged_done.txt"),
         log:
-            local("logs/prepare_fastqs_Illumina/prepare.log"),
+            "logs/prepare_fastqs_Illumina/prepare.log",
         conda:
             "../envs/python.yaml"
         script:
@@ -53,7 +52,7 @@ elif config["seq_tech"] == "ONT":
 
     rule prepare_fastqs:
         output:
-            sentinel=local(temp("data/fastq/merged_done.txt")),
+            sentinel=temp("data/fastq/merged_done.txt"),
         params:
             run_path=config["ONT"]["fastq_pass_path"],
             sample_name_path=config["ONT"]["sample_name_path"],
@@ -61,7 +60,7 @@ elif config["seq_tech"] == "ONT":
             filter_intervall=config["ONT"]["filter_intervall"],
             output_dir="data/fastq/",
         log:
-            local("logs/prepare_fastqs_ONT/prepare.log"),
+            "logs/prepare_fastqs_ONT/prepare.log",
         conda:
             "../envs/python.yaml"
         script:

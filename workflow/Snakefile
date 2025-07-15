@@ -43,7 +43,7 @@ print(
 
 rule all:
     input:
-        local(f"{outdir}/{runname}_report.zip"),
+        f"{outdir}/{runname}_report.zip",
 
 
 report: "../report/workflow.rst"
@@ -51,22 +51,22 @@ report: "../report/workflow.rst"
 
 rule snakemake_report:
     input:
-        local("results/abundance/stacked_bar_abundance_plot.html"),
-        local("results/abundance/combined_genus_abundance_bubbleplot.html"),
-        local("results/abundance/abundance_data.html"),
-        local("results/boxplots/combined_allength_boxplot.png"),
-        local("results/boxplots/combined_evalue_boxplot.png"),
-        local("results/boxplots/combined_percidt_boxplot.png"),
-        local("results/qc/multiqc.html"),
-        local("results/qc/attrition_plot.png"),
-        local("results/qc/overview_table.html"),        
-        local(expand("results/{sample}/genus_idt_per_genus_plot.png", sample=samples)),
+        "results/abundance/stacked_bar_abundance_plot.html",
+        "results/abundance/combined_genus_abundance_bubbleplot.html",
+        "results/abundance/abundance_data.html",
+        "results/boxplots/combined_allength_boxplot.png",
+        "results/boxplots/combined_evalue_boxplot.png",
+        "results/boxplots/combined_percidt_boxplot.png",
+        "results/qc/multiqc.html",
+        "results/qc/attrition_plot.png",
+        "results/qc/overview_table.html",
+        expand("results/{sample}/genus_idt_per_genus_plot.png", sample=samples),
     log:
-        local("logs/report/report.log"),
+        "logs/report/report.log",
     conda:
         "envs/snakemake.yaml"
     output:
-        local(f"{outdir}/{runname}_report.zip"),
+        f"{outdir}/{runname}_report.zip",
     shell:
         """        
         snakemake --nolock --report {output} --report-stylesheet config/custom-stylesheet.css 2>> {log}
