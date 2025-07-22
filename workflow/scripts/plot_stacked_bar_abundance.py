@@ -95,12 +95,14 @@ def plot_stacked_abundance(
     min_genus_abundance,
     force_include=None,
     force_exclude=None,
+    min_reads=20
 ):
     """Main function to generate a stacked bar plot of genus abundance by AMR family."""
     force_include = force_include or []
     force_exclude = force_exclude or []
 
     df = pd.read_csv(observed_csv)
+    df = df[df["total_count"] > min_reads]
     df = df.sort_values(["sample", "genus_count"], ascending=[True, False])
 
     # ─── Filter AMR families by total count ─────────────────────────────
@@ -121,8 +123,7 @@ def plot_stacked_abundance(
         rows=len(amrs),
         cols=1,
         subplot_titles=amrs,
-        shared_xaxes=True,
-        vertical_spacing=0.2,
+        vertical_spacing=0.15,
     )
 
     for i, amr in enumerate(amrs, start=1):
@@ -131,8 +132,8 @@ def plot_stacked_abundance(
         )
         genus_colors = get_genus_colors(df_amr["genus"].unique())
 
-        genera = df_amr["genus"].unique()
-        for genus in genera:
+        legendgroup = f"group{i}"  # unique group per subplot
+        for genus in df_amr["genus"].unique():
             genus_data = df_amr[df_amr["genus"] == genus]
             fig.add_trace(
                 go.Bar(
@@ -140,13 +141,26 @@ def plot_stacked_abundance(
                     y=genus_data["relative_genus_count"],
                     name=genus,
                     marker_color=genus_colors[genus],
+                    legendgroup=legendgroup,
+                    legendgrouptitle=dict(text=amr) if genus == df_amr["genus"].unique()[0] else None,
                     showlegend=True,
                 ),
                 row=i,
                 col=1,
             )
 
-    # ─── Layout ────────────────────────────────────────────────────────
+        # Custom legend positioning for each subplot (optional, only needed if separating legends visually)
+        fig.update_layout(
+            legend=dict(
+                y=1,
+                yanchor="top",
+                x=2.5-np.log10(samples),
+                xanchor="left",
+                tracegroupgap=500  # adds spacing between legend groups
+            ),
+            margin=dict(r=300)  # enough space for long legends
+        )
+
     fig.update_layout(
         barmode="stack",
         title="Relative Genus Abundance per AMR Gene Family",
@@ -154,9 +168,10 @@ def plot_stacked_abundance(
         width=1000 * np.log10(samples) if samples > 2 else 500,
         plot_bgcolor="white",
         yaxis=dict(tickformat=".0%"),
-        legend_title="Genus",
+        showlegend=True,
+        margin=dict(r=300),
     )
-
+    
     fig.update_xaxes(tickangle=45)
     fig.update_yaxes(title_text="Relative Abundance")
 
