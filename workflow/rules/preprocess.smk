@@ -32,7 +32,9 @@ rule split_fasta_file:
         num_parts=config["num_parts"],
     shell:
         """
-        seqkit split2 --by-part {params.num_parts} -w 0 {input} --out-dir {params.outdir}/results/fastq/split/
+        outdir=$(dirname {output})
+        mkdir -p "$outdir"
+        seqkit split2 --by-part {config[num_parts]} -w 0 {input} --out-dir "$outdir"
         """
 
 

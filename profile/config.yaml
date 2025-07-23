@@ -1,6 +1,17 @@
-cores: all
-software-deployment-method: conda
-shared-fs-usage: none
-latency-wait: 5
-printshellcmds: True
-local-storage-prefix: ../
+executor: slurm
+resources:
+  # constrain memory so that every job can be submitted to slurm
+  mem_mb: 180000
+shared-fs-usage:
+  - persistence
+  - software-deployment
+  - sources
+  - source-cache
+software-deployment-method:
+  - conda
+# ensure that we wait for the NFS
+latency-wait: 30
+# enforce using local work directories instead of directly running in NFS
+default-storage-provider: fs
+local-storage-prefix: /local/work/$USER/snakemake-scratch
+remote-job-local-storage-prefix: /local/work/$USER/slurm-job-$SLURM_JOB_ID/snakemake-scratch
