@@ -82,8 +82,8 @@ rule unzip_card_db:
     input:
         seq="data/card_db/card_seq.tar.bz2",
     output:
-        seq="data/card_db/protein_fasta_protein_homolog_model.fasta",
-        aro_mapping="data/card_db/aro_index.tsv",
+        seq=local("data/card_db/protein_fasta_protein_homolog_model.fasta"),
+        aro_mapping=local("data/card_db/aro_index.tsv"),
     params:
         path=get_card_db_dir(),
     log:
@@ -101,7 +101,7 @@ rule makeblastdb_card:
     input:
         seq="data/card_db/protein_fasta_protein_homolog_model.fasta",
     output:
-        db="data/card_db/card_db.dmnd",
+        db=local("data/card_db/card_db.dmnd"),
     params:
         path=get_card_db_dir(),
     log:

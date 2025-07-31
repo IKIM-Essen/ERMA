@@ -35,7 +35,7 @@ step_to_state = {
 # === Load and summarize the table ===
 def table_to_html(input_path, output_path):
     df = pd.read_csv(input_path, header=0)
-
+    print(df)
     df["state"] = df["step"].map(step_to_state)
 
     # Reorder and sort
