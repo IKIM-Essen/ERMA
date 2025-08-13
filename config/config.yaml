@@ -1,4 +1,4 @@
-runname: "test"
+runname: "Rozman_24_07_25"
 
 # Setting up base directory and location of fastq files. Generally, no changes needed here.
 
@@ -6,7 +6,7 @@ base_dir: "."
 fastq_dir: "data/fastq" # Copy target fastq.gz files in ERMA/data/fastq or change this path
 outdir: "results" # Output directory of the final report
 
-min_similarity: "0.8" # threshold to pre-filter blast hits by percentage identity
+min_similarity: "0.85" # threshold to pre-filter blast hits by percentage identity
 min_abundance: "0.01" # genera with lower abundance will be binned as "Other" in stacked bar abundance plot
 
 silva:
@@ -20,6 +20,8 @@ num_parts: 1 # number of chunks the fastqs are split into
 max_threads: 16
 
 similarity_search_mode: "full" # Put here "test" or "full" for strand/s to be included in the similarity search
+
+input_validation: "yes"
 
 ### Preprocessing ###
 # if data is already in format 'one fastq.gz per sample', this section can be ignored
