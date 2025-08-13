@@ -97,7 +97,6 @@ def merge_results(card_output, silva_output, final_output, overview_table):
     path_parts = card_output.split("/")
     sample = path_parts[1]
     part = path_parts[2]
-
     # Count number of rows in the combined DataFrame
     count = len(combined_df)
 
