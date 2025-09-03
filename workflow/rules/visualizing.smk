@@ -14,7 +14,7 @@ rule plot_abundance_data:
             labels={"HTML": "Abundance data"},
         ),
     log:
-        local("logs/genera_abundance_plot.log"),
+        local("logs/genera_abundance/genera_abundance_plot.log"),
     conda:
         "../envs/python.yaml"
     threads: config["max_threads"]
@@ -33,7 +33,7 @@ rule plot_abundance_bubble:
             labels={"figure": "Abundance Bubble Plot"},
         ),
     log:
-        local("logs/genera_abundance_plot.log"),
+        local("logs/genera_abundance/genera_abundance_plot.log"),
     conda:
         "../envs/python.yaml"
     threads: config["max_threads"]
@@ -52,7 +52,7 @@ rule plot_stacked_bar_abundance:
             labels={"figure": "Stacked Bar Abundance Plot"},
         ),
     log:
-        local("logs/stacked_bar_abundance_plot.log"),
+        local("logs/stacked_bar_abundance/stacked_bar_abundance_plot.log"),
     params:
         min_abundance = config["min_abundance"]
     conda:
