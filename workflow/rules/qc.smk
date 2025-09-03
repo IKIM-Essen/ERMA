@@ -18,8 +18,8 @@ rule fastqc:
             os.path.join(config["fastq_dir"], f"{wildcards.sample}.fastq.gz")
         ),
     output:
-        html=local("results/fastqc/{sample}.html"),
-        zip=local("results/fastqc/{sample}_fastqc.zip"),
+        html=local(temp("results/fastqc/{sample}.html")),
+        zip=local(temp("results/fastqc/{sample}_fastqc.zip")),
     log:
         local("logs/input/{sample}.log"),
     threads: 8
