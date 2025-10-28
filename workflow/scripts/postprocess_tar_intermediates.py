@@ -11,6 +11,9 @@ def tar_and_cleanup(results_dir, output_tar, exclude_dirs):
             if item in exclude_dirs:
                 print(f"Skipping excluded: {item}", file=sys.stderr)
                 continue
+            if os.path.islink(item_path):
+                print(f"Skipping symlink: {item}", file=sys.stderr)
+                continue
             print(f"Adding to tar: {item}", file=sys.stderr)
             tar.add(item_path, arcname=item)
 

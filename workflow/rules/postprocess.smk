@@ -15,7 +15,6 @@ rule tar_single_sample_dirs:
         local("results/qc/multiqc.html"),
         local("results/qc/attrition_plot.png"),
         local("results/qc/overview_table.html"),
-        local(expand("results/boxplots/{sample}_idt_genus_plot.png", sample=samples)),
     output:
         local("results/single_sample_similarity_search_data.tar.gz")
     log:

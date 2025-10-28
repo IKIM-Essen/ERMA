@@ -11,7 +11,13 @@ min_abundance: "0.01" # genera with lower abundance will be binned as "Other" in
 
 silva:
   download_path_seq: "https://www.arb-silva.de/fileadmin/silva_databases/release_138_2/Exports/SILVA_138.2_SSURef_NR99_tax_silva.fasta.gz"
+  #download_path_seq: "https://www.arb-silva.de/fileadmin/silva_databases/release_138_1/Exports/SILVA_138.1_SSURef_NR99_tax_silva.fasta.gz"
+  #download_path_seq: "https://www.arb-silva.de/fileadmin/silva_databases/release_138/Exports/SILVA_138_SSURef_NR99_tax_silva.fasta.gz"
+  #download_path_seq: "https://www.arb-silva.de/fileadmin/silva_databases/release_128/Exports/SILVA_128_SSURef_Nr99_tax_silva.fasta.gz"
   download_path_tax: "https://www.arb-silva.de/fileadmin/silva_databases/release_138_2/Exports/taxonomy/taxmap_slv_ssu_ref_nr_138.2.txt.gz"
+  #download_path_tax: "https://www.arb-silva.de/fileadmin/silva_databases/release_138_1/Exports/taxonomy/taxmap_slv_ssu_ref_nr_138.1.txt.gz"
+  #download_path_tax: "https://www.arb-silva.de/fileadmin/silva_databases/release_138/Exports/taxonomy/taxmap_slv_ssu_ref_nr_138.txt.gz"
+  #download_path_tax: "https://www.arb-silva.de/fileadmin/silva_databases/release_128/Exports/taxonomy/taxmap_slv_ssu_ref_nr_128.txt.gz"
 
 card:
   download_path: "https://card.mcmaster.ca/download/0/broadstreet-v3.3.0.tar.bz2"

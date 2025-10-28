@@ -20,12 +20,15 @@ In case, one of the targets is empty, a dummy is created preventing workflow fai
 
 dtype_dict = {
     "query_id": "string",
+    "subject_id": "string",
     "perc_identity": "float",
     "align_length": "int",
     "evalue": "float",
     "part": "string",
     "genus": "string",
     "AMR Gene Family": "string",
+    "Drug Class": "string",
+    "ARO Name": "string"
 }
 
 
@@ -34,7 +37,10 @@ def write_dummy_line(output_file):
     print("Detected only a dummy 16S line — generating merged dummy output.")
     dummy_line = {
         "query_id": "dummy",
+        "subject_id_16S": "dummy",
         "AMR Gene Family": "NA",
+        "Drug Class": "string",
+        "ARO Name": "string",
         "perc_identity_ABR": 0,
         "align_length_ABR": 0,
         "evalue_ABR": 0,
@@ -96,6 +102,7 @@ def rename_for_merge(df, part):
             "perc_identity": "perc_identity_" + part,
             "align_length": "align_length_" + part,
             "evalue": "evalue_" + part,
+            "subject_id": "subject_id_"+part,
         }
     )
     return df_renamed
@@ -174,10 +181,12 @@ def filter_blast_results(input_file, output_file, min_similarity, overview_table
                 "perc_identity_ABR",
                 "align_length_ABR",
                 "evalue_ABR",
+                "Drug Class",
+                "ARO Name"
             ]
         ],
         s16_final[
-            ["query_id", "genus", "perc_identity_16S", "align_length_16S", "evalue_16S"]
+            ["query_id", "genus", "perc_identity_16S", "align_length_16S", "evalue_16S", "subject_id_16S"]
         ],
         on="query_id",
         how="inner",

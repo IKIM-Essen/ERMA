@@ -21,6 +21,8 @@ def write_dummy_line(sample_name):
     dummy_line = {
         "sample": sample_name,
         "AMR Gene Family": "NA",
+        "Drug Class":"NA",
+        "ARO Name":"NA",
         "genus": "NA",
         "genus_count": 0,
         "total_count": 0,
@@ -34,7 +36,7 @@ def process_combined_data(combined_data, sample_name):
 
     # Count genus occurrences per AMR Gene Family
     genus_counts = (
-        combined_data.groupby(["sample", "AMR Gene Family", "genus"])
+        combined_data.groupby(["sample", "AMR Gene Family", "genus","Drug Class","ARO Name","subject_id_16S"])
         .size()
         .reset_index(name="genus_count")
     )
