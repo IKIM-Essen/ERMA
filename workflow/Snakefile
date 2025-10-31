@@ -41,27 +41,40 @@ print(
     f"Configured sequencing technology in preprocessing (for merging/demultiplexing):\t{seq_tech}\n"
 )
 
-
-rule all:
-    input:
-        local(f"{outdir}/{runname}_report.zip"),
-        local("results/single_sample_similarity_search_data.tar.gz"),
-
-
-report: "../report/workflow.rst"
+if not config["github_action_test"]:
+    rule all:
+        input:
+            local(f"{outdir}/{runname}_report.zip"),
+            local("results/single_sample_similarity_search_data.tar.gz"),
 
 
-rule snakemake_report:
-    input:
-        local("results/single_sample_similarity_search_data.tar.gz"),
-        local("logs/logs.json"),
-    log:
-        local("logs/report/report.log"),
-    conda:
-        "envs/snakemake.yaml"
-    output:
-        local(f"{outdir}/{runname}_report.zip"),
-    shell:
-        """        
-        snakemake --nolock --report {output} --report-stylesheet config/custom-stylesheet.css 2>> {log}
-        """
+    report: "../report/workflow.rst"
+
+
+    rule snakemake_report:
+        input:
+            local("results/single_sample_similarity_search_data.tar.gz"),
+            local("logs/logs.json"),
+        log:
+            local("logs/report/report.log"),
+        conda:
+            "envs/snakemake.yaml"
+        output:
+            local(f"{outdir}/{runname}_report.zip"),
+        shell:
+            """        
+            snakemake --nolock --report {output} --report-stylesheet config/custom-stylesheet.css 2>> {log}
+            """
+
+elif config["github_action_test"]:
+    rule all:
+        input:    
+            local("results/abundance/stacked_bar_abundance_plot.html"),
+            local("results/abundance/combined_genus_abundance_bubbleplot.html"),
+            local("results/abundance/abundance_data.html"),
+            local("results/boxplots/combined_allength_boxplot.png"),
+            local("results/boxplots/combined_evalue_boxplot.png"),
+            local("results/boxplots/combined_percidt_boxplot.png"),
+            local("results/qc/multiqc.html"),
+            local("results/qc/attrition_plot.png"),
+            local("results/qc/overview_table.html"),
