@@ -41,7 +41,7 @@ def write_dummy_line(output_file, part):
             "Resistance Mechanism",
             "CARD Short Name",
         ]
-        dummy_row = dummy_row +["ABR", "dummy"] + ["0"] * 3 + ["dummy"] * 8
+        dummy_row = dummy_row + ["ABR", "dummy"] + ["0"] * 3 + ["dummy"] * 8
     else:
         raise ValueError("Invalid part specified. Must be 'ABR' or '16S'.")
     dummy_df = pd.DataFrame([dummy_row], columns=header)
