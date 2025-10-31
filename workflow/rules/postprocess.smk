@@ -19,6 +19,8 @@ rule tar_single_sample_dirs:
         local("results/single_sample_similarity_search_data.tar.gz")
     log:
         local("logs/tar/tar.log")
+    conda:
+        "envs/snakemake.yaml"        
     script:
         "../scripts/postprocess_tar_intermediates.py"        
 
@@ -28,5 +30,9 @@ rule concatenate_logs:
         local("results/single_sample_similarity_search_data.tar.gz")
     output:
         local("logs/logs.json")
+    log:
+        local("logs/tar/concat.log")        
+    conda:
+        "envs/snakemake.yaml"        
     script:
         "../scripts/postprocess_concat_logs.py"

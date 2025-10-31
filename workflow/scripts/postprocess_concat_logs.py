@@ -2,7 +2,8 @@ import os
 import json
 import shutil
 
-def concatenate_logs(log_dir,output):
+
+def concatenate_logs(log_dir, output):
     logs = {}
     for rule in sorted(os.listdir(log_dir)):
         rule_path = os.path.join(log_dir, rule)
@@ -42,6 +43,7 @@ def concatenate_logs(log_dir,output):
             shutil.rmtree(rule_path)
 
     print("All subfolders removed, only logs.json remains.")
+
 
 if __name__ == "__main__":
     log_dir = "logs/"

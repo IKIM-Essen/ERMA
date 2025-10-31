@@ -3,6 +3,7 @@ import tarfile
 import shutil
 import sys
 
+
 def tar_and_cleanup(results_dir, output_tar, exclude_dirs):
     # Open tarball for writing
     with tarfile.open(output_tar, "w:gz") as tar:
@@ -27,9 +28,16 @@ def tar_and_cleanup(results_dir, output_tar, exclude_dirs):
         else:
             os.remove(item_path)
 
+
 if __name__ == "__main__":
     results_dir = "results"
     output_tar = "results/single_sample_similarity_search_data.tar.gz"
-    exclude_dirs = ["abundance", "boxplots", "qc", "test_report.zip","single_sample_similarity_search_data.tar.gz"]
+    exclude_dirs = [
+        "abundance",
+        "boxplots",
+        "qc",
+        "test_report.zip",
+        "single_sample_similarity_search_data.tar.gz",
+    ]
 
     tar_and_cleanup(results_dir, output_tar, exclude_dirs)

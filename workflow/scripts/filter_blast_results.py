@@ -28,7 +28,7 @@ dtype_dict = {
     "genus": "string",
     "AMR Gene Family": "string",
     "Drug Class": "string",
-    "ARO Name": "string"
+    "ARO Name": "string",
 }
 
 
@@ -102,7 +102,7 @@ def rename_for_merge(df, part):
             "perc_identity": "perc_identity_" + part,
             "align_length": "align_length_" + part,
             "evalue": "evalue_" + part,
-            "subject_id": "subject_id_"+part,
+            "subject_id": "subject_id_" + part,
         }
     )
     return df_renamed
@@ -182,11 +182,18 @@ def filter_blast_results(input_file, output_file, min_similarity, overview_table
                 "align_length_ABR",
                 "evalue_ABR",
                 "Drug Class",
-                "ARO Name"
+                "ARO Name",
             ]
         ],
         s16_final[
-            ["query_id", "genus", "perc_identity_16S", "align_length_16S", "evalue_16S", "subject_id_16S"]
+            [
+                "query_id",
+                "genus",
+                "perc_identity_16S",
+                "align_length_16S",
+                "evalue_16S",
+                "subject_id_16S",
+            ]
         ],
         on="query_id",
         how="inner",
