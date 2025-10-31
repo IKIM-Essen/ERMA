@@ -20,7 +20,7 @@ rule tar_single_sample_dirs:
     log:
         local("logs/tar/tar.log")
     conda:
-        "envs/snakemake.yaml"        
+        "../envs/snakemake.yaml"        
     script:
         "../scripts/postprocess_tar_intermediates.py"        
 
@@ -33,6 +33,6 @@ rule concatenate_logs:
     log:
         local("logs/tar/concat.log")        
     conda:
-        "envs/snakemake.yaml"        
+        "../envs/snakemake.yaml"        
     script:
         "../scripts/postprocess_concat_logs.py"
