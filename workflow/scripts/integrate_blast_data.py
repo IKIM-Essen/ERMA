@@ -24,9 +24,23 @@ def write_dummy_line(output_file, part):
     dummy_row = ["dummy.dummy", "dummy", "100"] + ["0"] * 9
     if part == "16S":
         header = blast_columns + ["part", "primaryAccession", "genus"]
-        dummy_row = dummy_row + ["16S", "dummy", "0", "dummy", "dummy"]
+        dummy_row = dummy_row + ["16S", "dummy", "dummy"]
     elif part == "ABR":
-        header = blast_columns + ["part","ARO Accession", "CVTERM ID","Model Sequence ID","Model ID","Model Name","ARO Name","Protein Accession","DNA Accession","AMR Gene Family","Drug Class","Resistance Mechanism","CARD Short Name"]
+        header = blast_columns + [
+            "part",
+            "ARO Accession",
+            "CVTERM ID",
+            "Model Sequence ID",
+            "Model ID",
+            "Model Name",
+            "ARO Name",
+            "Protein Accession",
+            "DNA Accession",
+            "AMR Gene Family",
+            "Drug Class",
+            "Resistance Mechanism",
+            "CARD Short Name",
+        ]
         dummy_row = dummy_row + ["ABR", "dummy"] + ["0"] * 3 + ["dummy"] * 8
     else:
         raise ValueError("Invalid part specified. Must be 'ABR' or '16S'.")

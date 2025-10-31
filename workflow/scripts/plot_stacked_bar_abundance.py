@@ -95,7 +95,7 @@ def plot_stacked_abundance(
     min_genus_abundance,
     force_include=None,
     force_exclude=None,
-    min_reads=20
+    min_reads=20,
 ):
     """Main function to generate a stacked bar plot of genus abundance by AMR family."""
     force_include = force_include or []
@@ -142,7 +142,9 @@ def plot_stacked_abundance(
                     name=genus,
                     marker_color=genus_colors[genus],
                     legendgroup=legendgroup,
-                    legendgrouptitle=dict(text=amr) if genus == df_amr["genus"].unique()[0] else None,
+                    legendgrouptitle=(
+                        dict(text=amr) if genus == df_amr["genus"].unique()[0] else None
+                    ),
                     showlegend=True,
                 ),
                 row=i,
@@ -154,11 +156,11 @@ def plot_stacked_abundance(
             legend=dict(
                 y=1,
                 yanchor="top",
-                x=2.5-np.log10(samples),
+                x=2.5 - np.log10(samples),
                 xanchor="left",
-                tracegroupgap=500  # adds spacing between legend groups
+                tracegroupgap=500,  # adds spacing between legend groups
             ),
-            margin=dict(r=300)  # enough space for long legends
+            margin=dict(r=300),  # enough space for long legends
         )
 
     fig.update_layout(
@@ -171,7 +173,7 @@ def plot_stacked_abundance(
         showlegend=True,
         margin=dict(r=300),
     )
-    
+
     fig.update_xaxes(tickangle=45)
     fig.update_yaxes(title_text="Relative Abundance")
 

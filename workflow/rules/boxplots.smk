@@ -14,7 +14,7 @@ rule generate_percidt_genus:
         ),
     output:
         report(
-            local("results/{sample}/genus_idt_per_genus_plot.png"),
+            local("results/boxplots/{sample}_idt_genus_plot.png"),
             caption="../../report/identity_read_count_per_genus.rst",
             category="2. Samplewise Genus per Percentage Identity",
             subcategory="{sample}",

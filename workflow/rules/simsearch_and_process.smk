@@ -10,7 +10,7 @@ rule diamond_card:
         card=local("data/card_db/card_db.dmnd"),
     output:
         card_results=local("results/{sample}/{part}/card_results.txt"),
-        overview_table=local("results/{sample}/{part}/overview_table.txt"),
+        overview_table=local(temp("results/{sample}/{part}/overview_table.txt")),
     params:
         internal_threads=config["max_threads"],
     log:
@@ -54,7 +54,7 @@ if config["similarity_search_mode"] == "full":
 
     rule usearch_silva:
         input:
-            overview_table=local("results/{sample}/{part}/overview_table.txt"),
+            overview_table=local( "results/{sample}/{part}/overview_table.txt"),
             fasta=local("results/fastq/split/{sample}.part_{part}.fasta"),
             silva=local("data/silva_db/silva_seq.fasta"),
         output:
@@ -153,7 +153,7 @@ rule table_combined_genera_abundance:
     params:
         sample_name=samples,
     log:
-        local("logs/genera_abundance_table.log"),
+        local("logs/genera_abundance/genera_abundance_table.log"),
     conda:
         "../envs/python.yaml"
     threads: config["max_threads"]

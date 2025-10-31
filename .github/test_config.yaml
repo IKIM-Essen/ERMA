@@ -14,6 +14,7 @@ card:
 num_parts: 1 # number of chunks the fastqs are split into
 max_threads: 4
 
+github_action_test: True
 similarity_search_mode: "test" # Put here "test" or "full" for strand/s to be included in the similarity search
 
 seq_tech: "Illumina" # Put here "Illumina" or "ONT"
