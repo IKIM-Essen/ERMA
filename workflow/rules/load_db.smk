@@ -97,18 +97,53 @@ rule unzip_card_db:
         """
 
 
-rule makeblastdb_card:
+rule merge_card_with_uniprot:
     input:
-        seq=local("data/card_db/protein_fasta_protein_homolog_model.fasta"),
+        card_fasta=local("data/card_db/protein_fasta_protein_homolog_model.fasta")
     output:
-        db=local("data/card_db/card_db.dmnd"),
+        merged_fasta=local("data/card_db/protein_fasta_with_uniprot.fasta")
     params:
-        path=get_card_db_dir(),
-    log:
-        local("logs/diamond_makedb_card/makedb_card.log"),
+        cluster=config["add_uniref_targets"]["uniprot_cluster"],
+        targets=config["add_uniref_targets"]["uniprot_targets"],
+        size=config["add_uniref_targets"]["max_entry_count"]
     conda:
-        "../envs/diamond.yaml"
-    shell:
-        """
-        diamond makedb --in {input.seq} -d {params.path}/card_db 2> {log};
-        """
+        "../envs/python.yaml"
+    log:
+        "logs/uniprot_merge/uniprot_merge.log"
+    script:
+        "../scripts/fetch_and_merge_uniprot.py"
+
+
+if config["add_uniref_targets"]["using_mixed_db"].lower() == "yes":
+    rule makeblastdb_card:
+        input:
+            seq=local("data/card_db/protein_fasta_with_uniprot.fasta"),
+        output:
+            db=local("data/card_db/card_db.dmnd"),
+        params:
+            path=get_card_db_dir(),
+        log:
+            local("logs/diamond_makedb_card/makedb_card.log"),
+        conda:
+            "../envs/diamond.yaml"
+        shell:
+            """
+            diamond makedb --in {input.seq} -d {params.path}/card_db 2> {log};
+            """
+
+elif config["add_uniref_targets"]["using_mixed_db"].lower() != "yes":
+    rule makeblastdb_card:
+        input:
+            seq=local("data/card_db/protein_fasta_protein_homolog_model.fasta"),
+        output:
+            db=local("data/card_db/card_db.dmnd"),
+        params:
+            path=get_card_db_dir(),
+        log:
+            local("logs/diamond_makedb_card/makedb_card.log"),
+        conda:
+            "../envs/diamond.yaml"
+        shell:
+            """
+            diamond makedb --in {input.seq} -d {params.path}/card_db 2> {log};
+            """

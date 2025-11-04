@@ -66,3 +66,4 @@ elif config["seq_tech"] == "ONT":
             "../envs/python.yaml"
         script:
             "../scripts/prepare_fastq.py"
+

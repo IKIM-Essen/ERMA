@@ -23,10 +23,15 @@ card:
   #download_path: "https://card.mcmaster.ca/download/0/broadstreet-v3.3.0.tar.bz2"
   download_path: "https://card.mcmaster.ca/download/0/broadstreet-v4.0.1.tar.bz2"
 
+add_uniref_targets:
+  using_mixed_db: "no"
+  uniprot_cluster: "100"
+  uniprot_targets: ["int1","inti1"]
+  max_entry_count: 500
+
 num_parts: 1 # number of chunks the fastqs are split into
 max_threads: 16
 
-github_action_test: False
 similarity_search_mode: "full" # Put here "test" or "full" for strand/s to be included in the similarity search
 
 input_validation: "yes"
