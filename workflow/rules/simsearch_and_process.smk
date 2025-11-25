@@ -20,7 +20,7 @@ rule diamond_card:
     threads: config["max_threads"]
     shell:
         """
-        diamond blastx -d {input.card} -q {input.fasta} -o {output.card_results} --outfmt 6 --evalue 1e-5 --quiet --threads {params.internal_threads} 2> {log}
+        diamond blastx -d {input.card} -q {input.fasta} -o {output.card_results} --outfmt 6 --evalue 1e-5 --quiet --threads {params.internal_threads} > {log} 2>&1
         echo -ne "Number of FastQ input reads,{wildcards.sample},{wildcards.part},$(cat {input.fasta}|grep -c '^>')\n" >> {output.overview_table}
         echo -ne "Diamond output hits,{wildcards.sample},{wildcards.part},$(cat {output.card_results}|wc -l)\n" >> {output.overview_table}
         """
@@ -69,7 +69,7 @@ if config["similarity_search_mode"] == "full":
         threads: config["max_threads"]
         shell:
             """
-            usearch -usearch_local {input.fasta} -db {input.silva} -blast6out {output.silva_results} -evalue 1e-5 -threads {params.internal_threads} -strand both -mincols 200 2> {log}
+            usearch -usearch_local {input.fasta} -db {input.silva} -blast6out {output.silva_results} -evalue 1e-5 -threads {params.internal_threads} -strand both -mincols 200 > {log} 2>&1
             echo -ne "Usearch output hits,{wildcards.sample},{wildcards.part},$(cat {output.silva_results}|wc -l)\n" >> {input.overview_table}
             """
 
@@ -159,3 +159,27 @@ rule table_combined_genera_abundance:
     threads: config["max_threads"]
     script:
         "../scripts/table_combined_genera_abundance.py"
+
+
+if config["add_uniref_targets"]["using_mixed_db"].lower() == "yes":
+    rule table_combined_genera_abundance_uniref:
+        input:
+            filtered_data=local(
+                expand(
+                    "results/{sample}/{part}/filtered_results.csv.gz",
+                    sample=samples,
+                    part=get_numpart_list(),
+                )
+            ),
+            info_tsv=local("data/card_db/protein_fasta_with_uniprot.tsv")
+        output:
+            csv=local("results/abundance/combined_genus_abundance_uniref.csv"),
+        params:
+            sample_name=samples,
+        log:
+            local("logs/genera_abundance/genera_abundance_table_uniref.log"),
+        conda:
+            "../envs/python.yaml"
+        threads: config["max_threads"]
+        script:
+            "../scripts/table_combined_genera_abundance_uniref.py"    

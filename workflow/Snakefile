@@ -46,7 +46,6 @@ rule all:
         local(f"{outdir}/{runname}_report.zip"),
         local("results/single_sample_similarity_search_data.tar.gz"),
 
-
 report: "../report/workflow.rst"
 
 

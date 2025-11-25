@@ -9,25 +9,23 @@ outdir: "results" # Output directory of the final report
 min_similarity: "0.80" # threshold to pre-filter blast hits by percentage identity
 min_abundance: "0.01" # genera with lower abundance will be binned as "Other" in stacked bar abundance plot
 
+#################
+### Databases ###
+#################
+
 silva:
   download_path_seq: "https://www.arb-silva.de/fileadmin/silva_databases/release_138_2/Exports/SILVA_138.2_SSURef_NR99_tax_silva.fasta.gz"
-  #download_path_seq: "https://www.arb-silva.de/fileadmin/silva_databases/release_138_1/Exports/SILVA_138.1_SSURef_NR99_tax_silva.fasta.gz"
-  #download_path_seq: "https://www.arb-silva.de/fileadmin/silva_databases/release_138/Exports/SILVA_138_SSURef_NR99_tax_silva.fasta.gz"
-  #download_path_seq: "https://www.arb-silva.de/fileadmin/silva_databases/release_128/Exports/SILVA_128_SSURef_Nr99_tax_silva.fasta.gz"
   download_path_tax: "https://www.arb-silva.de/fileadmin/silva_databases/release_138_2/Exports/taxonomy/taxmap_slv_ssu_ref_nr_138.2.txt.gz"
-  #download_path_tax: "https://www.arb-silva.de/fileadmin/silva_databases/release_138_1/Exports/taxonomy/taxmap_slv_ssu_ref_nr_138.1.txt.gz"
-  #download_path_tax: "https://www.arb-silva.de/fileadmin/silva_databases/release_138/Exports/taxonomy/taxmap_slv_ssu_ref_nr_138.txt.gz"
-  #download_path_tax: "https://www.arb-silva.de/fileadmin/silva_databases/release_128/Exports/taxonomy/taxmap_slv_ssu_ref_nr_128.txt.gz"
 
 card:
-  #download_path: "https://card.mcmaster.ca/download/0/broadstreet-v3.3.0.tar.bz2"
   download_path: "https://card.mcmaster.ca/download/0/broadstreet-v4.0.1.tar.bz2"
 
 add_uniref_targets:
   using_mixed_db: "no"
   uniprot_cluster: "100"
-  uniprot_targets: ["int1","inti1"]
-  max_entry_count: 500
+  uniprot_targets: ["int1","inti1","class_1_integron"]
+  max_entry_count: 1000
+  low_freq_threshold: 0.01 # necessary for two summary plots
 
 num_parts: 1 # number of chunks the fastqs are split into
 max_threads: 16
@@ -36,7 +34,10 @@ similarity_search_mode: "full" # Put here "test" or "full" for strand/s to be in
 
 input_validation: "yes"
 
+#####################
 ### Preprocessing ###
+#####################
+
 # if data is already in format 'one fastq.gz per sample', this section can be ignored
 
 seq_tech: "Illumina" # Put here "Illumina" or "ONT" befor using rule prepare_fastqs
@@ -47,3 +48,9 @@ ONT:
   sample_name_path: "data/ONT/barcode-rename.csv" # change this file with your barcode-sample name combinations
   target_fragment_length: 1250 # Length of the theoretical fragment after nested PCR
   filter_intervall: 0.1 # +/- Intervall used to filter too large/small fragments; 0.1 filters in a +/- 10% intervall
+
+###############################
+### Additional 16S Analysis ###
+###############################
+
+using_ribosnake: True

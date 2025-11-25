@@ -101,7 +101,8 @@ rule merge_card_with_uniprot:
     input:
         card_fasta=local("data/card_db/protein_fasta_protein_homolog_model.fasta")
     output:
-        merged_fasta=local("data/card_db/protein_fasta_with_uniprot.fasta")
+        info_tsv=local("data/card_db/protein_fasta_with_uniprot.tsv"),
+        merged_fasta=temp(local("data/card_db/protein_fasta_with_uniprot.fasta")),
     params:
         cluster=config["add_uniref_targets"]["uniprot_cluster"],
         targets=config["add_uniref_targets"]["uniprot_targets"],
@@ -114,10 +115,26 @@ rule merge_card_with_uniprot:
         "../scripts/fetch_and_merge_uniprot.py"
 
 
+rule normalize_merged_db:
+    input:
+        merged_fasta=local("data/card_db/protein_fasta_with_uniprot.fasta")
+    output:
+        norm_fasta=local("data/card_db/protein_fasta_with_uniprot_norm.fasta")
+    conda:
+        "../envs/python.yaml"
+    log:
+        "logs/uniprot_merge/uniprot_norm.log"
+    shell:
+        r"""
+        seqkit rmdup -s {input.merged_fasta} 2> {log} \
+        | seqtk seq -l 0 - > {output.norm_fasta} 2>> {log}
+        """
+
+
 if config["add_uniref_targets"]["using_mixed_db"].lower() == "yes":
     rule makeblastdb_card:
         input:
-            seq=local("data/card_db/protein_fasta_with_uniprot.fasta"),
+            seq=local("data/card_db/protein_fasta_with_uniprot_norm.fasta"),
         output:
             db=local("data/card_db/card_db.dmnd"),
         params:

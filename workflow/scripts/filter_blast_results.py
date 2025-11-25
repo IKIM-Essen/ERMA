@@ -29,6 +29,7 @@ dtype_dict = {
     "AMR Gene Family": "string",
     "Drug Class": "string",
     "ARO Name": "string",
+    "db": "string",
 }
 
 
@@ -174,7 +175,7 @@ def filter_blast_results(input_file, output_file, min_similarity, overview_table
 
     # Merge side-by-side on query_id
     merged = pd.merge(
-        abr_final[
+        abr_common[
             [
                 "query_id",
                 "AMR Gene Family",
@@ -183,9 +184,11 @@ def filter_blast_results(input_file, output_file, min_similarity, overview_table
                 "evalue_ABR",
                 "Drug Class",
                 "ARO Name",
+                "subject_id_ABR",
+                "db"
             ]
         ],
-        s16_final[
+        s16_common[
             [
                 "query_id",
                 "genus",

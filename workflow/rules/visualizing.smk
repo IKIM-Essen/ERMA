@@ -97,3 +97,44 @@ rule plot_attrition:
         "../envs/python.yaml"
     script:
         "../scripts/plot_attrition.py"
+
+
+if config["add_uniref_targets"]["using_mixed_db"]:
+    rule plot_uniref_abundance_data:
+        input:
+            abundance_data=local("results/abundance/combined_genus_abundance_uniref.csv"),
+        output:
+            report(
+                local("results/abundance/uniref_abundance_data.html"),
+                caption="../../report/abundance_data.rst",
+                category="1. Combined Abundance Data",
+                labels={"HTML": "Uniref Abundance data"},
+            ),
+        log:
+            local("logs/genera_abundance/genera_uniref_abundance_plot.log"),
+        conda:
+            "../envs/python.yaml"
+        threads: config["max_threads"]
+        script:
+            "../scripts/plot_uniref_abundance_data.py"
+
+    rule plot_uniref_summary:
+        input:
+            card_abundance=local("results/abundance/combined_genus_abundance.csv"),
+            uniref_abundance=local("results/abundance/combined_genus_abundance_uniref.csv"),
+        output:
+            report(
+                local("results/abundance/uniref_summary.html"),
+                caption="../../report/abundance_data.rst",
+                category="1. Combined Abundance Data",
+                labels={"HTML": "Uniref combined summary"},
+            ),
+        log:
+            local("logs/uniref_summary/uniref_summary.log"),
+        params:
+            low_freq_threshold = config["min_abundance"]            
+        conda:
+            "../envs/python.yaml"
+        threads: config["add_uniref_targets"]["low_freq_threshold"]
+        script:
+            "../scripts/plot_uniref_summary.py"

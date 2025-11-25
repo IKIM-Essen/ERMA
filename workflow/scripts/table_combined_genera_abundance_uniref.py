@@ -20,29 +20,33 @@ def write_dummy_line(sample_name):
     """Create a dummy row for missing input and returns placeholder"""
     dummy_line = {
         "sample": sample_name,
-        "AMR Gene Family": "NA",
-        "Drug Class": "NA",
-        "ARO Name": "NA",
+        'subject_id_ABR': "NA",
         "genus": "NA",
+        'subject_id_16S': "NA",
+        'db': "NA",
         "genus_count": 0,
         "total_count": 0,
         "relative_genus_count": 0,
+        'Common taxon':"NA",
+        'Identity': "NA",
+        'Cluster Name': "NA",
+        'Uniref query': "NA",
     }
     return pd.DataFrame([dummy_line])
 
 
-def process_combined_data(combined_data, sample_name):
-    combined_data["sample"] = sample_name
-
+def process_combined_data(df, info_df, sample_name):
+    df["sample"] = sample_name
+    combined_data = df.merge(info_df, on=["subject_id_ABR"])
     # Count genus occurrences per AMR Gene Family
     genus_counts = (
         combined_data.groupby(
             [
                 "sample",
-                "AMR Gene Family",
+                "Uniref query",
                 "genus",
-                "Drug Class",
-                "ARO Name",
+                "Common taxon",
+                "Cluster Name",
             ]
         )
         .size()
@@ -51,13 +55,13 @@ def process_combined_data(combined_data, sample_name):
 
     # Calculate total genus count per AMR Gene Family within each sample
     total_counts = (
-        genus_counts.groupby(["sample", "AMR Gene Family"])["genus_count"]
+        genus_counts.groupby(["sample", "Uniref query"])["genus_count"]
         .sum()
         .reset_index(name="total_count")
     )
 
     # Join and calculate relative abundance
-    result = pd.merge(genus_counts, total_counts, on=["sample", "AMR Gene Family"])
+    result = pd.merge(genus_counts, total_counts, on=["sample", "Uniref query"])
     result["relative_genus_count"] = round(
         result["genus_count"] / result["total_count"], 4
     )
@@ -70,7 +74,7 @@ def load_and_merge_parts(file_list):
     data_frames = []
     for file in file_list:
         try:
-            df = pd.read_csv(file, compression="gzip")
+            df = pd.read_csv(file)
             data_frames.append(df)
         except Exception as e:
             print(f"Skipping file due to read error [{file}]: {repr(e)}")
@@ -81,8 +85,12 @@ def load_and_merge_parts(file_list):
     return merged_df
 
 
-def export_genera_abundance(input_files, output_path):
+def export_genera_abundance(input_files, info_file, output_path):
     """Group input files by sample"""
+    info_df = pd.read_csv(info_file,header=0)
+    info_df = info_df.drop(['Reference sequence'],axis=1)
+    info_df = info_df.rename(columns={"Cluster ID": "subject_id_ABR"})
+
     sample_to_files = {}
     for file in input_files:
         # Extract sample name from the file path, assuming 3rd-to-last split is the sample name
@@ -93,12 +101,14 @@ def export_genera_abundance(input_files, output_path):
 
     for sample_name, files in sample_to_files.items():
         merged_data = load_and_merge_parts(files)
-        sample_data = process_combined_data(merged_data, sample_name)
+        sample_data = process_combined_data(merged_data, info_df, sample_name)
         all_data.append(sample_data)
 
     final_df = pd.concat(all_data, ignore_index=True)
+    
+    # Export the final aggregated data to a CSV file
     final_df = final_df.sort_values(
-        by=["sample", "AMR Gene Family", "genus_count"], ascending=False
+        by=["sample","genus_count"], ascending=False
     )
 
     # Export the final aggregated data to a CSV file
@@ -107,6 +117,7 @@ def export_genera_abundance(input_files, output_path):
 
 if __name__ == "__main__":
     input_files = list(snakemake.input.filtered_data)
+    info_tsv = snakemake.input.info_tsv
     output_path = snakemake.output.csv
     sys.stderr = open(snakemake.log[0], "w")
-    export_genera_abundance(input_files, output_path)
+    export_genera_abundance(input_files, info_tsv, output_path)
