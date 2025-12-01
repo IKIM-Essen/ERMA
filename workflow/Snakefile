@@ -13,6 +13,9 @@ include: "rules/simsearch_and_process.smk"
 include: "rules/boxplots.smk"
 include: "rules/visualizing.smk"
 
+if config["using_ribosnake"]:
+    include: "rules/ribosnake_analysis.smk"
+
 # Build a list of all "fastq.gz" files in "ERMA/data/fastq" which will be processed subsequently
 samples = [
     os.path.basename(f).replace(".fastq.gz", "")
@@ -43,8 +46,9 @@ print(
 
 rule all:
     input:
-        local(f"{outdir}/{runname}_report.zip"),
-        local("results/single_sample_similarity_search_data.tar.gz"),
+        #local(f"{outdir}/{runname}_report.zip"),
+        #local("results/single_sample_similarity_search_data.tar.gz"),
+        local("results/ribosnake_done.flag")
 
 report: "../report/workflow.rst"
 
@@ -63,3 +67,8 @@ rule snakemake_report:
         """        
         snakemake --nolock --report {output} --report-stylesheet config/custom-stylesheet.css 2>> {log}
         """
+
+module ribosnake:
+    workdir: config["ribosnake_directory"]
+    snakefile: config["ribosnake_directory"] + "/Snakefile"
+    config: config["ribosnake_config"]
