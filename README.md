@@ -3,16 +3,16 @@
 [![Snakemake](https://img.shields.io/badge/snakemake-≥9.0-brightgreen.svg)](https://snakemake.bitbucket.io)
 [![Snakemake CI](https://github.com/IKIM-Essen/ERMA/actions/workflows/snakemake-ci.yml/badge.svg)](https://github.com/IKIM-Essen/ERMA/actions/workflows/snakemake-ci.yml)
 
-This **Snakemake**-based pipeline processes sequencing reads from epicPCR experiments to link antimicrobial resistance (AMR) genes with genus-specific 16S rRNA gene sequences from prokaryotic cells. It orchestrates all workflow steps, including database downloads, sequence alignment, read filtering, and the generation of visual reports, ensuring reproducibility and streamlined analysis.
+This **Snakemake**-based pipeline processes sequencing reads from epicPCR experiments to link antimicrobial resistance (AMR) or other target genes with genus-specific 16S rRNA gene sequences from prokaryotic cells. It orchestrates all workflow steps, including database downloads, sequence alignment, read filtering, and the generation of visual reports, ensuring reproducibility and streamlined analysis.
 
-## Features
-- Downloads and prepares SILVA and CARD databases for use in the analysis.
-- Converts raw FASTQ sequencing files to FASTA format.
-- Performs Diamond/Usearch sequence alignments against both CARD (AMR genes) and SILVA (16S rRNA).
-- Integrates similarity search results to identify linked AMR and microbial markers.
-- Generates filtered results based on alignment quality and similarity thresholds.
-- Produces graphical outputs such as genus abundance plots, boxplots, and tables.
-- Generates an HTML report summarizing the analysis.
+## Feature overview
+- Auto-downloads and prepares SILVA and CARD databases for use in the analysis
+- Auto-downloads user-specified targets (UniRef )and adds it to the CARD database
+- Performs Diamond/Usearch sequence alignments against both databases
+- Integrates similarity search results to identify linked AMR and microbial markers
+- Generates filtered results based on alignment quality and similarity thresholds
+- Produces graphical outputs such as genus abundance plots, boxplots, and tables
+- Generates an HTML report summarizing the analysis
 
 ## Prerequisites
 
@@ -21,14 +21,13 @@ This **Snakemake**-based pipeline processes sequencing reads from epicPCR experi
 This pipeline is possible to deploy with snakedeploy. We recommend to only use this with already present experience with snakemake and snakedeploy. If this is not the case, we recommend to use the full installation guide.
 
 For usage:
-1. Install snakedeploy and snakemake≥v9 (if necessary)
+1. Make sure snakedeploy and snakemake≥v9 is installed
 2. deploy minimum workflow distribution (with desired destination)
 ```bash
 snakedeploy deploy-workflow https://github.com/IKIM-Essen/ERMA --dest . --branch snakedeploy
 ```
 3. prepare setup
 ```bash
-mkdir -p data/fastq
 cp "files-to-analyze" data/fastq
 ```
 4. start pipeline (change config if necessary)
@@ -48,7 +47,63 @@ Alternatively, follow the official [Snakemake installation](https://snakemake.re
 
 Install Dependencies: This pipeline uses conda environments to manage its dependencies. Snakemake will automatically create and manage these environments when run with the `--use-conda` flag (default in profile).
 
-## Usage Instructions
+### Preparing Databases
+
+ERMA relies on two primary reference databases: SILVA for taxonomic assignment and CARD for antimicrobial resistance gene detection. Both databases are handled directly through the workflow configuration and can be fetched automatically or provided locally, depending on user requirements.
+
+#### Automatic Download (Default)
+
+By default, ERMA downloads both databases using the URLs defined in the configuration file:
+
+```yaml
+download_silva: "https://www.arb-silva.de/fileadmin/silva_databases/release_138_2/Exports/SILVA_138.2_SSURef_NR99_tax_silva.fasta.gz"
+download_card: "https://card.mcmaster.ca/download/0/broadstreet-v4.0.1.tar.bz2"
+```
+
+When these entries remain set to URLs, the workflow retrieves and processes the databases automatically during execution. No additional preparation steps are required. Once downloaded, the workflow uses the present files for reiterations.
+
+#### Using Local Database Files
+
+If the user prefers handling the downloads manually or already has the required databases available on disk, the workflow can operate entirely from local paths. To do so, replace the URLs in the configuration file with absolute file paths:
+
+```yaml
+download_silva: "/path/to/local/SILVA_138.2.fasta.gz"
+download_card: "/path/to/local/broadstreet-v4.0.1.tar.bz2"
+```
+
+Once local paths are set, ERMA will skip remote downloads and use the supplied files without modification of the pipeline structure.
+
+#### Adding UniRef Targets of Interest (Optional)
+
+ERMA provides an optional mechanism to incorporate UniRef clusters representing additional genes or functions relevant to the analysis. This process is fully automated and controlled through the following section of the configuration file:
+
+```yaml
+add_uniref_targets: False
+uniprot_cluster: "100"
+uniprot_targets: ["int1", "inti1", "class_1_integron"]
+max_entry_count: 1000
+low_freq_threshold: 0.01
+```
+
+To activate UniRef integration, set:
+
+```yaml
+add_uniref_targets: True
+```
+
+Then adjust the uniprot_targets list to include any desired search terms or gene names. ERMA downloads the corresponding UniRef entries, filters them according to the configured uniprot_cluster level (e.g., UniRef100), and integrates them directly into the CARD-derived reference database used for similarity searches.
+This option enables users to extend the AMR and functional screening capabilities of ERMA without requiring manual reference curation.
+
+#### Manual Addition of New Targets (Alternative Workflow)
+
+Users who prefer to add custom targets manually can follow this approach:
+1. Retrieve the protein FASTA sequences for the target gene(s) from UniProt, CARD, or any external source
+2. Append the new sequences to the CARD protein FASTA file used by ERMA (protein_fasta_protein_homolog_model.fasta)
+3. Rezip the beforehand unzipped files to the same format as before
+4. Modify the workflow configuration to point to the updated local database files
+This approach offers full control over the source, format, and curation of custom targets while keeping the surrounding pipeline unchanged
+
+## Pipeline Usage
 
 First, clone the pipeline repository to your local machine:
 
@@ -58,41 +113,14 @@ cd ERMA
 ```
 Prepare Data Folder: You need to place your raw sequencing files (fastq.gz format) in the data/fastq/ directory or change this path to the desired directory.
 
-Modify the Config File: Open the config/config.yaml file and change the base_dir parameter to the base directory where the pipeline is located. The config file should look like this:
+Modify the Config File: Open the config/config.yaml file and change the base_dir parameter to the base directory where the pipeline is located. The most relevant parameters for the standard user are:
 
 ```yaml
-runname: "ERMA_runname123"
-# setting up base directory and location of input and output. Generally, no changes needed here.
-base_dir: "."
-fastq_dir: "data/fastq" # copy target fastq.gz files in ERMA/data/fastq or change this path
-outdir: "results" # Output directory of the final report
-
-min_similarity: "0.8" # threshold to filter blast hits by percentage identity
-min_abundance: "0.01" # genera with lower abundance will be binned as "Other" in stacked bar abundance plot
-
-silva:
-  download_path_seq: "path/to/silva_db"
-  download_path_tax: "path/to/silva_taxmap"
-
-card:
-  download_path: "https://card.mcmaster.ca/download/0/broadstreet-v3.3.0.tar.bz2"
-
-num_parts: 1 # number of subfiles the fastqs are split into
+runname: "runname123"
+min_similarity: "0.9" # threshold to filter blast hits by percentage identity
+num_parts: 1 # number of subfiles the fastqs are split into (prevents crashing with very large input)
 max_threads: 16 
-
-similarity_search_mode: "full" # Put here "test" or "full" for strand/s to be included in the similarity search
-
-### Preprocessing ###
-# if data is already in format 'one fastq.gz per sample', this section can be ignored
-
-seq_tech: "Illumina" # Put here "Illumina" or "ONT" befor using rule prepare_fastqs
-
-# In case of Demultiplexing ONT data, provide information for this section
-ONT:
-  fastq_pass_path: "data/ONT/fastq_pass" # copy your fastq_pass folder here
-  sample_name_path: "data/ONT/barcode-rename.csv" # change this file with your barcode-sample name combinations
-  target_fragment_length: 1250 # Length of the theoretical fragment after nested PCR
-  filter_intervall: 0.1 # +/- Intervall used to filter too large/small fragments; 0.1 filters in a +/- 10% intervall
+seq_tech: "Illumina" # Put here "Illumina" or "ONT" according to used technology (only important for using rule prepare_fastqs)
 ```
 
 ### Illumina input
@@ -124,7 +152,7 @@ When starting with raw ONT output, this routine can be used to demultiplex the s
 5. Run from the ERMA root folder:
 
 ```bash
-snakemake prepare_fastqs
+snakemake prepare_fastqs --cores N
 ```
 
 This will execute a python script that filters and demultiplex the ONT output in one fastq file per sample.
@@ -148,19 +176,23 @@ snakemake --profile profile
 
 ### Testing
 
-For testing the workflow you can copy the provided dummy data:
+For testing the workflow the user can copy the provided dummy data:
 
 ```
 cp .github/data/fastq/test_epic_data.fastq.gz data/fastq/
 ```
 
-In this case, the similarity search mode in the config file can be changed to "test"
+In this case, the similarity search mode in the config file can be changed to "test", searching only one of the two strands.
 
 ## Additional Notes
 
-The pipeline is designed to handle large sequencing datasets in parallel, so it's recommended to run it on a machine with sufficient computational resources. However, to run the pipeline on machines with less resources, it is recommended to split the fastq files or the tables in smaller chunks to prevent RAM  overflow. This can be done by increase num_parts in the config file. However, the higher the number of parts per FASTQ file, the higher the chance some blast results for the same read will be split and lost.
+The pipeline is designed to handle large sequencing datasets in parallel, so it's recommended to run it on a machine with sufficient computational resources. However, to run the pipeline on machines with less resources, it is recommended to split the fastq files or the tables in smaller chunks to prevent RAM overflow. This can be done by increase num_parts in the config file.
 If any errors occur during the pipeline run, Snakemake will provide detailed logs, allowing you to debug and troubleshoot any issues. You are most welcome to create an Issue when running into problems.
 
-License
+## Connected 16S Analysis
+
+We acknowledge that many users perform a regular 16S experiment additional to the epicPCR experiment. However, we have decided not to include an extra analysis  featue for this in ERMA. We would like to encourage the user to use RiboSnake (10.46471/gigabyte.132), a validated, automated, reproducible QIIME2-based pipeline implemented in Snakemake for analysing 16S rRNA gene amplicon sequencing data.
+
+## License
 
 This project is licensed under the MIT License.

@@ -20,17 +20,17 @@ def write_dummy_line(sample_name):
     """Create a dummy row for missing input and returns placeholder"""
     dummy_line = {
         "sample": sample_name,
-        'subject_id_ABR': "NA",
+        "subject_id_ABR": "NA",
         "genus": "NA",
-        'subject_id_16S': "NA",
-        'db': "NA",
+        "subject_id_16S": "NA",
+        "db": "NA",
         "genus_count": 0,
         "total_count": 0,
         "relative_genus_count": 0,
-        'Common taxon':"NA",
-        'Identity': "NA",
-        'Cluster Name': "NA",
-        'Uniref query': "NA",
+        "Common taxon": "NA",
+        "Identity": "NA",
+        "Cluster Name": "NA",
+        "Uniref query": "NA",
     }
     return pd.DataFrame([dummy_line])
 
@@ -87,8 +87,8 @@ def load_and_merge_parts(file_list):
 
 def export_genera_abundance(input_files, info_file, output_path):
     """Group input files by sample"""
-    info_df = pd.read_csv(info_file,header=0)
-    info_df = info_df.drop(['Reference sequence'],axis=1)
+    info_df = pd.read_csv(info_file, header=0)
+    info_df = info_df.drop(["Reference sequence"], axis=1)
     info_df = info_df.rename(columns={"Cluster ID": "subject_id_ABR"})
 
     sample_to_files = {}
@@ -105,11 +105,9 @@ def export_genera_abundance(input_files, info_file, output_path):
         all_data.append(sample_data)
 
     final_df = pd.concat(all_data, ignore_index=True)
-    
+
     # Export the final aggregated data to a CSV file
-    final_df = final_df.sort_values(
-        by=["sample","genus_count"], ascending=False
-    )
+    final_df = final_df.sort_values(by=["sample", "genus_count"], ascending=False)
 
     # Export the final aggregated data to a CSV file
     final_df.to_csv(output_path, index=False)

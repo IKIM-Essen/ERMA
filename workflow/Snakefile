@@ -22,7 +22,7 @@ samples = [
 ]
 
 # Validate sample input if not started from snakedeploy
-if config["input_validation"] == "yes":
+if config["input_validation"]:
     sys.path.append("workflow/scripts")
     from validate_inputs import validate_samples
     validate_samples(samples, os.path.join(config["base_dir"], config["fastq_dir"]))

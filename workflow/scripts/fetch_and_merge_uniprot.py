@@ -46,6 +46,7 @@ def fetch_all(base_url, params, headers, max_entries):
 
     return "".join(all_data)
 
+
 def df_to_fasta(df):
     """Convert DataFrame to FASTA formatted string."""
     fasta_lines = []
@@ -55,20 +56,29 @@ def df_to_fasta(df):
         fasta_lines.append(f"{header}\n{seq}")
     return "\n".join(fasta_lines)
 
-df_final=[]
+
+df_final = []
 for t in targets:
     query = f"{t} AND identity:{identity_map[cluster]}"
-    params = {"query": query,"fields":["id","name","common_taxon","identity","sequence"], "format": "tsv"}
-    fetch = fetch_all(base_url, params, headers,size)
-    df = pd.read_csv(io.StringIO(fetch),header=0,sep='\t')
+    params = {
+        "query": query,
+        "fields": ["id", "name", "common_taxon", "identity", "sequence"],
+        "format": "tsv",
+    }
+    fetch = fetch_all(base_url, params, headers, size)
+    df = pd.read_csv(io.StringIO(fetch), header=0, sep="\t")
     df["Uniref query"] = t
-    df["db"] = "Uniref"    
+    df["db"] = "Uniref"
     df_final.append(df)
 if df_final:
-    result = pd.concat(df_final,ignore_index=True).drop_duplicates().reset_index(drop=True)
-    result["Cluster Name"] = result["Cluster Name"].str.replace("Cluster:","")
-    result = result.drop(result[result["Common taxon"] == "Common taxon"].index) # remove double headers
-    result.to_csv(output_tsv,index=False)
+    result = (
+        pd.concat(df_final, ignore_index=True).drop_duplicates().reset_index(drop=True)
+    )
+    result["Cluster Name"] = result["Cluster Name"].str.replace("Cluster:", "")
+    result = result.drop(
+        result[result["Common taxon"] == "Common taxon"].index
+    )  # remove double headers
+    result.to_csv(output_tsv, index=False)
     fasta_text = df_to_fasta(result)
     with open(card_fasta, "r") as cf, open(output_fasta, "w") as out:
         out.write(cf.read().strip() + "\n" + fasta_text)

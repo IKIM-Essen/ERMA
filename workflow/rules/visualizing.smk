@@ -99,7 +99,7 @@ rule plot_attrition:
         "../scripts/plot_attrition.py"
 
 
-if config["add_uniref_targets"]["using_mixed_db"]:
+if config["add_uniref_targets"]:
     rule plot_uniref_abundance_data:
         input:
             abundance_data=local("results/abundance/combined_genus_abundance_uniref.csv"),
@@ -135,6 +135,6 @@ if config["add_uniref_targets"]["using_mixed_db"]:
             low_freq_threshold = config["min_abundance"]            
         conda:
             "../envs/python.yaml"
-        threads: config["add_uniref_targets"]["low_freq_threshold"]
+        threads: config["low_freq_threshold"]
         script:
             "../scripts/plot_uniref_summary.py"

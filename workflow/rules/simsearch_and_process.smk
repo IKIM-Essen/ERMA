@@ -79,7 +79,8 @@ rule integrate_blast_data:
         overview_table=local("results/{sample}/{part}/overview_table.txt"),
         card_results=local("results/{sample}/{part}/card_results.txt"),
         silva_results=local("results/{sample}/{part}/SILVA_results.txt"),
-        aro_mapping=local("data/card_db/aro_index.tsv"),
+        aro_mapping=local("data/card_db/unpacked/aro_index.tsv"),
+        unpacked=local("data/card_db/unpacked")
     output:
         intermed_card_results=local(
             temp("results/{sample}/{part}/intermed_card_results.csv")
@@ -161,7 +162,7 @@ rule table_combined_genera_abundance:
         "../scripts/table_combined_genera_abundance.py"
 
 
-if config["add_uniref_targets"]["using_mixed_db"].lower() == "yes":
+if config["add_uniref_targets"]:
     rule table_combined_genera_abundance_uniref:
         input:
             filtered_data=local(

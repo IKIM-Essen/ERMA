@@ -185,7 +185,7 @@ def filter_blast_results(input_file, output_file, min_similarity, overview_table
                 "Drug Class",
                 "ARO Name",
                 "subject_id_ABR",
-                "db"
+                "db",
             ]
         ],
         s16_common[

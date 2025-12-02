@@ -48,15 +48,21 @@ def write_dummy_line(output_file, part):
     dummy_df = pd.DataFrame([dummy_row], columns=header)
     dummy_df.to_csv(output_file, index=False)
 
+
 def classify_db(subj):
     # CARD entries have 4 parts when split by "|" and contain "ARO:<number>"
-    if isinstance(subj, str) and len(subj.split("|")) == 4 and re.search(r"ARO:\d+", subj):
+    if (
+        isinstance(subj, str)
+        and len(subj.split("|")) == 4
+        and re.search(r"ARO:\d+", subj)
+    ):
         return "card"
     # UniRef entries contain "UniRef" and an underscore followed by a number
     elif isinstance(subj, str) and re.search(r"UniRef\d+_", subj):
         return "uniref"
     else:
         return "other"
+
 
 def process_card_results(
     card_results_path, aro_mapping_path, blast_columns, output_path

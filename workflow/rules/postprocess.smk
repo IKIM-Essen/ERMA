@@ -3,7 +3,7 @@
 # This file may not be copied, modified, or distributed
 # except according to those terms.
 
-if config["add_uniref_targets"]["using_mixed_db"] != "yes":
+if not config["add_uniref_targets"]:
     rule tar_single_sample_dirs:
         input:    
             local("results/abundance/stacked_bar_abundance_plot.html"),
@@ -25,7 +25,7 @@ if config["add_uniref_targets"]["using_mixed_db"] != "yes":
             "../scripts/postprocess_tar_intermediates.py"        
 
 
-if config["add_uniref_targets"]["using_mixed_db"] == "yes":
+if config["add_uniref_targets"]:
     rule tar_single_sample_dirs:
         input:    
             local("results/abundance/uniref_summary.html"),
