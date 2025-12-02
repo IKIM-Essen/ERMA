@@ -101,7 +101,10 @@ def plot_stacked_abundance(
     force_include = force_include or []
     force_exclude = force_exclude or []
 
-    df = pd.read_csv(observed_csv)
+    cols_to_group = ["sample", "AMR Gene Family", "genus", "Drug Class", "total_count"]
+    df = pd.read_csv(observed_csv, sep=",")
+    df = df.groupby(cols_to_group, as_index=False).agg({"genus_count": "sum"})
+    df["relative_genus_count"] = df["genus_count"] / df["total_count"]
     df = df[df["total_count"] > min_reads]
     df = df.sort_values(["sample", "genus_count"], ascending=[True, False])
 
@@ -150,18 +153,6 @@ def plot_stacked_abundance(
                 row=i,
                 col=1,
             )
-
-        # Custom legend positioning for each subplot (optional, only needed if separating legends visually)
-        fig.update_layout(
-            legend=dict(
-                y=1,
-                yanchor="top",
-                x=2.5 - np.log10(samples),
-                xanchor="left",
-                tracegroupgap=500,  # adds spacing between legend groups
-            ),
-            margin=dict(r=300),  # enough space for long legends
-        )
 
     fig.update_layout(
         barmode="stack",
