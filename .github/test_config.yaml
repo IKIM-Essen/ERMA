@@ -13,3 +13,5 @@ max_threads: 4
 similarity_search_mode: "test" # Put here "test" or "full" for strand/s to be included in the similarity search
 
 seq_tech: "Illumina" # Put here "Illumina" or "ONT"
+
+add_uniref_targets: False
