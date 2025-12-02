@@ -23,7 +23,7 @@ download_silva: "https://www.arb-silva.de/fileadmin/silva_databases/release_138_
 download_card: "https://card.mcmaster.ca/download/0/broadstreet-v4.0.1.tar.bz2"
 # Use the default links, different versions of the same database or insert an absolute path to a local distribution ("/path/to/database")
 
-add_uniref_targets: True # True for activating the feature of adding additional targets to the card database
+add_uniref_targets: False # True for activating the feature of adding additional targets to the card database
 uniprot_cluster: "100" # Chooses which Uniref Cluster is used for the targets
 uniprot_targets: ["int1","inti1","class_1_integron"] 
 max_entry_count: 1000 # Only use the best N database entries for every target
