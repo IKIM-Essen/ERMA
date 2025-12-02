@@ -7,6 +7,7 @@
 import pandas as pd
 import concurrent.futures
 import os, sys
+import re
 
 """
 This script processes BLAST results from CARD (AMR gene hits) and SILVA 
@@ -48,6 +49,21 @@ def write_dummy_line(output_file, part):
     dummy_df.to_csv(output_file, index=False)
 
 
+def classify_db(subj):
+    # CARD entries have 4 parts when split by "|" and contain "ARO:<number>"
+    if (
+        isinstance(subj, str)
+        and len(subj.split("|")) == 4
+        and re.search(r"ARO:\d+", subj)
+    ):
+        return "card"
+    # UniRef entries contain "UniRef" and an underscore followed by a number
+    elif isinstance(subj, str) and re.search(r"UniRef\d+_", subj):
+        return "uniref"
+    else:
+        return "other"
+
+
 def process_card_results(
     card_results_path, aro_mapping_path, blast_columns, output_path
 ):
@@ -64,6 +80,7 @@ def process_card_results(
 
             card_df = pd.read_csv(f_in, sep="\t", names=blast_columns)
             card_df["part"] = "ABR"
+            card_df["db"] = card_df["subject_id"].apply(classify_db)
             # Extract ARO accession (formatted like: ARO|...|ACCESSION|...)
             card_df["ARO Accession"] = card_df["subject_id"].str.split(
                 "|", expand=True

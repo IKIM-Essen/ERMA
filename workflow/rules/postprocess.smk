@@ -3,26 +3,50 @@
 # This file may not be copied, modified, or distributed
 # except according to those terms.
 
+if not config["add_uniref_targets"]:
+    rule tar_single_sample_dirs:
+        input:    
+            local("results/abundance/stacked_bar_abundance_plot.html"),
+            local("results/abundance/combined_genus_abundance_bubbleplot.html"),
+            local("results/abundance/abundance_data.html"),
+            local("results/boxplots/combined_allength_boxplot.png"),
+            local("results/boxplots/combined_evalue_boxplot.png"),
+            local("results/boxplots/combined_percidt_boxplot.png"),
+            local("results/qc/multiqc.html"),
+            local("results/qc/attrition_plot.png"),
+            local("results/qc/overview_table.html"),
+        output:
+            local("results/single_sample_similarity_search_data.tar.gz")
+        log:
+            local("logs/tar/tar.log")
+        conda:
+            "../envs/python.yaml"        
+        script:
+            "../scripts/postprocess_tar_intermediates.py"        
 
-rule tar_single_sample_dirs:
-    input:    
-        local("results/abundance/stacked_bar_abundance_plot.html"),
-        local("results/abundance/combined_genus_abundance_bubbleplot.html"),
-        local("results/abundance/abundance_data.html"),
-        local("results/boxplots/combined_allength_boxplot.png"),
-        local("results/boxplots/combined_evalue_boxplot.png"),
-        local("results/boxplots/combined_percidt_boxplot.png"),
-        local("results/qc/multiqc.html"),
-        local("results/qc/attrition_plot.png"),
-        local("results/qc/overview_table.html"),
-    output:
-        local("results/single_sample_similarity_search_data.tar.gz")
-    log:
-        local("logs/tar/tar.log")
-    conda:
-        "../envs/python.yaml"        
-    script:
-        "../scripts/postprocess_tar_intermediates.py"        
+
+if config["add_uniref_targets"]:
+    rule tar_single_sample_dirs:
+        input:    
+            local("results/abundance/uniref_summary.html"),
+            local("results/abundance/uniref_abundance_data.html"),
+            local("results/abundance/stacked_bar_abundance_plot.html"),
+            local("results/abundance/combined_genus_abundance_bubbleplot.html"),
+            local("results/abundance/abundance_data.html"),
+            local("results/boxplots/combined_allength_boxplot.png"),
+            local("results/boxplots/combined_evalue_boxplot.png"),
+            local("results/boxplots/combined_percidt_boxplot.png"),
+            local("results/qc/multiqc.html"),
+            local("results/qc/attrition_plot.png"),
+            local("results/qc/overview_table.html"),
+        output:
+            local("results/single_sample_similarity_search_data.tar.gz")
+        log:
+            local("logs/tar/tar.log")
+        conda:
+            "../envs/python.yaml"        
+        script:
+            "../scripts/postprocess_tar_intermediates.py"       
 
 
 rule concatenate_logs:

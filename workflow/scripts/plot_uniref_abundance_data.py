@@ -23,7 +23,7 @@ html = """
         border-collapse: collapse;
         margin: 25px 0;
         font-size: 0.95em;
-        font-family: sans-serif;
+        font-query: sans-serif;
         min-width: 600px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
     }
@@ -48,7 +48,7 @@ html = """
 <body>
 <table class="styled-table">
 <thead>
-    <tr><th>Sample</th><th>AMR Gene Family</th><th>Genus</th><th>Fusion Read Count</th><th>Relative</th></tr>
+    <tr><th>Sample</th><th>Uniref query</th><th>Genus</th><th>Fusion Read Count</th><th>Relative</th></tr>
 </thead>
 <tbody>
 """
@@ -58,7 +58,7 @@ def plot_abundance_data(input_file, html, output_html):
     df = pd.read_csv(input_file)
     grouped_sample = df.groupby("sample")
     for sample, df_sample in grouped_sample:
-        grouped_query = df_sample.groupby("AMR Gene Family")
+        grouped_query = df_sample.groupby("Uniref query")
         for query, df_query in grouped_query:
             query_rowspan = len(df_query)
             query_first_row = True

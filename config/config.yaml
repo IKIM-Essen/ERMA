@@ -1,45 +1,41 @@
 runname: "test"
-
 # Setting up base directory and location of fastq files. Generally, no changes needed here.
 
 base_dir: "."
 fastq_dir: "data/fastq" # Copy target fastq.gz files in ERMA/data/fastq or change this path
 outdir: "results" # Output directory of the final report
 
+similarity_search_mode: "full" # Put here "test" or "full" for strand/s to be included in the similarity search
+
+num_parts: 1 # number of subfiles the fastqs are split into (prevents crashing with very large input)
+max_threads: 16
+
 min_similarity: "0.80" # threshold to pre-filter blast hits by percentage identity
 min_abundance: "0.01" # genera with lower abundance will be binned as "Other" in stacked bar abundance plot
 
-silva:
-  download_path_seq: "https://www.arb-silva.de/fileadmin/silva_databases/release_138_2/Exports/SILVA_138.2_SSURef_NR99_tax_silva.fasta.gz"
-  #download_path_seq: "https://www.arb-silva.de/fileadmin/silva_databases/release_138_1/Exports/SILVA_138.1_SSURef_NR99_tax_silva.fasta.gz"
-  #download_path_seq: "https://www.arb-silva.de/fileadmin/silva_databases/release_138/Exports/SILVA_138_SSURef_NR99_tax_silva.fasta.gz"
-  #download_path_seq: "https://www.arb-silva.de/fileadmin/silva_databases/release_128/Exports/SILVA_128_SSURef_Nr99_tax_silva.fasta.gz"
-  download_path_tax: "https://www.arb-silva.de/fileadmin/silva_databases/release_138_2/Exports/taxonomy/taxmap_slv_ssu_ref_nr_138.2.txt.gz"
-  #download_path_tax: "https://www.arb-silva.de/fileadmin/silva_databases/release_138_1/Exports/taxonomy/taxmap_slv_ssu_ref_nr_138.1.txt.gz"
-  #download_path_tax: "https://www.arb-silva.de/fileadmin/silva_databases/release_138/Exports/taxonomy/taxmap_slv_ssu_ref_nr_138.txt.gz"
-  #download_path_tax: "https://www.arb-silva.de/fileadmin/silva_databases/release_128/Exports/taxonomy/taxmap_slv_ssu_ref_nr_128.txt.gz"
+input_validation: True
 
-card:
-  #download_path: "https://card.mcmaster.ca/download/0/broadstreet-v3.3.0.tar.bz2"
-  download_path: "https://card.mcmaster.ca/download/0/broadstreet-v4.0.1.tar.bz2"
+#################
+### Databases ###
+#################
 
-add_uniref_targets:
-  using_mixed_db: "no"
-  uniprot_cluster: "100"
-  uniprot_targets: ["int1","inti1"]
-  max_entry_count: 500
+download_silva: "https://www.arb-silva.de/fileadmin/silva_databases/release_138_2/Exports/SILVA_138.2_SSURef_NR99_tax_silva.fasta.gz"
+download_card: "https://card.mcmaster.ca/download/0/broadstreet-v4.0.1.tar.bz2"
+# Use the default links, different versions of the same database or insert an absolute path to a local distribution ("/path/to/database")
 
-num_parts: 1 # number of chunks the fastqs are split into
-max_threads: 16
+add_uniref_targets: False # True for activating the feature of adding additional targets to the card database
+uniprot_cluster: "100" # Chooses which Uniref Cluster is used for the targets
+uniprot_targets: ["int1","inti1","class_1_integron"] 
+max_entry_count: 1000 # Only use the best N database entries for every target
+low_freq_threshold: 0.01 # necessary to not overload two summary plots
 
-similarity_search_mode: "full" # Put here "test" or "full" for strand/s to be included in the similarity search
-
-input_validation: "yes"
-
+#####################
 ### Preprocessing ###
+#####################
+
 # if data is already in format 'one fastq.gz per sample', this section can be ignored
 
-seq_tech: "Illumina" # Put here "Illumina" or "ONT" befor using rule prepare_fastqs
+seq_tech: "Illumina" # Put here "Illumina" or "ONT" according to used technology (only important for using rule prepare_fastqs)
 
 # In case of Demultiplexing ONT data, provide information for this section
 ONT:
