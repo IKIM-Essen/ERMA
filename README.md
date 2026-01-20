@@ -134,7 +134,7 @@ When analyzing paired-end reads, they must be merged before starting the pipelin
 3. Run from the ERMA root folder:
 
 ```bash
-snakemake prepare_fastqs
+snakemake prepare_fastqs --cores N
 ```
 
 This will execute a bash script with the essential step of merging R1 and R2 read with NGmerge

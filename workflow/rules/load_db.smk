@@ -101,8 +101,8 @@ if config["add_uniref_targets"]:
         input:
             card_fasta=local("data/card_db/unpacked/protein_fasta_protein_homolog_model.fasta")
         output:
-            info_tsv=local("data/card_db/protein_fasta_with_uniprot.tsv"),
-            merged_fasta=temp(local("data/card_db/protein_fasta_with_uniprot.fasta")),
+            info_tsv=local(temp("data/card_db/protein_fasta_with_uniprot.tsv")),
+            merged_fasta=local(temp("data/card_db/protein_fasta_with_uniprot.fasta")),
         params:
             cluster=config["uniprot_cluster"],
             targets=config["uniprot_targets"],
@@ -119,7 +119,7 @@ if config["add_uniref_targets"]:
         input:
             merged_fasta=local("data/card_db/protein_fasta_with_uniprot.fasta")
         output:
-            norm_fasta=local("data/card_db/protein_fasta_with_uniprot_norm.fasta")
+            norm_fasta=local(temp("data/card_db/protein_fasta_with_uniprot_norm.fasta"))
         conda:
             "../envs/python.yaml"
         log:
