@@ -10,7 +10,9 @@ similarity_search_mode: "full" # Put here "test" or "full" for strand/s to be in
 num_parts: 1 # number of subfiles the fastqs are split into (prevents crashing with very large input)
 max_threads: 16
 
-min_similarity: "0.80" # threshold to pre-filter blast hits by percentage identity
+evalue_thres: "1e-5" # threshold to prefilter similarity hit results
+min_similarity: "0.90" # threshold to pre-filter blast hits by percentage identity
+minlen: "200" # threshold for minimum length of 16S hits
 min_abundance: "0.01" # genera with lower abundance will be binned as "Other" in stacked bar abundance plot
 
 input_validation: True

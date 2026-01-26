@@ -13,6 +13,7 @@ rule diamond_card:
         overview_table=local(temp("results/{sample}/{part}/overview_table.txt")),
     params:
         internal_threads=config["max_threads"],
+        evalue_thres=config["evalue_thres"],
     log:
         local("logs/diamond_card/{sample}_{part}.log"),
     conda:
@@ -20,7 +21,7 @@ rule diamond_card:
     threads: config["max_threads"]
     shell:
         """
-        diamond blastx -d {input.card} -q {input.fasta} -o {output.card_results} --outfmt 6 --evalue 1e-5 --quiet --threads {params.internal_threads} > {log} 2>&1
+        diamond blastx -d {input.card} -q {input.fasta} -o {output.card_results} --outfmt 6 --evalue {params.evalue_thres} --quiet --threads {params.internal_threads} > {log} 2>&1
         echo -ne "Number of FastQ input reads,{wildcards.sample},{wildcards.part},$(cat {input.fasta}|grep -c '^>')\n" >> {output.overview_table}
         echo -ne "Diamond output hits,{wildcards.sample},{wildcards.part},$(cat {output.card_results}|wc -l)\n" >> {output.overview_table}
         """
@@ -39,13 +40,15 @@ if config["similarity_search_mode"] == "test":
             local("logs/blast_silva/{sample}_{part}.log"),
         params:
             internal_threads=config["max_threads"],
+            evalue_thres=config["evalue_thres"],
+            minlen=config["minlen"]
             min_id=config["min_similarity"],
         conda:
             "../envs/usearch.yaml"
         threads: config["max_threads"]
         shell:
             """
-            usearch -usearch_local {input.fasta} -db {input.silva} -blast6out {output.silva_results} -evalue 1e-5 -threads {params.internal_threads} -strand plus -mincols 200 > {log} 2>&1
+            usearch -usearch_local {input.fasta} -db {input.silva} -blast6out {output.silva_results} -evalue {params.evalue_thres} -threads {params.internal_threads} -strand plus -mincols {params.minlen} > {log} 2>&1
             echo -ne "Usearch output hits,{wildcards.sample},{wildcards.part},$(cat {output.silva_results}|wc -l)\n" >> {input.overview_table}
             """
 
@@ -63,13 +66,15 @@ if config["similarity_search_mode"] == "full":
             local("logs/blast_silva/{sample}_{part}.log"),
         params:
             internal_threads=config["max_threads"],
+            evalue_thres=config["evalue_thres"],
+            minlen=config["minlen"]
             min_id=config["min_similarity"],
         conda:
             "../envs/usearch.yaml"
         threads: config["max_threads"]
         shell:
             """
-            usearch -usearch_local {input.fasta} -db {input.silva} -blast6out {output.silva_results} -evalue 1e-5 -threads {params.internal_threads} -strand both -mincols 200 > {log} 2>&1
+            usearch -usearch_local {input.fasta} -db {input.silva} -blast6out {output.silva_results} -evalue {params.evalue_thres} -threads {params.internal_threads} -strand both -mincols {params.minlen} > {log} 2>&1
             echo -ne "Usearch output hits,{wildcards.sample},{wildcards.part},$(cat {output.silva_results}|wc -l)\n" >> {input.overview_table}
             """
 
