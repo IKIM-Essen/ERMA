@@ -41,7 +41,7 @@ if config["similarity_search_mode"] == "test":
         params:
             internal_threads=config["max_threads"],
             evalue_thres=config["evalue_thres"],
-            minlen=config["minlen"]
+            minlen=config["minlen"],
             min_id=config["min_similarity"],
         conda:
             "../envs/usearch.yaml"
@@ -67,7 +67,7 @@ if config["similarity_search_mode"] == "full":
         params:
             internal_threads=config["max_threads"],
             evalue_thres=config["evalue_thres"],
-            minlen=config["minlen"]
+            minlen=config["minlen"],
             min_id=config["min_similarity"],
         conda:
             "../envs/usearch.yaml"
