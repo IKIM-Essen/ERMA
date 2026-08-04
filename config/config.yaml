@@ -1,4 +1,4 @@
-runname: "test"
+runname: "Mock_long"
 # Setting up base directory and location of fastq files. Generally, no changes needed here.
 
 base_dir: "."
@@ -11,7 +11,7 @@ num_parts: 1 # number of subfiles the fastqs are split into (prevents crashing w
 max_threads: 16
 
 evalue_thres: "1e-5" # threshold to prefilter similarity hit results
-min_similarity: "0.90" # threshold to pre-filter blast hits by percentage identity
+min_similarity: "0.85" # threshold to pre-filter blast hits by percentage identity
 minlen: "200" # threshold for minimum length of 16S hits
 min_abundance: "0.01" # genera with lower abundance will be binned as "Other" in stacked bar abundance plot
 
@@ -37,11 +37,11 @@ low_freq_threshold: 0.01 # necessary to not overload two summary plots
 
 # if data is already in format 'one fastq.gz per sample', this section can be ignored
 
-seq_tech: "Illumina" # Put here "Illumina" or "ONT" according to used technology (only important for using rule prepare_fastqs)
+seq_tech: "ONT" # Put here "Illumina" or "ONT" according to used technology (only important for using rule prepare_fastqs)
 
 # In case of Demultiplexing ONT data, provide information for this section
 ONT:
   fastq_pass_path: "data/ONT/fastq_pass" # copy your fastq_pass folder here
   sample_name_path: "data/ONT/barcode-rename.csv" # change this file with your barcode-sample name combinations
-  target_fragment_length: 1250 # Length of the theoretical fragment after nested PCR
+  target_fragment_length: 501 # Length of the theoretical fragment after nested PCR
   filter_intervall: 0.1 # +/- Intervall used to filter too large/small fragments; 0.1 filters in a +/- 10% intervall
