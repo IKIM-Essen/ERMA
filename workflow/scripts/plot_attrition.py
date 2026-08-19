@@ -35,7 +35,7 @@ FILTER_REASONS = {
 MAIN_COLOR_MAP = {
     "Number of FastQ input reads": "seagreen",
     "Merged similarity hits": "#fc8d62",
-    "Filtered fusion reads": "#8da0cb",
+    "Filtered fusion reads": "lightblue",
 }
 
 
