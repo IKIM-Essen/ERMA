@@ -176,7 +176,7 @@ snakemake --profile profile
 
 ### Testing
 
-For testing the workflow the user can copy the provided dummy data:
+For testing the workflow the user can copy the provided (ONT) dummy data:
 
 ```
 cp .github/data/fastq/test_epic_data.fastq.gz data/fastq/
